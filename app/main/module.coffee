@@ -7,8 +7,8 @@ angular.module 'app.main', [
 ]
 
 .factory 'cordovaReady', [
-	'$q', '$document', 'fnQueue', 'isPhonegap'
-	($q, $document, fnQueue, isPhonegap) ->
+	'$q', '$document', 'fnQueue'
+	($q, $document, fnQueue) ->
 		deferred = $q.defer()
 		$document.one 'deviceready', -> deferred.resolve()
 		return fnQueue(deferred.promise)
