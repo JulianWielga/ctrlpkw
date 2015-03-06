@@ -13,7 +13,12 @@ angular.module 'app', [
 	'touk.jwl.ngFnQueue'
 
 	# app modules
-	'app.main'
+	'main.module'
+	'directives.googleMaps'
+
+	#'app.services'
+	'cordova.Ready'
+	'ngCordova.plugins.geolocation'
 
 	# jade / html templates and templates
 	'app.templates'
@@ -36,5 +41,5 @@ angular.module 'app', [
 	'$httpProvider'
 	($httpProvider, config) ->
 		$httpProvider.defaults.useXDomain = yes
-		$httpProvider.defaults.withCredentials = yes
+#		$httpProvider.defaults.withCredentials = yes
 ]

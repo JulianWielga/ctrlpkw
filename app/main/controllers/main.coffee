@@ -9,10 +9,10 @@ angular.module 'main.controllers.main', [
 	'$route'
 	'$routeParams'
 	'requestContext'
-	'$resource'
-	'geolocation'
+	'VotingsResources'
+	'$cordovaGeolocation'
 
-	($scope, $route, $routeParams, requestContext, $resource, geolocation) ->
+	($scope, $route, $routeParams, requestContext, VotingsResources, $cordovaGeolocation) ->
 		# Get the render context local to this controller (and relevant params).
 		renderContext = requestContext.getRenderContext()
 
@@ -39,19 +39,9 @@ angular.module 'main.controllers.main', [
 			# Announce the change in render conditions.
 			$scope.$broadcast "requestContextChanged", requestContext
 
-		res = $resource "http://ctrlpkw.pl:80/api/votings/:date/:action",
-			{}
-		,
-			getWards:
-				method: 'GET'
-				params:
-					action: 'wards'
-					date: '@date'
-				isArray: yes
 
-		geolocation.getCurrentPosition (position) =>
-
-			@markers = res.getWards
+		$cordovaGeolocation.getCurrentPosition().then (position) =>
+			@markers = VotingsResources.getWards
 				date: '2010-06-20'
 				latitude: position.coords.latitude
 				longitude: position.coords.longitude

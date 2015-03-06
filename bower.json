@@ -17,14 +17,10 @@
     "angular-animate": ">= 1.3 < 1.4",
     "angular-mocks": ">= 1.3 < 1.4",
     "angular-load": "~0.2.0",
-    "ngFnQueue": "https://github.com/JulianWielga/ngFnQueue.git",
-    "ngCordova": "~0.1.12-alpha"
+    "ngFnQueue": "https://github.com/JulianWielga/ngFnQueue.git"
   },
   "overrides": {
     "bootstrap": {
-      "main": "README.md"
-    },
-    "ngCordova": {
       "main": "README.md"
     },
     "jquery": {
