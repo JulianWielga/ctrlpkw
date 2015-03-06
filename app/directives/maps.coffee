@@ -27,35 +27,11 @@ angular.module 'directives.googleMaps', [
 		init: (element) =>
 			@_injectPlugin()
 			.then => @map = @_createMap element
-			.then => @locationWatchStart()
 			.then => @onInit()
-
-		locationWatchStart: =>
-#			@geolocation.watchPosition (position) =>
-#				pos = @Map.latLng position.coords.latitude, position.coords.longitude
-#				rad = position.coords.accuracy
-#
-#				unless @currentLoc
-#					@currentLoc = @Map.createMarker @map, pos, 'test'
-#					.then (currentLoc) =>
-#						@currentLoc = currentLoc
-#
-#					@currentLocRadius = @Map.createCircle @map,
-#						center: pos
-#						radius: rad
-#					.then (circle) =>
-#						@currentLocRadius = circle
-#
-#				else
-#					@currentLoc.setPosition pos
-#					@currentLocRadius.setCenter pos
-#					@currentLocRadius.setRadius rad
 
 		_injectPlugin: =>
 			@q.when @initMaps
-			.then (maps) =>
-				console.log maps
-				@Map = maps
+			.then (maps) => @Map = maps
 			.catch (error) => alert error
 
 		_createMap: (element) =>
@@ -67,7 +43,6 @@ angular.module 'directives.googleMaps', [
 			@scope.$watch 'markers', @markersChanged, yes
 			@geolocation.getCurrentPosition().then (position) =>
 				@map.setCenter @Map.latLng position.coords.latitude, position.coords.longitude
-
 
 		markersChanged: (markers) => if markers
 			@cleanMarkers()
@@ -85,7 +60,8 @@ angular.module 'directives.googleMaps', [
 			@Map.deleteMarker marker
 
 		createMarker: (marker) =>
-			position = @Map.latLng marker.location.latitude, marker.location.longitude
-			@Map.createMarker @map, position, marker.address
+			@Map.createMarker @map,
+				position: @Map.latLng marker.location.latitude, marker.location.longitude
+				title: marker.address
 ]
 

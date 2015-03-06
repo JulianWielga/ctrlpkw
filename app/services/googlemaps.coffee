@@ -68,12 +68,9 @@ angular.module 'cordova.plugin.googleMaps', []
 		latLng: (latitude, longitude) ->
 			new plugin.google.maps.LatLng latitude, longitude
 
-		createMarker: (map, position, title) ->
+		createMarker: (map, options) ->
 			deferred = $q.defer()
-			map.addMarker
-				position: position
-				title: title
-			, (marker) ->
+			map.addMarker options, (marker) ->
 				deferred.resolve marker
 			deferred.promise
 
@@ -95,37 +92,69 @@ angular.module 'cordova.plugin.googleMaps', []
 ]
 
 .factory "googleMapsJS", [
-	'$q'
-	($q) ->
-		version: 'googleMapsJS'
-		getMap: (canvas, params) ->
-			new google.maps.Map canvas, angular.extend params,
-				disableDefaultUI: yes
+	'$q', '$cordovaGeolocation'
+	($q, $cordovaGeolocation) ->
+		new class GoogleMapsJS
+			version: 'googleMapsJS'
 
-		latLng: (latitude, longitude) ->
-			new google.maps.LatLng latitude, longitude
+			getMap: (canvas, params) =>
+				map = new google.maps.Map canvas, angular.extend params,
+					disableDefaultUI: yes
+				@_updatePositionDot(map)
+				return map
 
-		createMarker: (map, position, title) ->
-			deferred = $q.defer()
-			marker = new google.maps.Marker
-				position: position
-				map: map
-				title: title
-			deferred.resolve marker
-			deferred.promise
+			_updatePositionDot: (map) ->
+				$cordovaGeolocation.watchPosition().then null, null, (position) =>
+					pos = @latLng position.coords.latitude, position.coords.longitude
+					rad = position.coords.accuracy
 
-		deleteMarker: (marker) ->
-			marker.setMap null
+					unless @currentLoc
+						@currentLoc = @createMarker map,
+							position: pos
+							title: 'test'
+							icon:
+								url: 'img/location.png'
+								size: new google.maps.Size 64, 64
+								scaledSize: new google.maps.Size 20, 20
+								origin: new google.maps.Point 0, 0
+								anchor: new google.maps.Point 10, 10
+						.then (currentLoc) =>
+							@currentLoc = currentLoc
 
-		createCircle: (map, options) ->
-			deferred = $q.defer()
-			params = angular.extend
-				fillColor: 'blue'
-				fillOpacity: 0.2
-				radius: 10
-				strokeWeight: 0
-				map: map
-			, options
-			deferred.resolve new google.maps.Circle params
-			deferred.promise
+						@currentLocRadius = @createCircle map,
+							center: pos
+							radius: rad
+						.then (circle) =>
+							@currentLocRadius = circle
+					else
+						@currentLoc.setPosition pos
+						@currentLocRadius.setCenter pos
+						@currentLocRadius.setRadius rad
+
+
+			latLng: (latitude, longitude) ->
+				new google.maps.LatLng latitude, longitude
+
+			createMarker: (map, options) ->
+				deferred = $q.defer()
+				marker = new google.maps.Marker angular.extend
+					map: map
+				, options
+				deferred.resolve marker
+				deferred.promise
+
+			deleteMarker: (marker) ->
+				marker.setMap null
+
+			createCircle: (map, options) ->
+				deferred = $q.defer()
+				params = angular.extend
+					map: map
+					fillColor: '#0161f8'
+					fillOpacity: 0.2
+					radius: 10
+					strokeWeight: 0
+				, options
+				deferred.resolve new google.maps.Circle params
+				deferred.promise
 ]
