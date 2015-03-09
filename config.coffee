@@ -61,6 +61,11 @@ exports.config =
 			optimize: true #nie działa ta opcja na js - zawsze true
 			sourceMaps: false
 
+		noreload:
+			plugins:
+				autoReload:
+					enabled: no
+
 
 	server:
 		port: 3334
