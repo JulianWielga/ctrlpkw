@@ -51,5 +51,8 @@ angular.module 'main.controllers.main', [
 					longitude: position.coords.longitude
 					count: @count
 
+		@center = =>
+			@centerMap()
+
 		$scope.$watch 'ctrl.count', @getWards
 ]

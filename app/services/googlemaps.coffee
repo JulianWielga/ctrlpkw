@@ -12,12 +12,12 @@ angular.module 'cordova.plugin.googleMaps', []
 		deferred = $q.defer()
 
 		checkNative = crdReady ->
-			return checkJavascript()
+#			return checkJavascript()
 
-#			return checkJavascript() unless plugin?.google?.maps?.Map
-#			plugin.google.maps.Map.isAvailable (isAvailable, message) ->
-#				return checkJavascript() unless isAvailable
-#				nativeMaps()
+			return checkJavascript() unless plugin?.google?.maps?.Map
+			plugin.google.maps.Map.isAvailable (isAvailable, message) ->
+				return checkJavascript() unless isAvailable
+				nativeMaps()
 
 		checkJavascript = ->
 			return javascriptMaps() if google?.maps?.Map
@@ -57,7 +57,7 @@ angular.module 'cordova.plugin.googleMaps', []
 		constructor: (@q) ->
 
 		getMap: (canvas, params) ->
-			plugin.google.maps.Map.getMap canvas,
+			map = plugin.google.maps.Map.getMap canvas,
 				backgroundColor: params.backgroundColor
 				controls:
 					zoom: no
@@ -68,6 +68,19 @@ angular.module 'cordova.plugin.googleMaps', []
 					tilt: params.tilt
 					zoom: params.zoom
 					bearing: params.bearing
+			map.setPadding 30
+			return map
+
+		fitBounds: (map, bounds) ->
+			map.animateCamera
+				target: bounds
+				duration: 1000
+
+		panTo: (map, position) -> map.getCameraPosition (camera) ->
+			map.animateCamera
+				target: position
+				zoom: camera.zoom
+				duration: 1000
 
 		latLng: (latitude, longitude) ->
 			new plugin.google.maps.LatLng latitude, longitude
@@ -88,7 +101,7 @@ angular.module 'cordova.plugin.googleMaps', []
 			deferred.promise
 
 		deleteMarker: (marker) ->
-			marker.remove()
+			marker?.remove()
 
 		createCircle: (map, options) =>
 			deferred = @q.defer()
@@ -190,7 +203,9 @@ angular.module 'cordova.plugin.googleMaps', []
 					animateResize currentLocRadius
 					animateMove currentLocRadius
 
+		fitBounds: (map, bounds) => map.fitBounds bounds
 
+		panTo: (map, position) => map.panTo position
 
 		latLng: (latitude, longitude) ->
 			new google.maps.LatLng latitude, longitude

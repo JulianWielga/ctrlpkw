@@ -18,9 +18,10 @@ html(ng-app='app')
 		title ctrlpkw
 
 	body(ng-controller='MainCtrl as ctrl')
-		.map-wrapper(ng-if='ctrl.loaded')
-			#map(map-canvas, markers='ctrl.markers')
 		#test
 			button(ng-click='ctrl.getWards()') get2
+			button(ng-click='ctrl.center()') center
 			input(ng-model='ctrl.count', type='number')
 			div {{position|json}}
+		.map-wrapper(ng-if='ctrl.loaded')
+			#map(map-canvas, markers='ctrl.markers', center-fn='ctrl.centerMap')
