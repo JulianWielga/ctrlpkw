@@ -40,11 +40,16 @@ angular.module 'main.controllers.main', [
 			$scope.$broadcast "requestContextChanged", requestContext
 
 
-		$cordovaGeolocation.getCurrentPosition().then (position) =>
-			@markers = VotingsResources.getWards
-				date: '2010-06-20'
-				latitude: position.coords.latitude
-				longitude: position.coords.longitude
-				count: 20
 
+		@getWards = =>
+			return unless @count > 0
+			$cordovaGeolocation.getCurrentPosition().then (position) =>
+				@loaded = yes
+				@markers = VotingsResources.getWards
+					date: '2010-06-20'
+					latitude: position.coords.latitude
+					longitude: position.coords.longitude
+					count: @count
+
+		$scope.$watch 'ctrl.count', @getWards
 ]

@@ -5,8 +5,7 @@ angular.module 'main.resources.votings', []
 .factory 'VotingsResources', [
 	'$resource'
 	($resource) ->
-#		apiUrl = 'http://ctrlpkw.pl:80/api'
-		apiUrl = 'http://dirt:8888/proxy/http://ctrlpkw.pl:80/api'
+		apiUrl = 'http://ctrlpkw.pl:80/api'
 
 		$resource "#{apiUrl}/votings/:date/:action",
 			{}
