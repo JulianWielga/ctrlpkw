@@ -1,3 +1,5 @@
+{exec} = require 'child_process'
+
 exports.config =
 # See docs at http://brunch.readthedocs.org/en/latest/config.html.
 	conventions:
@@ -55,21 +57,26 @@ exports.config =
 				basedir: 'app'
 			htmlmin: no
 
+	server:
+		port: 3334
 
 	overrides:
 		production:
 			optimize: true #nie działa ta opcja na js - zawsze true
 			sourceMaps: false
 
-		noreload:
+		ripple:
 			plugins:
 				autoReload:
 					enabled: no
 
+			server:
+				command: 'ripple emulate'
 
-	server:
-		port: 3334
-		base: '/'
+			onCompile: (files) ->
+				exec 'phonegap prepare'
+
+
 
 # export server configuration to jade processor
 process?.server = exports.config.server

@@ -1,14 +1,12 @@
 niezbedne:
 - nodejs
 - android sdk, ios sdk etc.
+- phonegap -> npm install -g phonegap
+- ripple -> npm install -g ripple-emulator
 
 instalacja na telefonie (emulatorze/symulatorze):
-- npm install -g phonegap
 - npm run build
 - phonegap run android
 
 podglad w przegladarce:
-- npm install -g ripple-emulator
-- npm run build
-- phonegap prepare
-- ripple emulate
+- npm run ripple
