@@ -120,92 +120,100 @@ angular.module 'cordova.plugin.googleMaps', []
 ]
 
 .service "googleMapsJS", [
-	'$q', '$cordovaGeolocation'
+	'$q', '$cordovaGeolocation', '$document', 'locationMonitor'
 	class GoogleMapsJS
-		constructor: (@q, @geolocation) ->
+		constructor: (@q, @geolocation, @document, @locationMonitor) ->
 
 		getMap: (canvas, params) =>
+			@document.off 'location_changed', @_locationChangeHandler
+
 			angular.extend params,
 				disableDefaultUI: yes
 
 			map = new google.maps.Map canvas, params
-			@_updatePositionDot(map)
+			@_locationChangeHandler = @_createLocationChangeHandler map
+			@_locationChangeHandler()
+
+			@document.on 'location_changed', @_locationChangeHandler
 			return map
 
-		_updatePositionDot: (map) =>
-			currentLoc = null
-			currentLocRadius = null
-			@geolocation.watchPosition().then null, null, (position) =>
-				pos = @latLng position.coords.latitude, position.coords.longitude
-				rad = position.coords.accuracy
-				unless currentLoc
-					currentLoc = {}
+		_createLocationChangeHandler: (map) =>
+			locationMarker = null
+			locationAccuracyCircle = null
+
+			=>
+				coords = @locationMonitor.lastPosition.coords
+				position = @latLng coords.latitude, coords.longitude
+				accuracy = coords.accuracy
+				unless locationMarker
+					locationMarker = {}
+					size = 64
+					scaledSize = size * .375
+					anchor = scaledSize / 2
 					@createMarker map,
-						position: pos
-						title: 'test'
+						position: position
 						icon:
 							url: 'img/location.png'
-							size: new google.maps.Size 64, 64
-							scaledSize: new google.maps.Size 24, 24
+							size: new google.maps.Size size, size
+							scaledSize: new google.maps.Size scaledSize, scaledSize
 							origin: new google.maps.Point 0, 0
-							anchor: new google.maps.Point 12, 12
-					.then (_currentLoc) ->
-						currentLoc = _currentLoc
+							anchor: new google.maps.Point anchor, anchor
+					.then (marker) ->
+						locationMarker = marker
 
-					currentLocRadius = {}
+					locationAccuracyCircle = {}
 					@createCircle map,
-						center: pos
-						radius: rad
+						center: position
+						radius: accuracy
 					.then (circle) ->
-						currentLocRadius = circle
+						locationAccuracyCircle = circle
 				else
-#					currentLoc.setPosition pos
-#					currentLocRadius.setCenter pos
-#					currentLocRadius.setRadius rad
+#					locationMarker.setPosition position
+#					locationAccuracyCircle.setCenter position
+#					locationAccuracyCircle.setRadius accuracy
+					@_animateMarkerMove locationMarker, position
+					@_animateCircleResize locationAccuracyCircle, accuracy
+					@_animateMarkerMove locationAccuracyCircle, position
 
-					move = (marker, latlngs, index, wait) ->
-						marker.setPosition?(latlngs[index])
-						marker.setCenter?(latlngs[index])
-						if index != latlngs.length - 1
-							setTimeout (->
-								move marker, latlngs, index + 1, wait
-							), wait
+		_moveMarker: (marker, latlngs, index, wait) =>
+			marker.setPosition?(latlngs[index])
+			marker.setCenter?(latlngs[index])
+			if index != latlngs.length - 1
+				setTimeout (=>
+					@_moveMarker marker, latlngs, index + 1, wait
+				), wait
 
-					resize = (marker, radius, index, wait) ->
-						marker.setRadius?(radius[index])
-						if index != radius.length - 1
-							setTimeout (->
-								resize marker, radius, index + 1, wait
-							), wait
+		_resizeCircle: (circle, radius, index, wait) =>
+			circle.setRadius?(radius[index])
+			if index != radius.length - 1
+				setTimeout (=>
+					@_resizeCircle circle, radius, index + 1, wait
+				), wait
 
-					animateMove = (marker) => if marker
-						frames = []
-						percent = 0
-						p = marker.getPosition?() or marker.getCenter?()
-						return unless p
-						clat = p.lat()
-						clng = p.lng()
-						while percent < 1
-							curLat = clat + percent * (pos.lat() - clat)
-							curLng = clng + percent * (pos.lng() - clng)
-							frames.push @latLng(curLat, curLng)
-							percent += 0.01
-						move marker, frames, 0, 20
+		_animateMarkerMove: (marker, position) => if marker
+			frames = []
+			percent = 0
+			p = marker.getPosition?() or marker.getCenter?()
+			return unless p
+			clat = p.lat()
+			clng = p.lng()
+			while percent < 1
+				curLat = clat + percent * (position.lat() - clat)
+				curLng = clng + percent * (position.lng() - clng)
+				frames.push @latLng(curLat, curLng)
+				percent += 0.01
+			@_moveMarker marker, frames, 0, 20
 
-					animateResize = (marker) =>
-						frames = []
-						percent = 0
-						cr = marker?.getRadius?()
-						return unless cr
-						while percent < 1
-							curR = cr + percent * (rad - cr)
-							frames.push curR
-							percent += 0.01
-						resize marker, frames, 0, 20
-
-					animateMove currentLoc
-					animateResize currentLocRadius
-					animateMove currentLocRadius
+		_animateCircleResize: (marker, radius) =>
+			frames = []
+			percent = 0
+			cr = marker?.getRadius?()
+			return unless cr
+			while percent < 1
+				curR = cr + percent * (radius - cr)
+				frames.push curR
+				percent += 0.01
+			@_resizeCircle marker, frames, 0, 20
 
 		fitBounds: (map, bounds) => map.fitBounds bounds
 
