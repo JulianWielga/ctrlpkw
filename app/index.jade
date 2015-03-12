@@ -18,10 +18,17 @@ html(ng-app='app')
 		title ctrlpkw
 
 	body(ng-controller='MainCtrl as ctrl')
-		#test
-			button(ng-click='ctrl.getWards()') get2
-			button(ng-click='ctrl.center()') center
-			input(ng-model='ctrl.count', type='number')
-			div {{position|json}}
-		.map-wrapper(ng-if='ctrl.loaded')
-			#map(map-canvas, markers='ctrl.markers', center-fn='ctrl.centerMap')
+		header
+			a(ng-href='#/home') test
+			a(ng-href='#/form') test2
+			a(ng-href='#/map') test3
+		div(ng-switch='subview')
+			div(ng-switch-when='home')
+			div(ng-switch-when='form')
+				input(ng-model='ctrl.count', type='number')
+				button(ng-click='ctrl.getWards()') getWards
+				.map-wrapper
+					map(markers='ctrl.markers', center-fn='ctrl.centerMap')
+				button(ng-click='ctrl.center()') center
+			div(ng-switch-when='map')
+		footer

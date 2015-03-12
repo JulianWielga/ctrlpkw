@@ -11,8 +11,9 @@ angular.module 'main.controllers.main', [
 	'requestContext'
 	'VotingsResources'
 	'$cordovaGeolocation'
+	'$location'
 
-	($scope, $route, $routeParams, requestContext, VotingsResources, $cordovaGeolocation) ->
+	($scope, $route, $routeParams, requestContext, VotingsResources, $cordovaGeolocation, $location) ->
 		# Get the render context local to this controller (and relevant params).
 		renderContext = requestContext.getRenderContext()
 
@@ -41,18 +42,19 @@ angular.module 'main.controllers.main', [
 
 
 
+
 		@getWards = =>
-			return unless @count > 0
 			$cordovaGeolocation.getCurrentPosition().then (position) =>
-				@loaded = yes
 				@markers = VotingsResources.getWards
 					date: '2010-06-20'
 					latitude: position.coords.latitude
 					longitude: position.coords.longitude
 					count: @count
+				@markers.$promise
+				.then (values) =>
+#					$location.path 'map'
 
 		@center = =>
 			@centerMap()
 
-		$scope.$watch 'ctrl.count', @getWards
 ]

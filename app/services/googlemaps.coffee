@@ -68,18 +68,20 @@ angular.module 'cordova.plugin.googleMaps', []
 					tilt: params.tilt
 					zoom: params.zoom
 					bearing: params.bearing
-			map.setPadding 30
 			return map
 
 		fitBounds: (map, bounds) ->
+			map.setPadding 30
 			map.animateCamera
 				target: bounds
 				duration: 1000
+			setTimeout ->
+				map.setPadding 0
 
 		panTo: (map, position) -> map.getCameraPosition (camera) ->
 			map.animateCamera
 				target: position
-				zoom: camera.zoom
+				zoom: camera.zoom.toFixed(3)
 				duration: 1000
 
 		latLng: (latitude, longitude) ->
@@ -123,8 +125,10 @@ angular.module 'cordova.plugin.googleMaps', []
 		constructor: (@q, @geolocation) ->
 
 		getMap: (canvas, params) =>
-			map = new google.maps.Map canvas, angular.extend params,
+			angular.extend params,
 				disableDefaultUI: yes
+
+			map = new google.maps.Map canvas, params
 			@_updatePositionDot(map)
 			return map
 

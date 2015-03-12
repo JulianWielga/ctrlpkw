@@ -4,7 +4,7 @@ angular.module 'directives.googleMaps', [
 	'cordova.plugin.googleMaps'
 ]
 
-.directive 'mapCanvas', [
+.directive 'map', [
 	'$q'
 	($q) ->
 		restrict: 'AE'
@@ -19,13 +19,14 @@ angular.module 'directives.googleMaps', [
 ]
 
 .controller 'mapController', [
-	'initMaps', '$injector', '$scope', '$q', '$cordovaGeolocation'
+	'initMaps', '$injector', '$scope', '$q', '$cordovaGeolocation', 'locationMonitor'
 	class MapController
 
-		lastPosition: null
+		constructor: (@initMaps, @injector, @scope, @q, @geolocation, @locationMonitor) ->
+			angular.extend @scope,
+				centerFn: @center
 
-		constructor: (@initMaps, @injector, @scope, @q, @geolocation) ->
-			@scope.centerFn = @center
+			@scope.$on '$destroy', @destructor
 
 		init: (element) =>
 			@_injectPlugin()
@@ -40,37 +41,37 @@ angular.module 'directives.googleMaps', [
 			.catch (error) => alert error
 
 		_createMap: (element) =>
+			pos = @Map.latLng @locationMonitor?.lastPosition?.coords?.latitude or 0, @locationMonitor?.lastPosition?.coords?.longitude or 0
 			@Map.getMap element,
-				center: @Map.latLng 0,0
-				zoom: 3
+				center: pos
+				zoom: 5
 
 		onInit: =>
 			@scope.$watch 'markers', @markersChanged, yes
-			@geolocation.watchPosition().then null, null, (position) =>
-				@lastPosition = @Map.latLng position.coords.latitude, position.coords.longitude
-			@center()
 
-		center: (withMarkers) =>
-			center = =>
-				if withMarkers and @markers
-					points = (@Map.getMarkerPositon marker for marker in @markers)
-					@q.all points
-					.then (points) =>
-						points.push @lastPosition
-						bounds = @Map.latLngBounds points
-						@Map.fitBounds @map, bounds
-				else
-					@Map.panTo @map, @lastPosition
+		center: (onlyLocation) =>
+			clearTimeout @centerTimeout
 
-			if @lastPosition
-				center()
+			center = (position) =>
+				@centerTimeout = setTimeout =>
+					pos = @Map.latLng position.coords.latitude, position.coords.longitude
+					if @markers and not onlyLocation
+						points = (@Map.getMarkerPositon marker for marker in @markers)
+						@q.all points
+						.then (points) =>
+							points.push pos
+							bounds = @Map.latLngBounds points
+							@Map.fitBounds @map, bounds
+					else
+						@Map.panTo @map, pos
+				, 250
+
+			if @locationMonitor.lastPosition
+				center @locationMonitor.lastPosition
 			else
 				@geolocation.getCurrentPosition()
 				.then (position) =>
-					pos = @Map.latLng position.coords.latitude, position.coords.longitude
-					@map.setCenter pos
-					@lastPosition = pos
-				.then center
+					center position
 
 		markersChanged: (markers, oldMarkers) => if markers
 			@cleanMarkers()
@@ -79,11 +80,16 @@ angular.module 'directives.googleMaps', [
 			@q.all promises
 			.then (markers) =>
 				@markers = markers
-				@center yes
+				@center()
 				return @markers
 
 		cleanMarkers: =>
 			return unless @markers?.length
+			if @map.clear?
+				@map.clear()
+				@map.off()
+				return
+
 			for marker, i in @markers
 				@removeMarker marker
 				delete @markers[i]
@@ -95,5 +101,9 @@ angular.module 'directives.googleMaps', [
 			@Map.createMarker @map,
 				position: @Map.latLng marker.location.latitude, marker.location.longitude
 				title: marker.address
+
+		destructor: =>
+			@cleanMarkers()
+#			@map.remove?()
 ]
 

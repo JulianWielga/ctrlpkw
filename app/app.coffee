@@ -6,6 +6,7 @@ angular.module 'app', [
 	'ngResource'
 	'ngSanitize'
 	'ngRoute'
+	'ngMaterial'
 
 	# angular external dependencies
 	'RequestContext'
@@ -24,18 +25,19 @@ angular.module 'app', [
 	'app.templates'
 ]
 
-#.config [
-#	'$routeProvider'
-#	'$locationProvider'
-#
-#	($routeProvider, $locationProvider) ->
-#		$routeProvider
-#
-#		.when '/a', action: 'a'
-#		.when '/b', action: 'b'
-#		.otherwise redirectTo: '/a'
-#
-#]
+.config [
+	'$routeProvider'
+	'$locationProvider'
+
+	($routeProvider, $locationProvider) ->
+		$routeProvider
+
+		.when '/home', action: 'home'
+		.when '/form', action: 'form'
+		.when '/map', action: 'map'
+		.otherwise redirectTo: '/home'
+
+]
 
 .config [
 	'$httpProvider'
