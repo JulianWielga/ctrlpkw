@@ -19,10 +19,10 @@ angular.module 'directives.googleMaps', [
 ]
 
 .controller 'mapController', [
-	'initMaps', '$injector', '$scope', '$q', '$cordovaGeolocation', 'locationMonitor'
+	'initMaps', '$injector', '$scope', '$q', '$cordovaGeolocation', 'locationMonitor', '$document'
 	class MapController
 
-		constructor: (@initMaps, @injector, @scope, @q, @geolocation, @locationMonitor) ->
+		constructor: (@initMaps, @injector, @scope, @q, @geolocation, @locationMonitor, @document) ->
 			angular.extend @scope,
 				centerFn: @center
 
@@ -48,6 +48,7 @@ angular.module 'directives.googleMaps', [
 
 		onInit: =>
 			@scope.$watch 'markers', @markersChanged, yes
+			@document.one 'location_changed', @center
 
 		center: (onlyLocation) =>
 			clearTimeout @centerTimeout

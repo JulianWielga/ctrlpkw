@@ -12,8 +12,9 @@ angular.module 'main.controllers.main', [
 	'VotingsResources'
 	'$cordovaGeolocation'
 	'$location'
+	'locationMonitor'
 
-	($scope, $route, $routeParams, requestContext, VotingsResources, $cordovaGeolocation, $location) ->
+	($scope, $route, $routeParams, requestContext, VotingsResources, $cordovaGeolocation, $location, locationMonitor) ->
 		# Get the render context local to this controller (and relevant params).
 		renderContext = requestContext.getRenderContext()
 
@@ -50,8 +51,8 @@ angular.module 'main.controllers.main', [
 					latitude: position.coords.latitude
 					longitude: position.coords.longitude
 					count: @count
-				@markers.$promise
-				.then (values) =>
+#				@markers.$promise
+#				.then (values) =>
 #					$location.path 'map'
 
 		@center = =>
