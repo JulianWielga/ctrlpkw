@@ -73,9 +73,8 @@ angular.module 'directives.googleMaps', [
 				.then (position) =>
 					center position
 
-		markersChanged: (markers, oldMarkers) => if markers
+		markersChanged: (markers) => if markers?.length
 			@cleanMarkers()
-			return unless markers.length
 			promises = (@createMarker marker for marker in markers)
 			@q.all promises
 			.then (markers) =>

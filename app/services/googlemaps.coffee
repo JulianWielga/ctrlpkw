@@ -75,13 +75,12 @@ angular.module 'cordova.plugin.googleMaps', []
 			map.animateCamera
 				target: bounds
 				duration: 1000
-			setTimeout ->
-				map.setPadding 0
+			setTimeout -> map.setPadding 0
 
 		panTo: (map, position) -> map.getCameraPosition (camera) ->
 			map.animateCamera
 				target: position
-				zoom: camera.zoom.toFixed(3)
+				zoom: camera.zoom
 				duration: 1000
 
 		latLng: (latitude, longitude) ->

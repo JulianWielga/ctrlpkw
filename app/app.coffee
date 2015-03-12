@@ -6,6 +6,7 @@ angular.module 'app', [
 	'ngResource'
 	'ngSanitize'
 	'ngRoute'
+	'ngTouch'
 	'ngMaterial'
 
 	# angular external dependencies
