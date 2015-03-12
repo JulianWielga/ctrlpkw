@@ -55,6 +55,6 @@ angular.module 'main.controllers.main', [
 #					$location.path 'map'
 
 		@center = =>
-			@centerMap()
+			@centerMap yes
 
 ]
