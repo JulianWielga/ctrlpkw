@@ -5,8 +5,8 @@ angular.module 'directives.googleMaps', [
 ]
 
 .directive 'map', [
-	'$q'
-	($q) ->
+	'$q', '$document'
+	($q, $document) ->
 		restrict: 'AE'
 		controller: 'mapController'
 		controllerAs: 'ctrl'
@@ -50,31 +50,30 @@ angular.module 'directives.googleMaps', [
 			@scope.$watch 'markers', @markersChanged, yes
 			@document.one 'location_changed', @center
 
+		_doCenter: => _.debounce (position, onlyLocation) =>
+			pos = @Map.latLng position.coords.latitude, position.coords.longitude
+			if @markers and not onlyLocation
+				points = (@Map.getMarkerPositon marker for marker in @markers)
+				@q.all points
+				.then (points) =>
+					points.push pos
+					bounds = @Map.latLngBounds points
+					@Map.fitBounds @map, bounds
+			else
+				@Map.panTo @map, pos
+		, 250
+
 		center: (onlyLocation) =>
-			clearTimeout @centerTimeout
-
-			center = (position) =>
-				@centerTimeout = setTimeout =>
-					pos = @Map.latLng position.coords.latitude, position.coords.longitude
-					if @markers and not onlyLocation
-						points = (@Map.getMarkerPositon marker for marker in @markers)
-						@q.all points
-						.then (points) =>
-							points.push pos
-							bounds = @Map.latLngBounds points
-							@Map.fitBounds @map, bounds
-					else
-						@Map.panTo @map, pos
-				, 250
-
+			@doCenter ?= @_doCenter()
 			if @locationMonitor.lastPosition
-				center @locationMonitor.lastPosition
+				@doCenter @locationMonitor.lastPosition, onlyLocation
 			else
 				@geolocation.getCurrentPosition()
 				.then (position) =>
-					center position
+					@doCenter position, onlyLocation
 
 		markersChanged: (markers) => if markers?.length
+			@document.off 'location_changed', @center
 			@cleanMarkers()
 			promises = (@createMarker marker for marker in markers)
 			@q.all promises
@@ -100,7 +99,9 @@ angular.module 'directives.googleMaps', [
 		createMarker: (marker) =>
 			@Map.createMarker @map,
 				position: @Map.latLng marker.location.latitude, marker.location.longitude
-				title: marker.address
+
+		resizeHandler: =>
+			@Map?.resize @map
 
 		destructor: =>
 			@cleanMarkers()

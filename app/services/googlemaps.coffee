@@ -12,8 +12,6 @@ angular.module 'cordova.plugin.googleMaps', []
 		deferred = $q.defer()
 
 		checkNative = crdReady ->
-#			return checkJavascript()
-
 			return checkJavascript() unless plugin?.google?.maps?.Map
 			plugin.google.maps.Map.isAvailable (isAvailable, message) ->
 				return checkJavascript() unless isAvailable
@@ -115,6 +113,9 @@ angular.module 'cordova.plugin.googleMaps', []
 			map.addCircle params, (circle) ->
 				deferred.resolve circle
 			deferred.promise
+
+		resize: (map) =>
+			map?.refreshLayout()
 
 ]
 
@@ -257,4 +258,7 @@ angular.module 'cordova.plugin.googleMaps', []
 			, options
 			deferred.resolve new google.maps.Circle params
 			deferred.promise
+
+		resize: (map) =>
+			google.maps.event.trigger map, 'resize'
 ]

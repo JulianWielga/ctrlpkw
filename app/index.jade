@@ -1,5 +1,5 @@
 doctype html
-html(ng-app='app')
+html(ng-app='app', device-detector)
 	head
 		meta(charset='utf-8')
 		meta(name='format-detection', content='telephone=no')
@@ -17,18 +17,41 @@ html(ng-app='app')
 		script(type='text/javascript', src='js/app.js')
 		title ctrlpkw
 
-	body(ng-controller='MainCtrl as ctrl')
-		header
-			a(ng-href='#/home') test
-			a(ng-href='#/form') test2
-			a(ng-href='#/map') test3
-		div(ng-switch='subview')
-			div(ng-switch-when='home')
-			div(ng-switch-when='form')
-				input(ng-model='ctrl.count', type='number')
-				button(ng-click='ctrl.getWards()') getWards
-				.map-wrapper
-					map(markers='ctrl.markers', center-fn='ctrl.centerMap')
+	body(ng-controller='MainCtrl as ctrl', layout="column", layout-fill)
+		md-toolbar
+			.md-toolbar-tools
+				h3: span My App Title
+		md-tabs(md-selected='tabs.selectedIndex')
+			md-tab test1
+			md-tab test2
+		.tabs-content(
+			flex
+			layout="row"
+			ng-switch='tabs.selectedIndex')
+			.tab-content(
+				flex='100'
+				layout="column"
+				layout-fill
+				ng-switch-when='0')
+				.map-wrapper(flex, layout="column")
+					map(flex, markers='ctrl.markers', center-fn='ctrl.centerMap')
 				button(ng-click='ctrl.center()') center
-			div(ng-switch-when='map')
-		footer
+				md-content(layout='column').md-padding
+					md-slider(flex, min='1', max='25', ng-model='ctrl.count', ng-click='ctrl.getWards()')
+		//header
+		//	a(ng-href='#/home') test
+		//	a(ng-href='#/form') test2
+		//	a(ng-href='#/map') test3
+		//div(ng-switch='subview')
+		//	div(ng-switch-when='home')
+		//	div(ng-switch-when='form')
+		//	div(ng-switch-when='map')
+		//footer
+		//div(role="tabpanel"
+			md-swipe-left="next()"
+			md-swipe-right="previous()"
+			ng-switch-when='0') aaaaaa
+		//div(role="tabpanel"
+			md-swipe-left="next()"
+			md-swipe-right="previous()"
+			ng-switch-when='1')

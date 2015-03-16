@@ -3,12 +3,6 @@
 /***/
 	/*-webkit-tap-highlight-color rgba(0,0,0,0)*/
 
-html, body
-	width 100%
-	height 100%
-	margin 0px
-	padding 0px
-
 /*body*/
 	/*-webkit-touch-callout none*/
 	/*-webkit-text-size-adjust none*/
@@ -23,11 +17,17 @@ header
 		padding 10px
 		margin 10px
 
-.map-wrapper
-	width 300px
-	height 300px
+.os-ios.browser-unknown
+	body > md-toolbar
+		padding-top 20px
+		min-height 64px + @padding-top
 
-	map
-		display block
-		width 100%
-		height 100%
+		&.md-tall
+			height 128px + @padding-top
+			min-height @height
+			max-height @height
+
+		&.md-medium-tall
+			height 88px + @padding-top
+			min-height @height
+			max-height @height

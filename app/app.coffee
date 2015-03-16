@@ -9,10 +9,11 @@ angular.module 'app', [
 	'ngTouch'
 	'ngMaterial'
 
-	# angular external dependencies
+	# angular external (bower) dependencies
 	'RequestContext'
 	'angularLoad'
 	'touk.jwl.ngFnQueue'
+	'ng.deviceDetector'
 
 	# app modules
 	'main.module'

@@ -44,16 +44,30 @@ angular.module 'main.controllers.main', [
 
 
 
-		@getWards = =>
-			$cordovaGeolocation.getCurrentPosition().then (position) =>
-				@markers = VotingsResources.getWards
-					date: '2010-06-20'
-					latitude: position.coords.latitude
-					longitude: position.coords.longitude
-					count: @count
-#				@markers.$promise
-#				.then (values) =>
+		doGetWards = _.debounce (position) =>
+			VotingsResources.getWards
+				date: '2010-06-20'
+				latitude: position.coords.latitude
+				longitude: position.coords.longitude
+				count: @count
+			.$promise.then (values) =>
+				@markers = _.chain(values)
+				.groupBy (marker) ->
+					[marker.location.latitude, marker.location.longitude]
+				.map (group) ->
+					location: group[0].location
+					wards: group
+				.value()
 #					$location.path 'map'
+		, 200
+
+		@getWards = =>
+			if locationMonitor.lastPosition
+				doGetWards locationMonitor.lastPosition
+			else
+				$cordovaGeolocation.getCurrentPosition().then doGetWards
+
+		$scope.$watch 'ctrl.count', @getWards
 
 		@center = =>
 			@centerMap yes
