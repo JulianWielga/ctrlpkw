@@ -72,9 +72,10 @@ angular.module 'directives.googleMaps', [
 				.then (position) =>
 					@doCenter position, onlyLocation
 
-		markersChanged: (markers) => if markers?.length
+		markersChanged: (markers) => if markers?
 			@document.off 'location_changed', @center
 			@cleanMarkers()
+			return unless markers.length
 			promises = (@createMarker marker for marker in markers)
 			@q.all promises
 			.then (markers) =>
@@ -97,8 +98,18 @@ angular.module 'directives.googleMaps', [
 			@Map.deleteMarker marker
 
 		createMarker: (marker) =>
-			@Map.createMarker @map,
-				position: @Map.latLng marker.location.latitude, marker.location.longitude
+			count = marker.wards?.length or ''
+			if marker.wards?.length < 2
+				@Map.createMarker @map,
+					position: @Map.latLng marker.location.latitude, marker.location.longitude
+			else
+				@Map.createMarker @map,
+					position: @Map.latLng marker.location.latitude, marker.location.longitude
+					icon:
+						url: "img/marker#{count}.png"
+						size:
+							width: 44/2
+							height: 80/2
 
 		resizeHandler: =>
 			@Map?.resize @map

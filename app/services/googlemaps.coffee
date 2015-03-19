@@ -55,7 +55,11 @@ angular.module 'cordova.plugin.googleMaps', []
 		constructor: (@q) ->
 
 		getMap: (canvas, params) ->
-			map = plugin.google.maps.Map.getMap canvas,
+			parent = angular
+			.element(canvas)
+			.css(display: 'none')
+			.parent()[0]
+			map = plugin.google.maps.Map.getMap parent,
 				backgroundColor: params.backgroundColor
 				controls:
 					zoom: no
@@ -90,6 +94,10 @@ angular.module 'cordova.plugin.googleMaps', []
 		createMarker: (map, options) =>
 			deferred = @q.defer()
 			map.addMarker options, (marker) ->
+				if options.icon
+					marker.setIcon
+						url: 'www/' + options.icon.url
+						size: options.icon.size
 				deferred.resolve marker
 			deferred.promise
 
@@ -141,22 +149,19 @@ angular.module 'cordova.plugin.googleMaps', []
 			locationMarker = null
 			locationAccuracyCircle = null
 
-			=>
+			=> if @locationMonitor.lastPosition?
 				coords = @locationMonitor.lastPosition.coords
 				position = @latLng coords.latitude, coords.longitude
 				accuracy = coords.accuracy
 				unless locationMarker
 					locationMarker = {}
-					size = 64
-					scaledSize = size * .375
+					scaledSize = 64 * .375
 					anchor = scaledSize / 2
 					@createMarker map,
 						position: position
 						icon:
 							url: 'img/location.png'
-							size: new google.maps.Size size, size
 							scaledSize: new google.maps.Size scaledSize, scaledSize
-							origin: new google.maps.Point 0, 0
 							anchor: new google.maps.Point anchor, anchor
 					.then (marker) ->
 						locationMarker = marker
@@ -230,6 +235,11 @@ angular.module 'cordova.plugin.googleMaps', []
 
 		createMarker: (map, options) =>
 			deferred = @q.defer()
+
+			if options.icon?.size?.width
+				options.icon.scaledSize = new google.maps.Size options.icon.size.width, options.icon.size.height
+				delete options.icon.size
+
 			marker = new google.maps.Marker angular.extend
 				map: map
 			, options
