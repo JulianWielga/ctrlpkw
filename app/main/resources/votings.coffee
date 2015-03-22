@@ -10,6 +10,10 @@ angular.module 'main.resources.votings', []
 		$resource "#{apiUrl}/votings/:date/:action",
 			{}
 		,
+			getVotings:
+				method: 'GET'
+				isArray: yes
+
 			getWards:
 				method: 'GET'
 				params:

@@ -22,18 +22,23 @@ html(ng-app='app', device-detector)
 			.md-toolbar-tools
 				h3: span ctrlPkw
 				//span(flex)
-				//md-button.md-tools(ng-click='ctrl.center()'): i.icon-room
+				//md-button.md-tools(): i.icon-3d-rotation
 		.map-wrapper(flex, layout="column")
-			map(flex, markers='ctrl.markers', center-fn='ctrl.centerMap')
+			img.mapImage(ng-if='ctrl.image.url', ng-src='{{ctrl.image.url}}', style="margin-top: -{{ctrl.image.height/2}}px; top: 50%")
+			map(
+				flex, markers='ctrl.markers', center-fn='ctrl.centerMap'
+				masked='ctrl.masked', image='ctrl.image'
+				get-map-center-fn='ctrl.getCenter')
 			md-button.md-fab-bottom-left.md-fab.md-mini(ng-click='ctrl.center()')
 				i.icon-location-searching
 			//.buttons(layout='row', layout-align="start center", layout-margin)
-		md-content(layout='column').md-padding
+		//md-content(layout='column').md-padding
 			div w promieniu {{ctrl.radius}}m
 			md-slider(flex, min='100', max='4000', ng-model='ctrl.radius')
 			div co najmniej {{ctrl.count}}
 			md-slider(flex, min='0', max='30', ng-model='ctrl.count')
-			//md-button(ng-click='ctrl.getWards()'): i.icon-room
+		md-content(layout='column').md-padding
+			md-button(ng-click='ctrl.getWards()'): i.icon-room
 
 		//header
 		//	a(ng-href='#/home') test

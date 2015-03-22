@@ -4,6 +4,27 @@
 
 'use strict'
 
+class Maps
+	EARTH_RADIUS: 6370986
+
+	toRad: (deg) -> deg * Math.PI / 180
+
+	distance: (pt1, pt2) =>
+		lat1 = @toRad pt1.lat
+		lng1 = @toRad pt1.lng
+		lat2 = @toRad pt2.lat
+		lng2 = @toRad pt2.lng
+
+		dlon = lng2 - lng1
+		dlat = lat2 - lat1
+
+		a = Math.pow((Math.sin(dlat/2)),2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(dlon/2),2)
+		c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+
+		return @EARTH_RADIUS * c;
+
+
+
 angular.module 'cordova.plugin.googleMaps', []
 
 .factory "initMaps", [
@@ -51,7 +72,7 @@ angular.module 'cordova.plugin.googleMaps', []
 
 .service "googleMapsNative", [
 	'$q'
-	class GoogleMapsNative
+	class GoogleMapsNative extends Maps
 		constructor: (@q) ->
 
 		getMap: (canvas, params) ->
@@ -113,23 +134,54 @@ angular.module 'cordova.plugin.googleMaps', []
 		createCircle: (map, options) =>
 			deferred = @q.defer()
 			params = angular.extend
-				fillColor: '#0000FF'
-				fillOpacity: 0.2
+				fillColor: 'rgba(1,97,248,20)'
 				radius: 10
-				strokeWeight: 0
+				strokeWidth: options.strokeWeight or 0
+				strokeColor: 'rgba(0,0,0,20)'
 			, options
 			map.addCircle params, (circle) ->
 				deferred.resolve circle
 			deferred.promise
 
+		deleteCircle: (circle) =>
+			@deleteMarker circle
+
 		resize: (map) =>
 			map?.refreshLayout()
+
+		getImage: (map) =>
+			deferred = @q.defer()
+			map?.toDataURL (imageData) =>
+				deferred.resolve imageData
+			deferred.promise
+
+		getView: (map) =>
+			deferred = @q.defer()
+			map.getVisibleRegion (bounds) =>
+				center = bounds.getCenter()
+				deferred.resolve
+					coords:
+						latitude: center.lat
+						longitude: center.lng
+						radius: @radius bounds
+			deferred.promise
+
+		radius: (bounds) =>
+			center = bounds.getCenter()
+			ne = bounds.northeast
+			pt1 =
+				lat: center.lat
+				lng: center.lng
+			pt2 =
+				lat: ne.lat
+				lng: ne.lng
+			return @distance pt1, pt2
 
 ]
 
 .service "googleMapsJS", [
 	'$q', '$cordovaGeolocation', '$document', 'locationMonitor'
-	class GoogleMapsJS
+	class GoogleMapsJS extends Maps
 		constructor: (@q, @geolocation, @document, @locationMonitor) ->
 
 		getMap: (canvas, params) =>
@@ -265,10 +317,40 @@ angular.module 'cordova.plugin.googleMaps', []
 				fillOpacity: 0.2
 				radius: 10
 				strokeWeight: 0
+				strokeColor: 'black'
+				strokeOpacity: 0.2
 			, options
 			deferred.resolve new google.maps.Circle params
 			deferred.promise
 
+		deleteCircle: (circle) =>
+			@deleteMarker circle
+
 		resize: (map) =>
 			google.maps.event.trigger map, 'resize'
+
+		getView: (map) =>
+			deferred = @q.defer()
+
+			bounds = map.getBounds()
+			center = bounds.getCenter()
+
+			deferred.resolve
+				coords:
+					latitude: center.lat()
+					longitude: center.lng()
+					radius: @radius bounds
+			deferred.promise
+
+		radius: (bounds) =>
+			center = bounds.getCenter()
+			ne = bounds.getNorthEast()
+			pt1 =
+				lat: center.lat()
+				lng: center.lng()
+			pt2 =
+				lat: ne.lat()
+				lng: ne.lng()
+			return @distance pt1, pt2
+
 ]

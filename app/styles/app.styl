@@ -35,3 +35,16 @@ header
 
 .map-wrapper
 	position relative
+	overflow hidden
+
+	.mapImage
+		position absolute
+		&.ng-enter
+		&.ng-leave
+			transition opacity .5s
+		&.ng-enter
+		&.ng-leave.ng-leave-active
+			opacity 0
+		&.ng-leave
+		&.ng-enter.ng-enter-active
+			opacity 1

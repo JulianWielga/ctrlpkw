@@ -43,16 +43,17 @@ angular.module 'main.controllers.main', [
 
 
 
-		@radius = 100
-		@count = 1
+		@count = 3
+
+		@votings = VotingsResources.getVotings()
 
 		doGetWards = _.debounce (position) =>
-			console.log @radius, @count
+			@markers = []
 			VotingsResources.getWards
 				date: '2010-06-20'
 				latitude: position.coords.latitude
 				longitude: position.coords.longitude
-				radius: @radius
+				radius: Math.min(5000, position.coords.radius / 2 or 0)
 				minCount: @count
 			.$promise.then (values) =>
 				if values.length
@@ -63,21 +64,21 @@ angular.module 'main.controllers.main', [
 						location: group[0].location
 						wards: group
 					.value()
-				else
-					@markers = []
 #				$location.path 'map'
 		, 250
 
 		@getWards = =>
-			if locationMonitor.lastPosition
+			if @getCenter?
+				@getCenter().then doGetWards
+			else if locationMonitor.lastPosition
 				doGetWards locationMonitor.lastPosition
 			else
 				$cordovaGeolocation.getCurrentPosition().then doGetWards
 
 		$scope.$watch 'ctrl.count', @getWards
-		$scope.$watch 'ctrl.radius', @getWards
 
 		@center = =>
 			@centerMap yes
+
 
 ]

@@ -13,9 +13,25 @@ angular.module 'directives.googleMaps', [
 		scope:
 			markers: '='
 			centerFn: '='
+			getMapCenterFn: '='
+			masked: '='
+			image: '='
 
 		link: (scope, element, attrs, ctrl) ->
 			ctrl.init element[0]
+
+			scope.$watch 'masked', (masked) ->
+				return unless ctrl.Map?.getImage?
+				if masked
+					ctrl.Map.getImage ctrl.map
+					.then (imageData) ->
+						scope.image =
+							url: imageData
+							height: element.parent()[0].clientHeight
+							width: element.parent()[0].clientWidth
+				else
+					scope.image?.url = null
+
 ]
 
 .controller 'mapController', [
@@ -24,7 +40,8 @@ angular.module 'directives.googleMaps', [
 
 		constructor: (@initMaps, @injector, @scope, @q, @geolocation, @locationMonitor, @document) ->
 			angular.extend @scope,
-				centerFn: @center
+				centerFn: @centerOnLocation
+				getMapCenterFn: @getView
 
 			@scope.$on '$destroy', @destructor
 
@@ -44,44 +61,86 @@ angular.module 'directives.googleMaps', [
 			pos = @Map.latLng @locationMonitor?.lastPosition?.coords?.latitude or 0, @locationMonitor?.lastPosition?.coords?.longitude or 0
 			@Map.getMap element,
 				center: pos
-				zoom: 5
+				zoom: 12
 
 		onInit: =>
 			@scope.$watch 'markers', @markersChanged, yes
-			@document.one 'location_changed', @center
+			@document.one 'location_changed', @centerOnLocation
 
-		_doCenter: => _.debounce (position, onlyLocation) =>
+		_doCenterOnLocation: => _.debounce (position) =>
 			pos = @Map.latLng position.coords.latitude, position.coords.longitude
-			if @markers and not onlyLocation
+			@Map.panTo @map, pos
+		, 250
+
+		centerOnLocation: =>
+			@doCenterOnLocation ?= @_doCenterOnLocation()
+			if @locationMonitor.lastPosition
+				@doCenterOnLocation @locationMonitor.lastPosition
+			else
+				@geolocation.getCurrentPosition().then (position) =>
+					@doCenterOnLocation position
+
+		_doCenterOnMarkers: => _.debounce =>
+			return unless @markers
+			@getView().then (position) =>
+				pos = @Map.latLng position.coords.latitude, position.coords.longitude
+				@Map.deleteCircle @viewCircle
 				points = (@Map.getMarkerPositon marker for marker in @markers)
 				@q.all points
 				.then (points) =>
 					points.push pos
 					bounds = @Map.latLngBounds points
-					@Map.fitBounds @map, bounds
-			else
-				@Map.panTo @map, pos
+					ne = bounds.getNorthEast?() or bounds.northeast
+					sw = bounds.getSouthWest?() or bounds.southwest
+					c =
+						lat: position.coords.latitude
+						lng: position.coords.longitude
+
+					lat1 = ne.lat?() or ne.lat
+					lat2 = sw.lat?() or sw.lat
+					lng1 = ne.lng?() or ne.lng
+					lng2 = sw.lng?() or sw.lng
+
+					pt1 =
+						lat: lat1
+						lng: lng1
+					pt2 =
+						lat: lat2
+						lng: lng1
+					pt3 =
+						lat: lat2
+						lng: lng2
+					pt4 =
+						lat: lat1
+						lng: lng2
+					radius = Math.max @Map.distance(c, pt1),@Map.distance(c, pt2),@Map.distance(c, pt3),@Map.distance(c, pt4)
+					radius = Math.max radius, (Math.min 5000, (position.coords.radius / 2 or 0))
+					@Map.createCircle @map,
+						center: pos
+						radius: radius + 5
+						fillColor: 'transparent'
+						strokeWeight: 2
+					.then (circle) =>
+						@viewCircle = circle
+						@Map.fitBounds @map, bounds
 		, 250
 
-		center: (onlyLocation) =>
-			@doCenter ?= @_doCenter()
-			if @locationMonitor.lastPosition
-				@doCenter @locationMonitor.lastPosition, onlyLocation
-			else
-				@geolocation.getCurrentPosition()
-				.then (position) =>
-					@doCenter position, onlyLocation
+		centerOnMarkers: =>
+			@doCenterOnMarkers ?= @_doCenterOnMarkers()
+			@doCenterOnMarkers()
 
 		markersChanged: (markers) => if markers?
-			@document.off 'location_changed', @center
+			@document.off 'location_changed', @centerOnLocation
 			@cleanMarkers()
 			return unless markers.length
 			promises = (@createMarker marker for marker in markers)
 			@q.all promises
 			.then (markers) =>
 				@markers = markers
-				@center()
+				@centerOnMarkers()
 				return @markers
+
+		getView: => @Map.getView @map
 
 		cleanMarkers: =>
 			return unless @markers?.length
