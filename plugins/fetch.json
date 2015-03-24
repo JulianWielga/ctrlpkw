@@ -1,0 +1,8 @@
+{
+    "plugin.google.maps": {
+        "source": {
+            "type": "registry",
+            "id": "plugin.google.maps"
+        }
+    }
+}
