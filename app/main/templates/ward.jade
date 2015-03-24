@@ -1,0 +1,11 @@
+md-content(ng-controller='WardController as ctrl', layout='column')
+	md-content(flex, ng-if='!ctrl.request.$resolved').md-padding
+		section(ng-repeat='ballot in ctrl.data.ballots')
+			h3 {{ballot.question}}
+			md-input-container(ng-repeat='option in ballot.options')
+				label {{option}}
+				input(ng-model='ctrl.result[ballot.no][$index]', type='number', min='0')
+			div razem: {{ctrl.sum(ballot.no)}}
+		md-button(ng-click='ctrl.sendResult()') wyslij
+	md-content(flex, ng-if='ctrl.request.$resolved').md-padding
+		div {{ctrl.request | json}}

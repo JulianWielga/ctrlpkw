@@ -37,6 +37,7 @@ angular.module 'app', [
 		.when '/votings', action: 'votings'
 		.when '/voting/:date', action: 'voting'
 		.when '/wards', action: 'wards'
+		.when '/ward/:community/:no', action: 'ward'
 		.otherwise redirectTo: '/votings'
 
 ]

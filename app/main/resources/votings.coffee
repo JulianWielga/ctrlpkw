@@ -8,7 +8,7 @@ angular.module 'main.resources.votings', []
 		apiUrl = 'http://ctrlpkw.pl:80/api'
 
 		$resource "#{apiUrl}/votings/:date/:action",
-			{}
+			date: '@date'
 		,
 			getVotings:
 				method: 'GET'
@@ -18,6 +18,19 @@ angular.module 'main.resources.votings', []
 				method: 'GET'
 				params:
 					action: 'wards'
-					date: '@date'
+				isArray: yes
+
+			getBallots:
+				method: 'GET'
+				params:
+					action: 'ballots'
+				isArray: yes
+
+			saveProtocol:
+				method: 'POST'
+				params:
+					action: 'protocols'
+				transformRequest: (data) ->
+					angular.toJson _.omit(data, 'date')
 				isArray: yes
 ]

@@ -12,7 +12,7 @@ angular.module 'main.controllers.wards', [
 	'locationMonitor'
 	'$location'
 
-	class VotingController
+	class WardsController
 		constructor: (@scope, RenderContext, @data, @cordovaGeolocation, @locationMonitor, @location) ->
 			renderContext = new RenderContext @scope, 'wards'
 

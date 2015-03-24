@@ -8,5 +8,6 @@ angular.module 'main.module', [
 	'main.controllers.votings'
 	'main.controllers.voting'
 	'main.controllers.wards'
+	'main.controllers.ward'
 	'main.resources.votings'
 ]

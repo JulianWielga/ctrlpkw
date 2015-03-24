@@ -6,11 +6,12 @@ angular.module 'main.data', [
 .service 'ApplicationData', [
 	'VotingsResources'
 	class ApplicationData
-		markets: []
+		markers: []
 		votings: []
+		ballots: []
+		count: 3
 		selectedVoting: null
 		selectedWards: []
-		count: 3
 		constructor: (@resources) ->
 			@votings = @resources.getVotings()
 			@getWards = _.debounce @_getWards, 250
@@ -32,4 +33,14 @@ angular.module 'main.data', [
 						location: group[0].location
 						wards: group
 					.value()
+
+		getBallots: =>
+			@ballots = @resources.getBallots
+				date: @selectedVoting
+
+		saveProtocol: (protocol) =>
+			@resources.saveProtocol angular.extend
+				date: @selectedVoting
+			, protocol
+
 ]
