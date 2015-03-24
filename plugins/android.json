@@ -39,6 +39,10 @@
                         {
                             "xml": "<feature name=\"Geocoder\"><param name=\"android-package\" value=\"plugin.google.maps.MyGeocoder\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Camera\"><param name=\"android-package\" value=\"org.apache.cordova.camera.CameraLauncher\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -53,6 +57,10 @@
                         {
                             "xml": "<uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />",
                             "count": 2
+                        },
+                        {
+                            "xml": "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\" />",
+                            "count": 1
                         }
                     ],
                     "/manifest": [
@@ -117,6 +125,9 @@
         },
         "plugin.google.maps": {
             "API_KEY_FOR_ANDROID": "AIzaSyBi6GqHyZxzPLB79k2wa_3L-Ibmg9-n5qs",
+            "PACKAGE_NAME": "com.phonegap.helloworld"
+        },
+        "org.apache.cordova.camera": {
             "PACKAGE_NAME": "com.phonegap.helloworld"
         }
     },

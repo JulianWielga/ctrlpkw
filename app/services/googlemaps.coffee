@@ -25,7 +25,9 @@ class Maps
 
 
 
-angular.module 'cordova.plugin.googleMaps', []
+angular.module 'cordova.plugin.googleMaps', [
+	'cordova.Ready'
+]
 
 .factory "initMaps", [
 	'$q', '$injector', 'crdReady'

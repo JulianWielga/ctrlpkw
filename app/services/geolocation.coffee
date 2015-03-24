@@ -1,7 +1,9 @@
 # install   :     cordova plugin add org.apache.cordova.geolocation
 # link      :     https://github.com/apache/cordova-plugin-geolocation/blob/master/doc/index.md
 
-angular.module "ngCordova.plugins.geolocation", []
+angular.module "ngCordova.plugins.geolocation", [
+	'cordova.Ready'
+]
 
 .factory "$cordovaGeolocation", [
 	"$q", 'crdReady'

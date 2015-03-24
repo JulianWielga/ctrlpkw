@@ -8,12 +8,11 @@ angular.module 'main.controllers.ward', [
 	'$scope'
 	'RenderContextFactory'
 	'ApplicationData'
-	'$cordovaGeolocation'
-	'locationMonitor'
+	'$cordovaCamera'
 	'$location'
 
 	class WardController
-		constructor: (@scope, RenderContext, @data, @cordovaGeolocation, @locationMonitor, @location) ->
+		constructor: (@scope, RenderContext, @data, @camera, @location) ->
 			renderContext = new RenderContext @scope, 'ward', ['community', 'no']
 			@communityCode = renderContext.getParam 'community'
 			@wardNo = renderContext.getParam 'no'
@@ -33,4 +32,6 @@ angular.module 'main.controllers.ward', [
 					votesValidCount: 0
 					votesCountPerOption: _.values results
 
+		takePhoto: =>
+			@camera.getPicture().then (uri) => @imageUri = uri
 ]

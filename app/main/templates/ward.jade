@@ -8,4 +8,6 @@ md-content(ng-controller='WardController as ctrl', layout='column')
 			div razem: {{ctrl.sum(ballot.no)}}
 		md-button(ng-click='ctrl.sendResult()') wyslij
 	md-content(flex, ng-if='ctrl.request.$resolved').md-padding
-		div {{ctrl.request | json}}
+		//div {{ctrl.request | json}}
+		img(ng-src='{{ctrl.imageUri}}')
+		md-button(ng-click='ctrl.takePhoto()') wyslij

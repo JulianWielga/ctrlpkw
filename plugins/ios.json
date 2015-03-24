@@ -16,7 +16,7 @@
                     "CoreLocation.framework": [
                         {
                             "xml": "false",
-                            "count": 3
+                            "count": 4
                         }
                     ],
                     "AVFoundation.framework": [
@@ -46,6 +46,10 @@
                     "ImageIO.framework": [
                         {
                             "xml": "false",
+                            "count": 1
+                        },
+                        {
+                            "xml": "true",
                             "count": 1
                         }
                     ],
@@ -80,6 +84,24 @@
                         }
                     ],
                     "SystemConfiguration.framework": [
+                        {
+                            "xml": "false",
+                            "count": 1
+                        }
+                    ],
+                    "CoreGraphics.framework": [
+                        {
+                            "xml": "false",
+                            "count": 2
+                        }
+                    ],
+                    "AssetsLibrary.framework": [
+                        {
+                            "xml": "false",
+                            "count": 1
+                        }
+                    ],
+                    "MobileCoreServices.framework": [
                         {
                             "xml": "false",
                             "count": 1
@@ -129,6 +151,14 @@
                         {
                             "xml": "<feature name=\"Geocoder\"><param name=\"ios-package\" value=\"Geocoder\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Camera\"><param name=\"ios-package\" value=\"CDVCamera\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<preference name=\"CameraUsesGeolocation\" value=\"false\" />",
+                            "count": 1
                         }
                     ]
                 }
@@ -138,7 +168,7 @@
                     "NSLocationWhenInUseUsageDescription": [
                         {
                             "xml": "<string />",
-                            "count": 1
+                            "count": 2
                         },
                         {
                             "xml": "<string>Show your location on the map</string>",
@@ -185,6 +215,9 @@
         },
         "plugin.google.maps": {
             "API_KEY_FOR_IOS": "AIzaSyB52Yqqz2jex4NhBRa4VrMTW9AC0W68n0U",
+            "PACKAGE_NAME": "com.phonegap.helloworld"
+        },
+        "org.apache.cordova.camera": {
             "PACKAGE_NAME": "com.phonegap.helloworld"
         }
     },

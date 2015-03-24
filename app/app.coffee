@@ -22,6 +22,7 @@ angular.module 'app', [
 	#'app.services'
 	'cordova.Ready'
 	'ngCordova.plugins.geolocation'
+	'ngCordova.plugins.camera'
 
 	# jade / html templates and templates
 	'app.templates'
