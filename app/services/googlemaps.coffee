@@ -177,6 +177,9 @@ angular.module 'cordova.plugin.googleMaps', []
 				lng: ne.lng
 			return @distance pt1, pt2
 
+		onMarkerClick: (marker, callback) =>
+			marker.addEventListener plugin.google.maps.event.MARKER_CLICK, callback
+
 ]
 
 .service "googleMapsJS", [
@@ -353,4 +356,6 @@ angular.module 'cordova.plugin.googleMaps', []
 				lng: ne.lng()
 			return @distance pt1, pt2
 
+		onMarkerClick: (marker, callback) =>
+			google.maps.event.addListener marker, 'click', callback
 ]

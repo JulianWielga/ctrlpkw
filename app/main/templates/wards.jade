@@ -1,0 +1,8 @@
+md-content(ng-controller='WardsController as ctrl')
+	md-list
+		md-item(ng-repeat='ward in ctrl.data.selectedWards')
+			md-item-content
+				//a(ng-href='#/voting/{{voting.date}}')
+				.md-tile-content
+					h3 {{ward.address}}
+					h4 {{ward.communityCode}} / {{ward.no}}

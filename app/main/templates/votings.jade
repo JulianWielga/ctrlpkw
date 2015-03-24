@@ -1,0 +1,7 @@
+md-content(ng-controller='VotingsController as ctrl')
+	md-list
+		md-item(ng-repeat='voting in ctrl.data.votings')
+			md-item-content
+				a(ng-href='#/voting/{{voting.date}}').md-tile-content
+					h3 {{voting.description}}
+					h4 {{voting.date}}

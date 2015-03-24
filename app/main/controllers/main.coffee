@@ -9,12 +9,9 @@ angular.module 'main.controllers.main', [
 	'$route'
 	'$routeParams'
 	'requestContext'
-	'VotingsResources'
-	'$cordovaGeolocation'
-	'$location'
-	'locationMonitor'
+	'ApplicationData'
 
-	($scope, $route, $routeParams, requestContext, VotingsResources, $cordovaGeolocation, $location, locationMonitor) ->
+	($scope, $route, $routeParams, requestContext, data) ->
 		# Get the render context local to this controller (and relevant params).
 		renderContext = requestContext.getRenderContext()
 
@@ -41,44 +38,6 @@ angular.module 'main.controllers.main', [
 			# Announce the change in render conditions.
 			$scope.$broadcast "requestContextChanged", requestContext
 
-
-
-		@count = 3
-
-		@votings = VotingsResources.getVotings()
-
-		doGetWards = _.debounce (position) =>
-			@markers = []
-			VotingsResources.getWards
-				date: '2010-06-20'
-				latitude: position.coords.latitude
-				longitude: position.coords.longitude
-				radius: Math.min(5000, position.coords.radius / 2 or 0)
-				minCount: @count
-			.$promise.then (values) =>
-				if values.length
-					@markers = _.chain(values)
-					.groupBy (marker) ->
-						[marker.location.latitude, marker.location.longitude]
-					.map (group) ->
-						location: group[0].location
-						wards: group
-					.value()
-#				$location.path 'map'
-		, 250
-
-		@getWards = =>
-			if @getCenter?
-				@getCenter().then doGetWards
-			else if locationMonitor.lastPosition
-				doGetWards locationMonitor.lastPosition
-			else
-				$cordovaGeolocation.getCurrentPosition().then doGetWards
-
-		$scope.$watch 'ctrl.count', @getWards
-
-		@center = =>
-			@centerMap yes
-
-
+		@data = data
+		@center = => @centerMap yes
 ]

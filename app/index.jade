@@ -20,40 +20,15 @@ html(ng-app='app', device-detector)
 	body(ng-controller='MainCtrl as ctrl', layout="column", layout-fill)
 		md-toolbar
 			.md-toolbar-tools
-				h3: span ctrlPkw
-				//span(flex)
-				//md-button.md-tools(): i.icon-3d-rotation
-		.map-wrapper(flex, layout="column")
-			img.mapImage(ng-if='ctrl.image.url', ng-src='{{ctrl.image.url}}', style="margin-top: -{{ctrl.image.height/2}}px; top: 50%")
-			map(
-				flex, markers='ctrl.markers', center-fn='ctrl.centerMap'
-				masked='ctrl.masked', image='ctrl.image'
-				get-map-center-fn='ctrl.getCenter')
-			md-button.md-fab-bottom-left.md-fab.md-mini(ng-click='ctrl.center()')
-				i.icon-location-searching
-			//.buttons(layout='row', layout-align="start center", layout-margin)
-		//md-content(layout='column').md-padding
-			div w promieniu {{ctrl.radius}}m
-			md-slider(flex, min='100', max='4000', ng-model='ctrl.radius')
-			div co najmniej {{ctrl.count}}
-			md-slider(flex, min='0', max='30', ng-model='ctrl.count')
-		md-content(layout='column').md-padding
-			md-button(ng-click='ctrl.getWards()'): i.icon-room
+				h3: span ctrlPkw{{ctrl.data.markers.length}}
+				span(flex)
+				md-button.md-tools(ng-href='#/votings'): i.icon-arrow-back
 
-		//header
-		//	a(ng-href='#/home') test
-		//	a(ng-href='#/form') test2
-		//	a(ng-href='#/map') test3
-		//div(ng-switch='subview')
-		//	div(ng-switch-when='home')
-		//	div(ng-switch-when='form')
-		//	div(ng-switch-when='map')
-		//footer
-		//div(role="tabpanel"
-			md-swipe-left="next()"
-			md-swipe-right="previous()"
-			ng-switch-when='0') aaaaaa
-		//div(role="tabpanel"
-			md-swipe-left="next()"
-			md-swipe-right="previous()"
-			ng-switch-when='1')
+		mixin subview(name)
+			div(ng-switch-when=name, flex, layout="column")
+				md-content(ng-include="'/templates/"+name+".html'", flex, layout="column")
+
+		div(ng-switch='subview', flex, layout="column")
+			+subview('votings')
+			+subview('voting')
+			+subview('wards')

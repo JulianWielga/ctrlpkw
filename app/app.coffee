@@ -34,10 +34,10 @@ angular.module 'app', [
 	($routeProvider, $locationProvider) ->
 		$routeProvider
 
-		.when '/home', action: 'home'
-		.when '/form', action: 'form'
-		.when '/map', action: 'map'
-		.otherwise redirectTo: '/home'
+		.when '/votings', action: 'votings'
+		.when '/voting/:date', action: 'voting'
+		.when '/wards', action: 'wards'
+		.otherwise redirectTo: '/votings'
 
 ]
 

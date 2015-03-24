@@ -1,0 +1,16 @@
+md-content(flex, layout="column", ng-controller='VotingController as ctrl')
+	.map-wrapper(flex, layout="column")
+		//img.mapImage(ng-if='ctrl.image.url', ng-src='{{ctrl.image.url}}', style="margin-top: -{{ctrl.image.height/2}}px; top: 50%")
+		map(
+			flex, markers='ctrl.data.markers'
+			masked='ctrl.mapMasked', image='ctrl.mapImage'
+			on-init='ctrl.getWards'
+			center-map-fn='ctrl.centerMap'
+			get-map-center-fn='ctrl.getMapCenter'
+			on-marker-click='ctrl.onMarkerClick'
+		)
+		md-button.md-fab-bottom-left.md-fab.md-mini(ng-click='ctrl.centerMap()')
+			i.icon-location-searching
+		//.buttons(layout='row', layout-align="start center", layout-margin)
+	md-content(layout='column').md-padding
+		md-button(ng-click='ctrl.getWards()'): i.icon-room

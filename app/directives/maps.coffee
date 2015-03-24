@@ -12,8 +12,10 @@ angular.module 'directives.googleMaps', [
 		controllerAs: 'ctrl'
 		scope:
 			markers: '='
-			centerFn: '='
+			centerMapFn: '='
 			getMapCenterFn: '='
+			onInit: '='
+			onMarkerClick: '='
 			masked: '='
 			image: '='
 
@@ -40,7 +42,7 @@ angular.module 'directives.googleMaps', [
 
 		constructor: (@initMaps, @injector, @scope, @q, @geolocation, @locationMonitor, @document) ->
 			angular.extend @scope,
-				centerFn: @centerOnLocation
+				centerMapFn: @centerOnLocation
 				getMapCenterFn: @getView
 
 			@scope.$on '$destroy', @destructor
@@ -66,8 +68,12 @@ angular.module 'directives.googleMaps', [
 		onInit: =>
 			@scope.$watch 'markers', @markersChanged, yes
 			@document.one 'location_changed', @centerOnLocation
+			setTimeout =>
+				@scope.onInit?()
+			, 250
 
 		_doCenterOnLocation: => _.debounce (position) =>
+			@resizeHandler()
 			pos = @Map.latLng position.coords.latitude, position.coords.longitude
 			@Map.panTo @map, pos
 		, 250
@@ -81,6 +87,7 @@ angular.module 'directives.googleMaps', [
 					@doCenterOnLocation position
 
 		_doCenterOnMarkers: => _.debounce =>
+			@resizeHandler()
 			return unless @markers
 			@getView().then (position) =>
 				pos = @Map.latLng position.coords.latitude, position.coords.longitude
@@ -159,16 +166,22 @@ angular.module 'directives.googleMaps', [
 		createMarker: (marker) =>
 			count = marker.wards?.length or ''
 			if marker.wards?.length < 2
-				@Map.createMarker @map,
+				m = @Map.createMarker @map,
 					position: @Map.latLng marker.location.latitude, marker.location.longitude
 			else
-				@Map.createMarker @map,
+				m = @Map.createMarker @map,
 					position: @Map.latLng marker.location.latitude, marker.location.longitude
 					icon:
 						url: "img/marker#{count}.png"
 						size:
 							width: 44/2
 							height: 80/2
+			m.then (el) =>
+				@Map.onMarkerClick el, => @onMarkerClick marker
+			return m
+
+		onMarkerClick: (marker) =>
+			@scope.onMarkerClick marker
 
 		resizeHandler: =>
 			@Map?.resize @map
