@@ -14,11 +14,11 @@ angular.module 'ngCordova.plugins.camera', [
 				if !navigator.camera
 					q.resolve null
 					return q.promise
-				navigator.camera.getPicture (imageData) ->
+				navigator.camera.getPicture ((imageData) ->
 					q.resolve imageData
-				, (err) ->
+				), ((err) ->
 					q.reject err
-				, options
+				), options
 			q.promise
 
 		cleanup: ->

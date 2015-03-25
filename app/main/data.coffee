@@ -9,7 +9,7 @@ angular.module 'main.data', [
 		markers: []
 		votings: []
 		ballots: []
-		count: 3
+		count: 2
 		selectedVoting: null
 		selectedWards: []
 		constructor: (@resources) ->

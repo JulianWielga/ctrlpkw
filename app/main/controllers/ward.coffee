@@ -2,6 +2,7 @@
 
 angular.module 'main.controllers.ward', [
 	'RequestContext'
+	'main.resources.cloudinary'
 ]
 
 .controller 'WardController', [
@@ -9,10 +10,12 @@ angular.module 'main.controllers.ward', [
 	'RenderContextFactory'
 	'ApplicationData'
 	'$cordovaCamera'
+	'CloudinaryResources'
 	'$location'
 
+
 	class WardController
-		constructor: (@scope, RenderContext, @data, @camera, @location) ->
+		constructor: (@scope, RenderContext, @data, @camera, @cloudinary, @location) ->
 			renderContext = new RenderContext @scope, 'ward', ['community', 'no']
 			@communityCode = renderContext.getParam 'community'
 			@wardNo = renderContext.getParam 'no'
@@ -31,7 +34,21 @@ angular.module 'main.controllers.ward', [
 					votesCastCount: 0
 					votesValidCount: 0
 					votesCountPerOption: _.values results
+			@request.$promise.then (response) => @uploadParams = response
 
-		takePhoto: =>
-			@camera.getPicture().then (uri) => @imageUri = uri
+		takePhoto: (ballotParams) =>
+			@camera.getPicture
+				destinationType: Camera.DestinationType.DATA_URL
+				correctOrientation: yes
+				saveToPhotoAlbum: yes
+				quality: 49
+			.then (uri) =>
+				@cloudinary.save
+					api_key: ballotParams.apiKey
+					timestamp: ballotParams.timestamp
+					signature: ballotParams.signature
+					public_id: ballotParams.publicId
+					file: "data:image/jpeg;base64,#{uri}"
+
+				@imageUri = uri
 ]
