@@ -67,7 +67,8 @@ angular.module 'directives.googleMaps', [
 
 		onInit: =>
 			@scope.$watch 'markers', @markersChanged, yes
-			@document.one 'location_changed', @centerOnLocation
+#			@document.one 'location_changed', @centerOnLocation
+			@centerOnLocation()
 			setTimeout =>
 				@scope.onInit?()
 			, 250
@@ -86,6 +87,25 @@ angular.module 'directives.googleMaps', [
 				@geolocation.getCurrentPosition().then (position) =>
 					@doCenterOnLocation position
 
+		createCircleForPoints: (center, points) =>
+			c =
+				lat: center.coords.latitude
+				lng: center.coords.longitude
+			radius = Math.min 5000, (center.coords.radius / 2 or 0)
+			for point in points
+				pt =
+					lat: point.lat?() or point.lat
+					lng: point.lng?() or point.lng
+				distance = @Map.distance(c, pt)
+				radius = Math.max distance, radius
+			@Map.createCircle @map,
+				center: @Map.latLng c.lat, c.lng
+				radius: radius
+				fillColor: 'rgba(0,0,0,0)'
+				strokeWeight: 2
+			.then (circle) =>
+				@viewCircle = circle
+
 		_doCenterOnMarkers: => _.debounce =>
 			@resizeHandler()
 			return unless @markers
@@ -95,48 +115,21 @@ angular.module 'directives.googleMaps', [
 				points = (@Map.getMarkerPositon marker for marker in @markers)
 				@q.all points
 				.then (points) =>
+					@createCircleForPoints position, points
 					points.push pos
 					bounds = @Map.latLngBounds points
-					ne = bounds.getNorthEast?() or bounds.northeast
-					sw = bounds.getSouthWest?() or bounds.southwest
-					c =
-						lat: position.coords.latitude
-						lng: position.coords.longitude
-
-					lat1 = ne.lat?() or ne.lat
-					lat2 = sw.lat?() or sw.lat
-					lng1 = ne.lng?() or ne.lng
-					lng2 = sw.lng?() or sw.lng
-
-					pt1 =
-						lat: lat1
-						lng: lng1
-					pt2 =
-						lat: lat2
-						lng: lng1
-					pt3 =
-						lat: lat2
-						lng: lng2
-					pt4 =
-						lat: lat1
-						lng: lng2
-					radius = Math.max @Map.distance(c, pt1),@Map.distance(c, pt2),@Map.distance(c, pt3),@Map.distance(c, pt4)
-					radius = Math.max radius, (Math.min 5000, (position.coords.radius / 2 or 0))
-					@Map.createCircle @map,
-						center: pos
-						radius: radius + 5
-						fillColor: 'transparent'
-						strokeWeight: 2
-					.then (circle) =>
-						@viewCircle = circle
-						@Map.fitBounds @map, bounds
-		, 250
+					@Map.fitBounds @map, bounds
+		, 500
 
 		centerOnMarkers: =>
 			@doCenterOnMarkers ?= @_doCenterOnMarkers()
 			@doCenterOnMarkers()
 
-		markersChanged: (markers) => if markers?
+		markersChanged: (markers) =>
+			@doMarkersChanged ?= @_doMarkersChanged()
+			@doMarkersChanged markers if markers?
+
+		_doMarkersChanged: => _.debounce (markers) =>
 			@document.off 'location_changed', @centerOnLocation
 			@cleanMarkers()
 			return unless markers.length
@@ -146,6 +139,7 @@ angular.module 'directives.googleMaps', [
 				@markers = markers
 				@centerOnMarkers()
 				return @markers
+		, 250
 
 		getView: => @Map.getView @map
 

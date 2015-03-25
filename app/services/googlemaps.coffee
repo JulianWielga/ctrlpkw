@@ -136,10 +136,10 @@ angular.module 'cordova.plugin.googleMaps', [
 		createCircle: (map, options) =>
 			deferred = @q.defer()
 			params = angular.extend
-				fillColor: 'rgba(1,97,248,20)'
+				fillColor: 'rgba(1,97,248,.2)'
 				radius: 10
 				strokeWidth: options.strokeWeight or 0
-				strokeColor: 'rgba(0,0,0,20)'
+				strokeColor: 'rgba(0,0,0,.2)'
 			, options
 			map.addCircle params, (circle) ->
 				deferred.resolve circle
