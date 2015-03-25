@@ -4,7 +4,7 @@ md-content(flex, layout="column", ng-controller='VotingController as ctrl')
 		map(
 			flex, markers='ctrl.data.markers'
 			masked='ctrl.mapMasked', image='ctrl.mapImage'
-			on-init='ctrl.getWards'
+			on-init='ctrl.init'
 			center-map-fn='ctrl.centerMap'
 			get-map-center-fn='ctrl.getMapCenter'
 			on-marker-click='ctrl.onMarkerClick'

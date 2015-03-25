@@ -11,17 +11,21 @@ angular.module 'main.controllers.voting', [
 	'$cordovaGeolocation'
 	'locationMonitor'
 	'$location'
+	'$timeout'
 
 	class VotingController
-		constructor: (@scope, RenderContext, @data, @cordovaGeolocation, @locationMonitor, @location) ->
+		constructor: (@scope, RenderContext, @data, @cordovaGeolocation, @locationMonitor, @location, @timeout) ->
 			renderContext = new RenderContext @scope, 'voting', 'date'
 			if votingDate = renderContext.getParam('date')
 				@data.selectedVoting = votingDate
 
-		getWards: =>
-			if @getMapCenter?
+		init: =>
+			@getWards yes
+
+		getWards: (init) =>
+			if @getMapCenter? and not init
 				@getMapCenter().then @data.getWards
-			if @locationMonitor?.lastPosition
+			else if @locationMonitor?.lastPosition
 				@data.getWards @locationMonitor.lastPosition
 			else
 				@cordovaGeolocation.getCurrentPosition().then @data.getWards

@@ -10,9 +10,10 @@ angular.module 'main.data', [
 		markers: []
 		votings: []
 		ballots: []
-		count: 2
+		count: 3
 		selectedVoting: null
 		selectedWards: []
+
 		constructor: ($rootScope, @resources) ->
 			@getWards = _.debounce @_getWards, 250
 
@@ -25,23 +26,27 @@ angular.module 'main.data', [
 			, => if @selectedVoting
 				@getBallots()
 
-		_getWards: (position, date) =>
+		_getWards: (position) =>
 			@markers = []
+			position.coords.radius = Math.min(5000, position.coords.radius / 2 or 0)
 			@resources.getWards
 				date: @selectedVoting
 				latitude: position.coords.latitude
 				longitude: position.coords.longitude
-				radius: Math.min(5000, position.coords.radius / 2 or 0)
+				radius: position.coords.radius
 				minCount: @count
 			.$promise.then (values) =>
 				if values.length
-					@markers = _.chain(values)
+					points = _.chain(values)
 					.groupBy (marker) ->
 						[marker.location.latitude, marker.location.longitude]
 					.map (group) ->
 						location: group[0].location
 						wards: group
 					.value()
+					@markers =
+						points: points
+						center: position
 
 		getBallots: =>
 			@ballots = @resources.getBallots

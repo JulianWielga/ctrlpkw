@@ -50,7 +50,7 @@ angular.module 'directives.googleMaps', [
 		init: (element) =>
 			@_injectPlugin()
 			.then =>
-				@map = @_createMap element
+				@map ?= @_createMap element
 				return @map
 			.then => @onInit()
 
@@ -68,19 +68,21 @@ angular.module 'directives.googleMaps', [
 		onInit: =>
 			@scope.$watch 'markers', @markersChanged, yes
 #			@document.one 'location_changed', @centerOnLocation
-			@centerOnLocation()
 			setTimeout =>
+				@centerOnLocation()
+				console.log 'onInit'
 				@scope.onInit?()
 			, 250
 
 		_doCenterOnLocation: => _.debounce (position) =>
-			@resizeHandler()
 			pos = @Map.latLng position.coords.latitude, position.coords.longitude
 			@Map.panTo @map, pos
 		, 250
 
 		centerOnLocation: =>
+			console.log 'centerOnLocation'
 			@doCenterOnLocation ?= @_doCenterOnLocation()
+			@resizeHandler()
 			if @locationMonitor.lastPosition
 				@doCenterOnLocation @locationMonitor.lastPosition
 			else
@@ -88,10 +90,11 @@ angular.module 'directives.googleMaps', [
 					@doCenterOnLocation position
 
 		createCircleForPoints: (center, points) =>
+			console.log 'createCircleForPoints'
 			c =
 				lat: center.coords.latitude
 				lng: center.coords.longitude
-			radius = Math.min 5000, (center.coords.radius / 2 or 0)
+			radius = center.coords.radius
 			for point in points
 				pt =
 					lat: point.lat?() or point.lat
@@ -103,43 +106,44 @@ angular.module 'directives.googleMaps', [
 				radius: radius
 				fillColor: 'rgba(0,0,0,0)'
 				strokeWeight: 2
-			.then (circle) =>
-				@viewCircle = circle
 
-		_doCenterOnMarkers: => _.debounce =>
-			@resizeHandler()
-			return unless @markers
-			@getView().then (position) =>
-				pos = @Map.latLng position.coords.latitude, position.coords.longitude
-				@Map.deleteCircle @viewCircle
-				points = (@Map.getMarkerPositon marker for marker in @markers)
-				@q.all points
-				.then (points) =>
-					@createCircleForPoints position, points
+		_doCenterOnMarkers: => (position) =>
+			console.log 'centerOnMarkers'
+			pos = @Map.latLng position.coords.latitude, position.coords.longitude
+			@Map.deleteCircle @viewCircle
+			points = (@Map.getMarkerPositon marker for marker in @markers)
+			@q.all points
+			.then (points) =>
+				@createCircleForPoints position, points
+				.then (circle) =>
 					points.push pos
 					bounds = @Map.latLngBounds points
+					@viewCircle = circle
 					@Map.fitBounds @map, bounds
-		, 500
 
-		centerOnMarkers: =>
+		centerOnMarkers: (position) =>
 			@doCenterOnMarkers ?= @_doCenterOnMarkers()
-			@doCenterOnMarkers()
+			return unless @markers
+			if position
+				@doCenterOnMarkers position
+			else
+				@getView().then @doCenterOnMarkers
 
 		markersChanged: (markers) =>
-			@doMarkersChanged ?= @_doMarkersChanged()
-			@doMarkersChanged markers if markers?
+			@resizeHandler()
+			@doMarkersChanged markers
 
-		_doMarkersChanged: => _.debounce (markers) =>
+		doMarkersChanged: (markers) =>
+			return unless markers?
 			@document.off 'location_changed', @centerOnLocation
 			@cleanMarkers()
-			return unless markers.length
-			promises = (@createMarker marker for marker in markers)
+			return unless markers.points?.length
+			promises = (@createMarker marker for marker in markers.points)
 			@q.all promises
-			.then (markers) =>
-				@markers = markers
-				@centerOnMarkers()
+			.then (_markers) =>
+				@markers = _markers
+				@centerOnMarkers markers.center
 				return @markers
-		, 250
 
 		getView: => @Map.getView @map
 
@@ -182,6 +186,5 @@ angular.module 'directives.googleMaps', [
 
 		destructor: =>
 			@cleanMarkers()
-#			@map.remove?()
 ]
 
