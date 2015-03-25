@@ -15,8 +15,8 @@ angular.module 'main.controllers.voting', [
 	class VotingController
 		constructor: (@scope, RenderContext, @data, @cordovaGeolocation, @locationMonitor, @location) ->
 			renderContext = new RenderContext @scope, 'voting', 'date'
-			@data.selectedVoting = renderContext.getParam 'date'
-			@data.getBallots()
+			if votingDate = renderContext.getParam('date')
+				@data.selectedVoting = votingDate
 
 		getWards: =>
 			if @getMapCenter?

@@ -22,7 +22,8 @@ html(ng-app='app', device-detector)
 			.md-toolbar-tools
 				h3: span ctrlPkw{{ctrl.data.markers.length}}
 				span(flex)
-				md-button.md-tools(ng-href='#/votings'): i.icon-arrow-back
+				md-button.md-tools(ng-href='#/votings'): i.icon-accessibility
+				md-button.md-tools(ng-href='#/voting'): i.icon-map
 
 		mixin subview(name)
 			div(ng-switch-when=name, flex, layout="column")

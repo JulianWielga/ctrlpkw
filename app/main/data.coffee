@@ -4,6 +4,7 @@ angular.module 'main.data', [
 ]
 
 .service 'ApplicationData', [
+	'$rootScope'
 	'VotingsResources'
 	class ApplicationData
 		markers: []
@@ -12,9 +13,17 @@ angular.module 'main.data', [
 		count: 2
 		selectedVoting: null
 		selectedWards: []
-		constructor: (@resources) ->
-			@votings = @resources.getVotings()
+		constructor: ($rootScope, @resources) ->
 			@getWards = _.debounce @_getWards, 250
+
+			@votings = @resources.getVotings()
+			@votings.$promise.then =>
+				@selectedVoting ?= @votings[0].date
+
+			$rootScope.$watch =>
+				@selectedVoting
+			, => if @selectedVoting
+				@getBallots()
 
 		_getWards: (position, date) =>
 			@markers = []
