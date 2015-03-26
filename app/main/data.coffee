@@ -6,6 +6,7 @@ angular.module 'main.data', [
 .service 'ApplicationData', [
 	'$rootScope'
 	'VotingsResources'
+	'ProtocolsResources'
 	class ApplicationData
 		markers: []
 		votings: []
@@ -14,10 +15,10 @@ angular.module 'main.data', [
 		selectedVoting: null
 		selectedWards: []
 
-		constructor: ($rootScope, @resources) ->
+		constructor: ($rootScope, @votingsResources, @protocolsResources) ->
 			@getWards = _.debounce @_getWards, 250
 
-			@votings = @resources.getVotings()
+			@votings = @votingsResources.getVotings()
 			@votings.$promise.then =>
 				@selectedVoting ?= @votings[0].date
 
@@ -28,7 +29,7 @@ angular.module 'main.data', [
 
 		_getWards: (position) =>
 			position.coords.radius = Math.min(5000, position.coords.radius / 2 or 0)
-			@resources.getWards
+			@votingsResources.getWards
 				date: @selectedVoting
 				latitude: position.coords.latitude
 				longitude: position.coords.longitude
@@ -48,12 +49,12 @@ angular.module 'main.data', [
 						center: position
 
 		getBallots: =>
-			@ballots = @resources.getBallots
+			@ballots = @votingsResources.getBallots
 				date: @selectedVoting
 
 		saveProtocol: (protocol) =>
-			@resources.saveProtocol angular.extend
-				date: @selectedVoting
+			@protocolsResources.save angular.extend
+				votingDate: @selectedVoting
 			, protocol
 
 ]

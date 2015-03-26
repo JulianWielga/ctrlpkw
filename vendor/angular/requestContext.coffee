@@ -91,6 +91,7 @@ angular.module 'RequestContext', []
 		paramNames.length and requestContext.haveParamsChanged(paramNames)
 
 	getParam: requestContext.getParam
+	getParamAsInt: requestContext.getParamAsInt
 
 .factory 'RenderContextFactory', [
 	'requestContext', (requestContext) ->

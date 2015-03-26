@@ -1,11 +1,12 @@
 'use strict'
 
+apiUrl = 'http://ctrlpkw.pl:80/api'
+
 angular.module 'main.resources.votings', []
 
 .factory 'VotingsResources', [
 	'$resource'
 	($resource) ->
-		apiUrl = 'http://ctrlpkw.pl:80/api'
 
 		$resource "#{apiUrl}/votings/:date/:action",
 			date: '@date'
@@ -26,11 +27,15 @@ angular.module 'main.resources.votings', []
 					action: 'ballots'
 				isArray: yes
 
-			saveProtocol:
+]
+
+.factory 'ProtocolsResources', [
+	'$resource'
+	($resource) ->
+
+		$resource "#{apiUrl}/protocols/:id", {},
+			# TODO: wywalic pozniej jak Tomek poprawi
+			save:
 				method: 'POST'
-				params:
-					action: 'protocols'
-				transformRequest: (data) ->
-					angular.toJson _.omit(data, 'date')
 				isArray: yes
 ]

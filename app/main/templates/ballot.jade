@@ -1,0 +1,25 @@
+md-content(layout="column", flex, ng-controller='BallotController as ctrl').md-padding
+	div(ng-if='!ctrl.uploadParams')
+		h3 {{ctrl.ballot.question}}
+		md-input-container(ng-repeat='option in ctrl.ballot.options')
+			label {{option}}
+			input(ng-model='ctrl.result[$index]', type='number', min='0')
+		div razem: {{ctrl.sum()}}
+		md-button(ng-click='ctrl.sendResult()') wyslij
+
+	div(ng-if='ctrl.uploadParams')
+		md-grid-list(
+			md-cols-sm="2", md-cols-md="4", md-cols-gt-md="8"
+			md-row-height-gt-md="1:1", md-row-height="2:2"
+			md-gutter="12px", md-gutter-gt-sm="8px")
+			md-grid-tile(md-rowspan="1", md-colspan="1", ng-repeat='image in ctrl.images').image
+				img(ng-src='{{image}}')
+
+		md-button(ng-click='ctrl.takePhoto()')
+			i.icon-photo-camera
+			span prześlij zdjęcie protokołu
+
+		md-button(ng-if='ctrl.images.length', ng-click='ctrl.done()')
+			i.icon-navigate-next
+			span zakończ
+

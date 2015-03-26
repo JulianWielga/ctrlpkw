@@ -20,7 +20,8 @@ html(ng-app='app', device-detector)
 	body(ng-controller='MainCtrl as ctrl', layout="column", layout-fill)
 		md-toolbar
 			.md-toolbar-tools
-				h3: span ctrlPkw{{ctrl.data.markers.length}}
+				//md-button.md-tools(ng-click='ctrl.back()'): i.icon-arrow-back
+				h3: span {{subview}}
 				span(flex)
 				md-button.md-tools(ng-href='#/votings'): i.icon-accessibility
 				md-button.md-tools(ng-href='#/voting'): i.icon-map

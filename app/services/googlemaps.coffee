@@ -334,7 +334,6 @@ angular.module 'cordova.plugin.googleMaps', [
 				strokeColor: strokeColor?.toRGBString() or 'rgb(0, 0, 0)'
 				strokeOpacity: strokeColor?.alpha or 0.2
 			, options
-			console.log params
 			deferred.resolve new google.maps.Circle params
 			deferred.promise
 

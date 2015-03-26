@@ -36,10 +36,20 @@ angular.module 'app', [
 		$routeProvider
 
 		.when '/votings', action: 'votings'
+
 		.when '/voting', action: 'voting'
 		.when '/voting/:date', action: 'voting'
+
 		.when '/wards', action: 'wards'
+		.when '/ward', action: 'wards'
+
 		.when '/ward/:community/:no', action: 'ward'
+		.when '/ward/:community/:no/ballots', action: 'ward'
+
+		.when '/ward/:community/:no/ballots/:ballot', action: 'ward.ballot'
+
+		.when '/ward/:community/:no/ballots/:ballot/share', action: 'ward.ballot.share'
+
 		.otherwise redirectTo: '/voting'
 
 ]

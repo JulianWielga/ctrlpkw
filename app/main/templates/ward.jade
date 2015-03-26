@@ -1,13 +1,14 @@
-md-content(ng-controller='WardController as ctrl', layout='column')
-	md-content(flex, ng-if='!ctrl.request.$resolved').md-padding
-		section(ng-repeat='ballot in ctrl.data.ballots')
-			h3 {{ballot.question}}
-			md-input-container(ng-repeat='option in ballot.options')
-				label {{option}}
-				input(ng-model='ctrl.result[ballot.no][$index]', type='number', min='0')
-			div razem: {{ctrl.sum(ballot.no)}}
-		md-button(ng-click='ctrl.sendResult()') wyslij
-	md-content(flex, ng-if='ctrl.request.$resolved').md-padding
-		section(ng-repeat='ballotParams in ctrl.request')
-			//img(ng-src='{{ctrl.imageUri}}', style='width: 100%')
-			md-button(ng-click='ctrl.takePhoto(ballotParams)') wyslij
+div(ng-controller='WardController as ctrl', layout='column')
+	mixin subview(name)
+		div(ng-switch-when=name, flex, layout="column")
+			div(ng-include="'/templates/" + name + ".html'", flex, layout="column")
+
+	div(ng-switch='subview', flex, layout="column")
+		+subview('ballot')
+		div(ng-switch-default)
+			md-content(layout="column", flex).md-padding
+				md-list: md-item(ng-repeat='ballot in ctrl.data.ballots')
+					md-item-content
+						a(ng-href='#/ward/{{ctrl.communityCode}}/{{ctrl.wardNo}}/ballots/{{ballot.no}}').md-tile-content
+							h3 {{ballot.question}}
+
