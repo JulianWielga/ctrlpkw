@@ -20,7 +20,8 @@
     "ngFnQueue": "https://github.com/JulianWielga/ngFnQueue.git",
     "angular-material": "https://github.com/JulianWielga/bower-material.git#master",
     "ng-device-detector": "~1.1.1",
-    "lodash": "~3.5.0"
+    "lodash": "~3.5.0",
+    "color-obj": "~1.0.1"
   },
   "overrides": {
     "jquery": {

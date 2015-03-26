@@ -67,30 +67,26 @@ angular.module 'directives.googleMaps', [
 
 		onInit: =>
 			@scope.$watch 'markers', @markersChanged, yes
-#			@document.one 'location_changed', @centerOnLocation
 			setTimeout =>
-				@centerOnLocation()
-				console.log 'onInit'
+				@centerOnLocation(yes)
 				@scope.onInit?()
 			, 250
 
-		_doCenterOnLocation: => _.debounce (position) =>
+		_doCenterOnLocation: => _.debounce (position, fast) =>
 			pos = @Map.latLng position.coords.latitude, position.coords.longitude
-			@Map.panTo @map, pos
+			@Map[if fast then 'moveTo' else 'panTo'] @map, pos
 		, 250
 
-		centerOnLocation: =>
-			console.log 'centerOnLocation'
-			@doCenterOnLocation ?= @_doCenterOnLocation()
+		centerOnLocation: (fast) =>
 			@resizeHandler()
+			@doCenterOnLocation ?= @_doCenterOnLocation()
 			if @locationMonitor.lastPosition
-				@doCenterOnLocation @locationMonitor.lastPosition
+				@doCenterOnLocation @locationMonitor.lastPosition, fast
 			else
 				@geolocation.getCurrentPosition().then (position) =>
-					@doCenterOnLocation position
+					@doCenterOnLocation position, fast
 
 		createCircleForPoints: (center, points) =>
-			console.log 'createCircleForPoints'
 			c =
 				lat: center.coords.latitude
 				lng: center.coords.longitude
@@ -105,10 +101,11 @@ angular.module 'directives.googleMaps', [
 				center: @Map.latLng c.lat, c.lng
 				radius: radius
 				fillColor: 'rgba(0,0,0,0)'
+				strokeColor: 'rgba(255, 0, 0, 0.5)'
 				strokeWeight: 2
 
-		_doCenterOnMarkers: => (position) =>
-			console.log 'centerOnMarkers'
+		doCenterOnMarkers: (position) =>
+			@resizeHandler()
 			pos = @Map.latLng position.coords.latitude, position.coords.longitude
 			@Map.deleteCircle @viewCircle
 			points = (@Map.getMarkerPositon marker for marker in @markers)
@@ -122,7 +119,6 @@ angular.module 'directives.googleMaps', [
 					@Map.fitBounds @map, bounds
 
 		centerOnMarkers: (position) =>
-			@doCenterOnMarkers ?= @_doCenterOnMarkers()
 			return unless @markers
 			if position
 				@doCenterOnMarkers position
@@ -135,7 +131,6 @@ angular.module 'directives.googleMaps', [
 
 		doMarkersChanged: (markers) =>
 			return unless markers?
-			@document.off 'location_changed', @centerOnLocation
 			@cleanMarkers()
 			return unless markers.points?.length
 			promises = (@createMarker marker for marker in markers.points)
@@ -186,5 +181,6 @@ angular.module 'directives.googleMaps', [
 
 		destructor: =>
 			@cleanMarkers()
+			@centerOnLocation(yes)
 ]
 

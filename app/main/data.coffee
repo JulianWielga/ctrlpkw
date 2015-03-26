@@ -27,7 +27,6 @@ angular.module 'main.data', [
 				@getBallots()
 
 		_getWards: (position) =>
-			@markers = []
 			position.coords.radius = Math.min(5000, position.coords.radius / 2 or 0)
 			@resources.getWards
 				date: @selectedVoting

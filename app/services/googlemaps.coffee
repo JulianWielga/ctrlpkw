@@ -108,6 +108,11 @@ angular.module 'cordova.plugin.googleMaps', [
 				zoom: camera.zoom
 				duration: 1000
 
+		moveTo: (map, position) -> map.getCameraPosition (camera) ->
+			map.moveCamera
+				target: position
+				zoom: camera.zoom
+
 		latLng: (latitude, longitude) ->
 			new plugin.google.maps.LatLng latitude, longitude
 
@@ -281,6 +286,8 @@ angular.module 'cordova.plugin.googleMaps', [
 
 		panTo: (map, position) => map.panTo position
 
+		moveTo: (map, position) => map.setCenter position
+
 		latLng: (latitude, longitude) ->
 			new google.maps.LatLng latitude, longitude
 
@@ -316,15 +323,18 @@ angular.module 'cordova.plugin.googleMaps', [
 
 		createCircle: (map, options) =>
 			deferred = @q.defer()
+			fillColor = new Color(options.fillColor) if options.fillColor?
+			strokeColor = new Color(options.strokeColor) if options.strokeColor?
 			params = angular.extend
 				map: map
-				fillColor: '#0161f8'
-				fillOpacity: 0.2
+				fillColor: fillColor?.toRGBString() or 'rgb(1, 97, 248)'
+				fillOpacity: fillColor?.alpha or 0.2
 				radius: 10
 				strokeWeight: 0
-				strokeColor: 'black'
-				strokeOpacity: 0.2
+				strokeColor: strokeColor?.toRGBString() or 'rgb(0, 0, 0)'
+				strokeOpacity: strokeColor?.alpha or 0.2
 			, options
+			console.log params
 			deferred.resolve new google.maps.Circle params
 			deferred.promise
 
