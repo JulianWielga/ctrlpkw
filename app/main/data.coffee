@@ -29,6 +29,7 @@ angular.module 'main.data', [
 
 		_getWards: (position) =>
 			position.coords.radius = Math.min(5000, position.coords.radius / 2 or 0)
+			@wardsLoading = yes
 			@votingsResources.getWards
 				date: @selectedVoting
 				latitude: position.coords.latitude
@@ -47,6 +48,8 @@ angular.module 'main.data', [
 					@markers =
 						points: points
 						center: position
+			.finally =>
+				@wardsLoading = no
 
 		getBallots: =>
 			@ballots = @votingsResources.getBallots

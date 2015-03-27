@@ -1,4 +1,5 @@
 md-content(flex, layout="column", ng-controller='VotingController as ctrl')
+	md-progress-linear(ng-if='ctrl.data.wardsLoading', md-mode="indeterminate").fixed-top
 	.map-wrapper(flex, layout="column")
 		//img.mapImage(ng-if='ctrl.image.url', ng-src='{{ctrl.image.url}}', style="margin-top: -{{ctrl.image.height/2}}px; top: 50%")
 		map(

@@ -48,3 +48,14 @@ header
 		&.ng-leave
 		&.ng-enter.ng-enter-active
 			opacity 1
+
+md-progress-linear
+	&.fixed-top
+		height 0
+		.md-container
+			top 0
+			z-index 1
+			opacity .8
+			transform translate(0, -5px) scale(1, 0)
+			&.md-ready
+				transform translate(0) scale(1)
