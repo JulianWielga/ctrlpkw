@@ -157,18 +157,16 @@ angular.module 'directives.googleMaps', [
 			@Map.deleteMarker marker
 
 		createMarker: (marker) =>
-			count = marker.wards?.length or ''
-			if marker.wards?.length < 2
-				m = @Map.createMarker @map,
-					position: @Map.latLng marker.location.latitude, marker.location.longitude
-			else
-				m = @Map.createMarker @map,
-					position: @Map.latLng marker.location.latitude, marker.location.longitude
-					icon:
-						url: "img/marker#{count}.png"
-						size:
-							width: 44/2
-							height: 80/2
+			count = marker.wards.length if marker.wards?.length > 1
+			scale = .75 unless _.every marker.wards, protocolStatus: 'LACK'
+
+			m = @Map.createMarker @map,
+				position: @Map.latLng marker.location.latitude, marker.location.longitude
+				icon:
+					url: "img/marker#{count or ''}.png"
+					size:
+						width: (44/2) * (scale or 1)
+						height: (80/2) * (scale or 1)
 			m.then (el) =>
 				@Map.onMarkerClick el, => @onMarkerClick marker
 			return m
