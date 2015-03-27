@@ -1,7 +1,6 @@
 doctype html
 html(ng-app='app', device-detector)
 	head
-		base(href='/')
 		meta(charset='utf-8')
 		meta(name='format-detection', content='telephone=no')
 		meta(name='msapplication-tap-highlight', content='no')
@@ -21,6 +20,7 @@ html(ng-app='app', device-detector)
 	body(ng-controller='MainCtrl as ctrl', layout="column", layout-fill)
 		md-toolbar
 			.md-toolbar-tools
+				md-button.md-tools(ng-if='history.hasPrevious()', ng-click='history.back()'): i.icon-arrow-back
 				//md-button.md-tools(ng-click='ctrl.back()'): i.icon-arrow-back
 				h3: span {{subview}}
 				span(flex)

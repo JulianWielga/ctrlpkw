@@ -14,6 +14,7 @@ angular.module 'app', [
 	'angularLoad'
 	'touk.promisedLink'
 	'touk.jwl.ngFnQueue'
+	'touk.jwl.history'
 	'ng.deviceDetector'
 
 	# app modules
@@ -47,7 +48,6 @@ angular.module 'app', [
 		.when '/wards/:community/:no/ballots', action: 'ward'
 
 		.when '/wards/:community/:no/ballots/:ballot', action: 'ward.ballot'
-		.when '/wards/:community/:no/ballots/:ballot/details', action: 'ward.ballot.details'
 		.when '/wards/:community/:no/ballots/:ballot/photos', action: 'ward.ballot.photos'
 		.when '/wards/:community/:no/ballots/:ballot/share', action: 'ward.ballot.share'
 

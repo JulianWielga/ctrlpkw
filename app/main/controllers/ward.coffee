@@ -13,9 +13,10 @@ angular.module 'main.controllers.ward', [
 	'$cordovaCamera'
 	'CloudinaryResources'
 	'$location'
+	'$history'
 
 	class WardController
-		constructor: (@scope, RenderContext, @data, @camera, @cloudinary, @location) ->
+		constructor: (@scope, RenderContext, @data, @camera, @cloudinary, @location, @history) ->
 			renderContext = new RenderContext @scope, 'ward', ['community', 'no']
 
 			@scope.$watch =>
@@ -30,6 +31,7 @@ angular.module 'main.controllers.ward', [
 			@init renderContext
 
 			if @data.ballots.length is 1
+				@history.replace()
 				@location.replace()
 				@openBallot @data.ballots[0]
 

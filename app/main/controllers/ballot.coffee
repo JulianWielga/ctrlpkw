@@ -12,10 +12,11 @@ angular.module 'main.controllers.ballot', [
 	'$cordovaCamera'
 	'CloudinaryResources'
 	'$location'
+	'$history'
 
 	class BallotController
-		constructor: (@scope, RenderContext, @data, @camera, @cloudinary, @location) ->
-			renderContext = new RenderContext @scope, 'ward.ballot', ['community', 'no', 'ballot', 'page']
+		constructor: (@scope, RenderContext, @data, @camera, @cloudinary, @location, @history) ->
+			renderContext = new RenderContext @scope, 'ward.ballot', ['community', 'no', 'ballot']
 
 			@scope.$watch =>
 				@ballotNo
@@ -30,12 +31,12 @@ angular.module 'main.controllers.ballot', [
 			@result = votesCountPerOption: []
 			@init(renderContext)
 
-
 		init: (renderContext) =>
 			@communityCode = renderContext.getParam 'community'
 			@wardNo = renderContext.getParam 'no'
-			@page = renderContext.getParam 'page'
 			@ballotNo = renderContext.getParamAsInt 'ballot'
+
+			@history.replace() if @scope.subview
 
 		sum: =>
 			_.reduce @result.votesCountPerOption, (sum, value) -> (sum or 0) + (value or 0)

@@ -12,15 +12,19 @@ angular.module 'main.controllers.voting', [
 	'locationMonitor'
 	'$location'
 	'$timeout'
+	'$history'
 
 	class VotingController
-		constructor: (@scope, RenderContext, @data, @cordovaGeolocation, @locationMonitor, @location, @timeout) ->
+		constructor: (@scope, RenderContext, @data, @cordovaGeolocation, @locationMonitor, @location, @timeout, @history) ->
 			renderContext = new RenderContext @scope, 'voting', 'date'
 			if votingDate = renderContext.getParam('date')
 				@data.selectedVoting = votingDate
-			else if @data.selectedVoting?
-				@location.path "/voting/#{@data.selectedVoting}"
-				@location.replace()
+				@history.clean()
+			else
+				@data.votings.$promise.then =>
+					@history.replace()
+					@location.replace()
+					@location.path "/voting/#{@data.selectedVoting}"
 
 		init: =>
 			@getWards yes
