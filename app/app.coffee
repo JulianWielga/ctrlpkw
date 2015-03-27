@@ -54,6 +54,7 @@ angular.module 'app', [
 
 		.otherwise redirectTo: '/voting'
 
+		$locationProvider.html5Mode no
 ]
 
 .config [
@@ -61,4 +62,6 @@ angular.module 'app', [
 	($httpProvider, config) ->
 		$httpProvider.defaults.useXDomain = yes
 #		$httpProvider.defaults.withCredentials = yes
+
+
 ]

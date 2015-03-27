@@ -30,6 +30,7 @@ angular.module 'main.controllers.ward', [
 			@init renderContext
 
 			if @data.ballots.length is 1
+				@location.replace()
 				@openBallot @data.ballots[0]
 
 		openBallot: (ballot) =>
