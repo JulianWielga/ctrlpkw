@@ -33,9 +33,5 @@ angular.module 'main.resources.votings', []
 	'$resource'
 	($resource) ->
 
-		$resource "#{apiUrl}/protocols/:id", {},
-			# TODO: wywalic pozniej jak Tomek poprawi
-			save:
-				method: 'POST'
-				isArray: yes
+		$resource "#{apiUrl}/protocols/:id", {}
 ]

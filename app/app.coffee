@@ -12,6 +12,7 @@ angular.module 'app', [
 	# angular external (bower) dependencies
 	'RequestContext'
 	'angularLoad'
+	'touk.promisedLink'
 	'touk.jwl.ngFnQueue'
 	'ng.deviceDetector'
 
@@ -41,14 +42,15 @@ angular.module 'app', [
 		.when '/voting/:date', action: 'voting'
 
 		.when '/wards', action: 'wards'
-		.when '/ward', action: 'wards'
 
-		.when '/ward/:community/:no', action: 'ward'
-		.when '/ward/:community/:no/ballots', action: 'ward'
+		.when '/wards/:community/:no', action: 'ward'
+		.when '/wards/:community/:no/ballots', action: 'ward'
 
-		.when '/ward/:community/:no/ballots/:ballot', action: 'ward.ballot'
+		.when '/wards/:community/:no/ballots/:ballot', action: 'ward.ballot'
+		.when '/wards/:community/:no/ballots/:ballot/details', action: 'ward.ballot.details'
+		.when '/wards/:community/:no/ballots/:ballot/photos', action: 'ward.ballot.photos'
+		.when '/wards/:community/:no/ballots/:ballot/share', action: 'ward.ballot.share'
 
-		.when '/ward/:community/:no/ballots/:ballot/share', action: 'ward.ballot.share'
 
 		.otherwise redirectTo: '/voting'
 

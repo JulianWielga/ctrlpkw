@@ -18,6 +18,9 @@ angular.module 'main.controllers.voting', [
 			renderContext = new RenderContext @scope, 'voting', 'date'
 			if votingDate = renderContext.getParam('date')
 				@data.selectedVoting = votingDate
+			else if @data.selectedVoting?
+				@location.path "/voting/#{@data.selectedVoting}"
+				@location.replace()
 
 		init: =>
 			@getWards yes

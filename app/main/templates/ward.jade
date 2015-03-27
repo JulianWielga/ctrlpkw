@@ -1,14 +1,15 @@
-div(ng-controller='WardController as ctrl', layout='column')
+div(ng-controller='WardController as ctrl', layout='column', flex)
 	mixin subview(name)
 		div(ng-switch-when=name, flex, layout="column")
 			div(ng-include="'/templates/" + name + ".html'", flex, layout="column")
 
+	h3 {{ctrl.ward.label}}
 	div(ng-switch='subview', flex, layout="column")
-		+subview('ballot')
 		div(ng-switch-default)
 			md-content(layout="column", flex).md-padding
 				md-list: md-item(ng-repeat='ballot in ctrl.data.ballots')
 					md-item-content
-						a(ng-href='#/ward/{{ctrl.communityCode}}/{{ctrl.wardNo}}/ballots/{{ballot.no}}').md-tile-content
+						a(ng-href='#/wards/{{ctrl.communityCode}}/{{ctrl.wardNo}}/ballots/{{ballot.no}}').md-tile-content
 							h3 {{ballot.question}}
 
+		+subview('ballot')

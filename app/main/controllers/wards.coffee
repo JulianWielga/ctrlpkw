@@ -18,6 +18,7 @@ angular.module 'main.controllers.wards', [
 
 			if @data.selectedWards.length is 1
 				ward = @data.selectedWards[0]
-				@location.path "/ward/#{ward.communityCode}/#{ward.no}"
+				@location.path "/wards/#{ward.communityCode}/#{ward.no}"
+				@location.replace()
 
 ]

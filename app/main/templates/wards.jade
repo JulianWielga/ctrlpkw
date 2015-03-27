@@ -2,6 +2,7 @@ md-content(ng-controller='WardsController as ctrl')
 	md-list
 		md-item(ng-repeat='ward in ctrl.data.selectedWards')
 			md-item-content
-				a(ng-href='#/ward/{{ward.communityCode}}/{{ward.no}}').md-tile-content
+				a(ng-href='#/wards/{{ward.communityCode}}/{{ward.no}}').md-tile-content
 					h3 {{ward.address}}
-					h4 {{ward.communityCode}} / {{ward.no}}
+					div Kod terytorialny gminy: {{ward.communityCode}}
+					div Nr obwodu głosowania: {{ward.no}}

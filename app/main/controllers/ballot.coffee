@@ -13,43 +13,42 @@ angular.module 'main.controllers.ballot', [
 	'CloudinaryResources'
 	'$location'
 
-
 	class BallotController
-
 		constructor: (@scope, RenderContext, @data, @camera, @cloudinary, @location) ->
-			renderContext = new RenderContext @scope, 'ward.ballot', ['community', 'no', 'ballot']
+			renderContext = new RenderContext @scope, 'ward.ballot', ['community', 'no', 'ballot', 'page']
+
+			@scope.$watch =>
+				@ballotNo
+			, =>
+				@ballot = _.find @data.ballots, no: @ballotNo
 
 			@scope.$on "requestContextChanged", =>
 				return unless renderContext.isChangeRelevant()
 				@init(renderContext)
 
+			@images = []
+			@result = votesCountPerOption: []
 			@init(renderContext)
 
+
 		init: (renderContext) =>
-			@images = []
-			@result = []
 			@communityCode = renderContext.getParam 'community'
 			@wardNo = renderContext.getParam 'no'
-			@ballot = _.find @data.ballots, no: renderContext.getParamAsInt 'ballot'
+			@page = renderContext.getParam 'page'
+			@ballotNo = renderContext.getParamAsInt 'ballot'
 
 		sum: =>
-			_.reduce @result, (sum, value) -> sum + value
+			_.reduce @result.votesCountPerOption, (sum, value) -> (sum or 0) + (value or 0)
 
 		sendResult: =>
 			@request = @data.saveProtocol
 				ballotNo: @ballot.no
 				communityCode: @communityCode
 				wardNo: @wardNo
-				ballotResult:
-					votersEntitledCount: 0
-					ballotsGivenCount: 0
-					votesCastCount: 0
-					votesValidCount: 0
-					votesCountPerOption: @result
+				ballotResult: @result
 			@request.$promise.then (response) =>
-#				TODO: zamienic pozniej jak Tomek poprawi
-#				@uploadParams = response
-				@uploadParams = response[0]
+				@uploadParams = response
+			return @request.$promise
 
 		takePhoto: =>
 			@camera.getPicture
