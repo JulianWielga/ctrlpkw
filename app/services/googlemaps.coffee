@@ -96,7 +96,7 @@ angular.module 'cordova.plugin.googleMaps', [
 			return map
 
 		fitBounds: (map, bounds) ->
-			map.setPadding 30
+			map.setPadding 60
 			map.animateCamera
 				target: bounds
 				duration: 1000

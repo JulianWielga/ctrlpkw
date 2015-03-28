@@ -13,13 +13,24 @@ angular.module 'main.controllers.voting', [
 	'$location'
 	'$timeout'
 	'$history'
+	'$page'
 
 	class VotingController
-		constructor: (@scope, RenderContext, @data, @cordovaGeolocation, @locationMonitor, @location, @timeout, @history) ->
+		constructor: (@scope, RenderContext, @data, @cordovaGeolocation, @locationMonitor, @location, @timeout, @history, $page) ->
+			$page.title = 'Komisje wyborcze'
+			$page.subtitle = 'Wybierz na mapie komisję wyborczą w danej lokalizacji'
 			renderContext = new RenderContext @scope, 'voting', 'date'
+
+			@scope.$on "requestContextChanged", =>
+				return unless renderContext.isChangeRelevant()
+				@contextChanged renderContext
+
+			@contextChanged renderContext
+
+		contextChanged: (renderContext) =>
+			@history.clean()
 			if votingDate = renderContext.getParam('date')
 				@data.selectedVoting = votingDate
-				@history.clean()
 			else
 				@data.votings.$promise.then =>
 					@history.replace()

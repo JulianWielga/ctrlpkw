@@ -12,9 +12,11 @@ angular.module 'main.controllers.wards', [
 	'locationMonitor'
 	'$location'
 	'$history'
+	'$page'
 
 	class WardsController
-		constructor: (@scope, RenderContext, @data, @cordovaGeolocation, @locationMonitor, @location, @history) ->
+		constructor: (@scope, RenderContext, @data, @cordovaGeolocation, @locationMonitor, @location, @history, $page) ->
+			$page.title = 'Komisje wyborcze'
 			renderContext = new RenderContext @scope, 'wards'
 
 			if @data.selectedWards.length is 1

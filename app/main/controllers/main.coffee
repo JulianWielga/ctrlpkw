@@ -39,5 +39,5 @@ angular.module 'main.controllers.main', [
 			$scope.$broadcast "requestContextChanged", requestContext
 
 		@data = data
-		@center = => @centerMap yes
+
 ]

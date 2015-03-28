@@ -15,6 +15,7 @@ angular.module 'app', [
 	'touk.promisedLink'
 	'touk.jwl.ngFnQueue'
 	'touk.jwl.history'
+	'touk.jwl.page'
 	'ng.deviceDetector'
 
 	# app modules
@@ -64,4 +65,14 @@ angular.module 'app', [
 #		$httpProvider.defaults.withCredentials = yes
 
 
+]
+
+.config [
+	'$mdThemingProvider'
+	($mdThemingProvider) ->
+		$mdThemingProvider
+		.theme 'default'
+		.primaryPalette 'red'
+		.accentPalette 'grey',
+			'default': '800'
 ]

@@ -14,9 +14,11 @@ angular.module 'main.controllers.ward', [
 	'CloudinaryResources'
 	'$location'
 	'$history'
+	'$page'
 
 	class WardController
-		constructor: (@scope, RenderContext, @data, @camera, @cloudinary, @location, @history) ->
+		constructor: (@scope, RenderContext, @data, @camera, @cloudinary, @location, @history, $page) ->
+			$page.title = 'Komisja wyborcza'
 			renderContext = new RenderContext @scope, 'ward', ['community', 'no']
 
 			@scope.$watch =>

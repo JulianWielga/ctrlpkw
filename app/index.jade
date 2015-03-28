@@ -17,22 +17,21 @@ html(ng-app='app', device-detector)
 		script(type='text/javascript', src='js/app.js')
 		title ctrlpkw
 
-	body(ng-controller='MainCtrl as ctrl', layout="column", layout-fill)
-		md-toolbar
-			.md-toolbar-tools
-				md-button.md-tools(ng-if='history.hasPrevious()', ng-click='history.back()'): i.icon-arrow-back
-				//md-button.md-tools(ng-click='ctrl.back()'): i.icon-arrow-back
-				h3: span {{subview}}
-				span(flex)
-				md-button.md-tools(ng-href='#/votings'): i.icon-accessibility
-				md-button.md-tools(ng-href='#/voting'): i.icon-map
+	mixin subview(name)
+		div(ng-switch-when=name, flex, layout="column")
+			md-content(ng-include="'/templates/"+name+".html'", flex, layout="column")
 
-		mixin subview(name)
-			div(ng-switch-when=name, flex, layout="column")
-				md-content(ng-include="'/templates/"+name+".html'", flex, layout="column")
+	body(ng-controller='MainCtrl as mainCtrl', layout-fill, layout="column")
+			md-toolbar.md-shadow-bottom-z-1
+				.md-toolbar-tools
+					md-button.md-tools.back(ng-if='history.hasPrevious()', ng-click='history.back()'): i.icon-arrow-back
+					h2(flex).md-title {{page.title}}
+					md-button.md-tools(ng-if="subview != 'votings'", ng-href='#/votings'): i.icon-event
+					md-button.md-tools(ng-if="subview == 'voting'", ng-click='mainCtrl.centerMap()'): i.icon-my-location
 
-		div(ng-switch='subview', flex, layout="column")
-			+subview('votings')
-			+subview('voting')
-			+subview('wards')
-			+subview('ward')
+
+			div(ng-switch='subview', flex, layout="colum")
+				+subview('votings')
+				+subview('voting')
+				+subview('wards')
+				+subview('ward')

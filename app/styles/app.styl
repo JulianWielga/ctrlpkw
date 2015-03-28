@@ -49,6 +49,10 @@ header
 		&.ng-enter.ng-enter-active
 			opacity 1
 
+[class^="icon-"]
+[class*=" icon-"]
+	font-size 24px
+
 md-progress-linear
 	&.fixed-top
 		height 0
@@ -59,3 +63,47 @@ md-progress-linear
 			transform translate(0, -5px) scale(1, 0)
 			&.md-ready
 				transform translate(0) scale(1)
+
+.md-toolbar-tools
+	.md-tools
+		&.ng-enter
+		&.ng-leave
+			transition opacity .5s
+
+		&.ng-enter
+		&.ng-leave.ng-leave-active
+			opacity 0
+
+		&.ng-leave
+		&.ng-enter.ng-enter-active
+			opacity 1
+
+
+	BACK-BUTTON-WIDTH = 38px
+	.md-tools.back
+		width BACK-BUTTON-WIDTH
+		margin-right 18px
+		margin-left -6px
+		&.ng-enter
+		&.ng-leave
+			display block
+			position relative
+			overflow visible
+			box-sizing border-box
+			transition all .5s
+			i
+				position relative
+
+		&.ng-enter
+		&.ng-leave.ng-leave-active
+			width 0
+			margin-right 0
+			padding-right 0
+			transform translateX(- BACK-BUTTON-WIDTH * 2)
+
+		&.ng-leave
+		&.ng-enter.ng-enter-active
+			margin-right 18px
+			padding-right 6px
+			width BACK-BUTTON-WIDTH
+			transform translateX(0)
