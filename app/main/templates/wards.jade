@@ -2,7 +2,8 @@ md-content(ng-controller='WardsController as ctrl')
 	md-list
 		md-item(ng-repeat='ward in ctrl.data.selectedWards')
 			md-item-content
+				.md-tile-left
+					md-icon(md-font-icon='icon-place').md-primary.md-hue-3
 				a(ng-href='#/wards/{{ward.communityCode}}/{{ward.no}}').md-tile-content
-					h3 {{ward.address}}
-					div Kod terytorialny gminy: {{ward.communityCode}}
-					div Nr obwodu głosowania: {{ward.no}}
+					h3.md-title {{ward.label}}
+					p.md-caption {{ward.address}}

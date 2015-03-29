@@ -82,7 +82,7 @@ md-progress-linear
 	BACK-BUTTON-WIDTH = 38px
 	.md-tools.back
 		width BACK-BUTTON-WIDTH
-		margin-right 18px
+		margin-right 24px
 		margin-left -6px
 		&.ng-enter
 		&.ng-leave
@@ -103,7 +103,31 @@ md-progress-linear
 
 		&.ng-leave
 		&.ng-enter.ng-enter-active
-			margin-right 18px
+			margin-right 24px
 			padding-right 6px
 			width BACK-BUTTON-WIDTH
 			transform translateX(0)
+
+
+a
+	&
+	&:hover
+	&:active
+		color inherit
+		text-decoration inherit
+
+
+.md-tile-left
+	min-width 72px
+	md-icon
+		font-size 32px
+		line-height @font-size
+		width @font-size
+		height @font-size
+		padding 16px
+		.md-font
+			font-size inherit
+
+.md-toolbar-tools
+	.md-title
+		overflow ellipsis

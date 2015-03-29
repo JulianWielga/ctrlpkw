@@ -2,6 +2,8 @@ md-content(ng-controller='VotingsController as ctrl')
 	md-list
 		md-item(ng-repeat='voting in ctrl.data.votings')
 			md-item-content
+				.md-tile-left
+					md-icon(md-font-icon='icon-event', ng-class="{'md-hue-3': voting.date != ctrl.data.selectedVoting}").md-primary.md-hue-2
 				a(ng-href='#/voting/{{voting.date}}').md-tile-content
-					h3 {{voting.description}}
-					h4 {{voting.date}}
+					h3.md-title {{voting.date | amDateFormat:'LL'}}
+					p.md-caption {{voting.description}}

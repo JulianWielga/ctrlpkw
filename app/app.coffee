@@ -12,6 +12,7 @@ angular.module 'app', [
 	# angular external (bower) dependencies
 	'RequestContext'
 	'angularLoad'
+	'angularMoment'
 	'touk.promisedLink'
 	'touk.jwl.ngFnQueue'
 	'touk.jwl.history'
@@ -63,8 +64,6 @@ angular.module 'app', [
 	($httpProvider, config) ->
 		$httpProvider.defaults.useXDomain = yes
 #		$httpProvider.defaults.withCredentials = yes
-
-
 ]
 
 .config [
@@ -75,4 +74,10 @@ angular.module 'app', [
 		.primaryPalette 'red'
 		.accentPalette 'grey',
 			'default': '800'
+]
+
+.run [
+	'amMoment'
+	(amMoment) ->
+		amMoment.changeLocale('de')
 ]
