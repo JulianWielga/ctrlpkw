@@ -24,11 +24,10 @@ html(ng-app='app', device-detector)
 	body(ng-controller='MainCtrl as mainCtrl', layout-fill, layout="column")
 			md-toolbar.md-shadow-bottom-z-1
 				.md-toolbar-tools
-					md-button.md-tools.back(ng-if='history.hasPrevious()', ng-click='history.back()'): i.icon-arrow-back
+					md-button.md-tools.back(md-no-ink, ng-if='history.hasPrevious()', ng-click='history.back()'): i.icon-arrow-back
 					h2(flex).md-title {{page.title}}
-					md-button.md-tools(ng-if="subview != 'votings'", ng-href='#/votings'): i.icon-event
-					md-button.md-tools(ng-if="subview == 'voting'", ng-click='mainCtrl.centerMap()'): i.icon-my-location
-
+					md-button.md-tools(md-no-ink, ng-if="subview != 'votings'", ng-href='#/votings'): i.icon-event
+					md-button.md-tools(md-no-ink, ng-if="subview == 'voting'", ng-click='mainCtrl.centerMap()'): i.icon-my-location
 
 			div(ng-switch='subview', flex, layout="colum")
 				+subview('votings')
