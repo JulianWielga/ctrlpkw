@@ -131,3 +131,25 @@ a
 .md-toolbar-tools
 	.md-title
 		overflow ellipsis
+
+.md-subheader:not(.md-sticky-no-effect)
+	margin-right 0
+	&::after
+		right 0
+
+.buttons
+.bottom-buttons
+	& > .md-button
+		margin 8px
+		overflow ellipsis
+		md-icon
+			margin-right 4px
+			height 16px
+			line-height @height
+			vertical-align top
+			.md-font
+				font-size 22px
+				line-height @height
+
+.ballot
+	padding 2px 16px

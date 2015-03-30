@@ -1,58 +1,68 @@
-md-content(ng-controller='BallotController as ctrl', layout="column", flex).md-padding
+div(ng-controller='BallotController as ctrl', layout="column", flex)
 	//mixin subview(name)
 		div(ng-switch-when=name, flex, layout="column")
 			div(ng-include="'/templates/" + name + ".html'", flex, layout="column")
 
 	div(ng-switch='subview', flex, layout="column")
 		div(ng-switch-default)
-			h4 WYNIKI KANDYDATÓW
-			md-input-container(ng-repeat='option in ctrl.ballot.options')
-				label {{option}}
-				input(ng-model='ctrl.result.votesCountPerOption[$index]', type='tel', required, ng-pattern='/^[0-9]+$/')
-			//-md-button(ng-href='#/wards/{{ctrl.communityCode}}/{{ctrl.wardNo}}/ballots/{{ctrl.ballot.no}}/details')
-				span dalej
-
-			//-div(ng-switch-when='details')
-			h4 ROZLICZENIE KART DO GŁOSOWANIA
-			md-input-container
-				label Liczba wyborców uprawnionych
-					//do głosowania (umieszczonych w spisie) w chwili zakończenia głosowania
-				input(ng-model='ctrl.result.votersEntitledCount', type='tel', required, ng-pattern='/^[0-9]+$/')
-			md-input-container
-				label Liczba wyborców, którym wydano karty
-					//do głosowania (liczba podpisów w spisie)
-				input(ng-model='ctrl.result.ballotsGivenCount', type='tel', required, ng-pattern='/^[0-9]+$/')
-			md-input-container
-				label Liczba oddanych głosów
-					//, czyli kart wrzuconych do urny przez wyborców
-				input(ng-model='ctrl.result.votesCastCount', type='tel', required, ng-pattern='/^[0-9]+$/')
-			md-input-container
-				label Liczba głosów ważnych
-				input(ng-model='ctrl.result.votesValidCount', type='tel', required, ng-pattern='/^[0-9]+$/')
-			md-button(ng-href='#/wards/{{ctrl.communityCode}}/{{ctrl.wardNo}}/ballots/{{ctrl.ballot.no}}')
-				span wstecz
-			md-button(ng-href='#/wards/{{ctrl.communityCode}}/{{ctrl.wardNo}}/ballots/{{ctrl.ballot.no}}/photos', promised-fn='ctrl.sendResult()')
-				span dalej
+			section.ballot.md-whiteframe-z1
+				h5.md-body-2 WYNIKI KANDYDATÓW
+				md-input-container(ng-repeat='option in ctrl.ballot.options')
+					label {{option}}
+					input(ng-model='ctrl.result.votesCountPerOption[$index]', type='tel', required, ng-pattern='/^[0-9]+$/')
+			section.ballot.md-whiteframe-z1
+				h5.md-body-2 ROZLICZENIE KART DO GŁOSOWANIA
+				md-input-container
+					label Liczba wyborców uprawnionych
+						//do głosowania (umieszczonych w spisie) w chwili zakończenia głosowania
+					input(ng-model='ctrl.result.votersEntitledCount', type='tel', required, ng-pattern='/^[0-9]+$/')
+				md-input-container
+					label Liczba wyborców, którym wydano karty
+						//do głosowania (liczba podpisów w spisie)
+					input(ng-model='ctrl.result.ballotsGivenCount', type='tel', required, ng-pattern='/^[0-9]+$/')
+				md-input-container
+					label Liczba oddanych głosów
+						//, czyli kart wrzuconych do urny przez wyborców
+					input(ng-model='ctrl.result.votesCastCount', type='tel', required, ng-pattern='/^[0-9]+$/')
+				md-input-container
+					label Liczba głosów ważnych
+					input(ng-model='ctrl.result.votesValidCount', type='tel', required, ng-pattern='/^[0-9]+$/')
+			div.buttons(layout="row", layout-align="end center")
+				//md-button(ng-href='#/wards/{{ctrl.communityCode}}/{{ctrl.wardNo}}/ballots/{{ctrl.ballot.no}}')
+				//	span wstecz
+				md-button(ng-href='#/wards/{{ctrl.communityCode}}/{{ctrl.wardNo}}/ballots/{{ctrl.ballot.no}}/photos', promised-fn='ctrl.sendResult()')
+					span dalej
 		div(ng-switch-when='photos')
-			h4 FOTOGRAFIE PROTOKOŁÓW
-			md-grid-list(
-				md-cols-sm="2", md-cols-md="4", md-cols-gt-md="8"
-				md-row-height-gt-md="1:1", md-row-height="2:2"
-				md-gutter="12px", md-gutter-gt-sm="8px")
-				md-grid-tile(md-rowspan="1", md-colspan="1", ng-repeat='image in ctrl.images').image
-					img(ng-src='{{image}}')
-			md-button(ng-click='ctrl.takePhoto()')
-				i.icon-photo-camera
-				span prześlij zdjęcie protokołu
-			md-button(ng-if='ctrl.images.length', ng-href='#/wards/{{ctrl.communityCode}}/{{ctrl.wardNo}}/ballots/{{ctrl.ballot.no}}/share', promised-fn='ctrl.sendResult()')
-				span zakończ
+			section
+				h5.md-body-2 FOTOGRAFIE PROTOKOŁÓW
+				div.buttons(layout="row", layout-align="center center")
+					md-button(flex, ng-click='ctrl.takePhoto()')
+						md-icon(md-font-icon='icon-photo-library')
+						span wybierz zdjęcie
+					md-button(flex, ng-click='ctrl.takePhoto()')
+						md-icon(md-font-icon='icon-photo-camera')
+						span zrób zdjęcie
+			section(ng-if='ctrl.images.length')
+				md-grid-list(
+					md-cols-sm="2", md-cols-md="4", md-cols-gt-md="8"
+					md-row-height-gt-md="1:1", md-row-height="2:2"
+					md-gutter="12px", md-gutter-gt-sm="8px")
+					md-grid-tile(md-rowspan="1", md-colspan="1", ng-repeat='image in ctrl.images').image
+						img(ng-src='{{image}}')
+			div.bottom-buttons(layout="row", layout-align="end center")
+				md-button(ng-if='ctrl.images.length', ng-href='#/wards/{{ctrl.communityCode}}/{{ctrl.wardNo}}/ballots/{{ctrl.ballot.no}}/share', promised-fn='ctrl.sendResult()')
+					span zakończ
 		div(ng-switch-when='share')
-			h4 PODZIEL SIĘ
-			md-button facebook
-			md-button twitter
+			section
 
-			md-button(ng-if='ctrl.data.selectedWards.length > 1', ng-href='#/wards') inne obwody w pobliżu
-			md-button(ng-href='#/voting') powrot do mapy
+				h5.md-body-2 Podziel się
+
+				md-button facebook
+				md-button twitter
+
+			div.bottom-buttons(layout="row", layout-align="end center")
+				md-button(ng-if='ctrl.data.selectedWards.length > 1', ng-href='#/wards') inne obwody w pobliżu
+				md-button(ng-href='#/voting') powrot do mapy
 
 
 
