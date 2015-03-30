@@ -53,7 +53,7 @@ angular.module 'main.data', []
 			request.$promise.then (@wards) =>
 				return unless @wards.length
 
-				points = _.chain(values)
+				points = _.chain(@wards)
 				.groupBy (ward) ->
 					[ward.location.latitude, ward.location.longitude]
 				.map (group) ->
