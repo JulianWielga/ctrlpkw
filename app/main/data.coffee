@@ -1,55 +1,74 @@
 'use strict'
 
-angular.module 'main.data', [
-]
+MAX_RADIUS = 5000
+DEBOUNCE_TIMEOUT = 250
+
+angular.module 'main.data', []
 
 .service 'ApplicationData', [
 	'$rootScope'
-	'VotingsResources'
-	'ProtocolsResources'
+	'VotingsResources', 'ProtocolsResources'
+
 	class ApplicationData
-		markers: []
 		votings: []
-		ballots: []
-		count: 3
 		selectedVoting: null
+
+		ballots: []
+
+		wardsCount: 3
+		wards: []
 		selectedWards: []
+		markers: []
 
 		constructor: ($rootScope, @votingsResources, @protocolsResources) ->
-			@getWards = _.debounce @_getWards, 250
+			@getWards = _.debounce @_getWards, DEBOUNCE_TIMEOUT
 
 			@votings = @votingsResources.getVotings()
 			@votings.$promise.then =>
 				@selectedVoting ?= @votings[0].date
 
-			$rootScope.$watch =>
-				@selectedVoting
-			, => if @selectedVoting
-				@getBallots()
+			$rootScope.$watch (=> @selectedVoting), @_onVotingChanged
+
+		_onVotingChanged: =>
+			return unless @selectedVoting?
+
+			@wards = []
+			@selectedWards = []
+			@markers = []
+
+			@getBallots()
 
 		_getWards: (position) =>
-			position.coords.radius = Math.min(5000, position.coords.radius / 2 or 0)
 			@wardsLoading = yes
-			@votingsResources.getWards
+
+			@selectedWards = []
+			position.coords.radius = Math.min(MAX_RADIUS, position.coords.radius / 2 or 0)
+			request = @votingsResources.getWards
 				date: @selectedVoting
+				minCount: @wardsCount
 				latitude: position.coords.latitude
 				longitude: position.coords.longitude
 				radius: position.coords.radius
-				minCount: @count
-			.$promise.then (values) =>
-				if values.length
-					points = _.chain(values)
-					.groupBy (marker) ->
-						[marker.location.latitude, marker.location.longitude]
-					.map (group) ->
-						location: group[0].location
-						wards: group
-					.value()
-					@markers =
-						points: points
-						center: position
+
+			request.$promise.then (@wards) =>
+				return unless @wards.length
+
+				points = _.chain(values)
+				.groupBy (ward) ->
+					[ward.location.latitude, ward.location.longitude]
+				.map (group) ->
+					location: group[0].location
+					wards: group
+				.value()
+
+				@markers =
+					points: points
+					center: position
+
 			.finally =>
 				@wardsLoading = no
+
+			return request.$promise
 
 		getBallots: =>
 			@ballots = @votingsResources.getBallots

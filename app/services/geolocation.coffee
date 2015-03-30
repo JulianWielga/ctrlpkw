@@ -42,12 +42,12 @@ angular.module "ngCordova.plugins.geolocation", [
 ]
 
 .service "locationMonitor", [
-	'$q', '$cordovaGeolocation', '$document'
+	'$q', '$rootScope', '$cordovaGeolocation', '$document'
 	class LocationMonitor
 		promise: null
 		lastPosition: null
 
-		constructor: (@q, @geolocation, @document) ->
+		constructor: (@q, @rootScope, @geolocation, @document) ->
 			@document
 			.on 'resume', @start
 			.on 'pause', @stop
@@ -55,8 +55,8 @@ angular.module "ngCordova.plugins.geolocation", [
 
 		start: =>
 			@stop()
-			@promise = @geolocation.watchPosition().then null, null, (position) =>
-				@lastPosition = position
+			@promise = @geolocation.watchPosition().then null, null, (@lastPosition) =>
+				@rootScope.$broadcast 'LOCATION_CHANGED', @lastPosition
 				@document.triggerHandler 'location_changed'
 
 		stop: =>
