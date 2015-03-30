@@ -45,6 +45,7 @@ angular.module 'app', [
 		.when '/voting/:date', action: 'voting'
 
 		.when '/wards', action: 'wards'
+		.when '/wards/:date', action: 'wards'
 
 		.when '/wards/:community/:no', action: 'ward'
 		.when '/wards/:community/:no/ballots', action: 'ward'
@@ -54,7 +55,7 @@ angular.module 'app', [
 		.when '/wards/:community/:no/ballots/:ballot/share', action: 'ward.ballot.share'
 
 
-		.otherwise redirectTo: '/voting'
+		.otherwise redirectTo: '/wards'
 
 		$locationProvider.html5Mode no
 ]

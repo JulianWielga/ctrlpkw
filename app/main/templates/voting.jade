@@ -10,5 +10,5 @@ md-content(flex, layout="column", ng-controller='VotingController as ctrl')
 			get-map-center-fn='ctrl.getMapCenter'
 			on-marker-click='ctrl.onMarkerClick'
 		)
-		md-button.md-fab-bottom-right.md-fab(ng-click='ctrl.getWards()')
+		md-button.md-fab-bottom-right.md-fab(ng-click='ctrl.updateWards()')
 			i.icon-find-replace

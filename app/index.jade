@@ -28,6 +28,8 @@ html(ng-app='app', device-detector)
 					h2(flex).md-title {{page.title}}
 					md-button.md-tools(md-no-ink, ng-if="subview != 'votings'", ng-href='#/votings'): i.icon-event
 					md-button.md-tools(md-no-ink, ng-if="subview == 'voting'", ng-click='mainCtrl.centerMap()'): i.icon-my-location
+					md-button.md-tools(md-no-ink, ng-if="subview == 'voting'", ng-href='#/wards'): i.icon-list
+					md-button.md-tools(md-no-ink, ng-if="subview == 'wards'", ng-href='#/voting'): i.icon-map
 
 			div(ng-switch='subview', flex, layout="colum")
 				+subview('votings')

@@ -73,9 +73,9 @@ angular.module 'cordova.plugin.googleMaps', [
 ]
 
 .service "googleMapsNative", [
-	'$q'
+	'$q', '$rootScope'
 	class GoogleMapsNative extends Maps
-		constructor: (@q) ->
+		constructor: (@q, @rootScope) ->
 
 		getMap: (canvas, params) ->
 			parent = angular
@@ -93,7 +93,14 @@ angular.module 'cordova.plugin.googleMaps', [
 					tilt: params.tilt
 					zoom: params.zoom
 					bearing: params.bearing
+
+			map.on plugin.google.maps.event.CAMERA_CHANGE, @_onMapCameraChanged(map)
 			return map
+
+		_onMapCameraChanged: (map) => =>
+			@getView map
+			.then (position) =>
+				@rootScope.$broadcast 'MAP_VIEW_CHANGE', position
 
 		fitBounds: (map, bounds) ->
 			map.setPadding 60
@@ -165,12 +172,15 @@ angular.module 'cordova.plugin.googleMaps', [
 		getView: (map) =>
 			deferred = @q.defer()
 			map.getVisibleRegion (bounds) =>
-				center = bounds.getCenter()
-				deferred.resolve
-					coords:
-						latitude: center.lat
-						longitude: center.lng
-						radius: @radius bounds
+				map.getCameraPosition (camera) =>
+					center = bounds.getCenter()
+					deferred.resolve
+						bounds: bounds
+						zoom: camera.zoom
+						coords:
+							latitude: center.lat
+							longitude: center.lng
+							radius: @radius bounds
 			deferred.promise
 
 		radius: (bounds) =>
@@ -187,12 +197,13 @@ angular.module 'cordova.plugin.googleMaps', [
 		onMarkerClick: (marker, callback) =>
 			marker.addEventListener plugin.google.maps.event.MARKER_CLICK, callback
 
+
 ]
 
 .service "googleMapsJS", [
-	'$q', '$cordovaGeolocation', '$document', 'locationMonitor'
+	'$q', '$cordovaGeolocation', '$document', 'locationMonitor', '$rootScope'
 	class GoogleMapsJS extends Maps
-		constructor: (@q, @geolocation, @document, @locationMonitor) ->
+		constructor: (@q, @geolocation, @document, @locationMonitor, @rootScope) ->
 
 		getMap: (canvas, params) =>
 			@document.off 'location_changed', @_locationChangeHandler
@@ -205,7 +216,13 @@ angular.module 'cordova.plugin.googleMaps', [
 			@_locationChangeHandler()
 
 			@document.on 'location_changed', @_locationChangeHandler
+			google.maps.event.addListener map, 'center_changed', @_onMapCameraChanged(map)
 			return map
+
+		_onMapCameraChanged: (map) => =>
+			@getView map
+			.then (position) =>
+				@rootScope.$broadcast 'MAP_VIEW_CHANGE', position
 
 		_createLocationChangeHandler: (map) =>
 			locationMarker = null
@@ -350,6 +367,8 @@ angular.module 'cordova.plugin.googleMaps', [
 			center = bounds.getCenter()
 
 			deferred.resolve
+				bounds: bounds
+				zoom: map.getZoom()
 				coords:
 					latitude: center.lat()
 					longitude: center.lng()

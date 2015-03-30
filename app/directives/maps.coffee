@@ -36,11 +36,13 @@ angular.module 'directives.googleMaps', [
 
 ]
 
+.service 'mapData', [->]
+
 .controller 'mapController', [
-	'initMaps', '$injector', '$scope', '$q', '$cordovaGeolocation', 'locationMonitor', '$document'
+	'initMaps', '$injector', '$scope', '$q', '$cordovaGeolocation', 'locationMonitor', '$document', 'mapData'
 	class MapController
 
-		constructor: (@initMaps, @injector, @scope, @q, @geolocation, @locationMonitor, @document) ->
+		constructor: (@initMaps, @injector, @scope, @q, @geolocation, @locationMonitor, @document, @savedMapData) ->
 			angular.extend @scope,
 				centerMapFn: @centerOnLocation
 				getMapCenterFn: @getView
@@ -60,15 +62,20 @@ angular.module 'directives.googleMaps', [
 			.catch (error) => alert error
 
 		_createMap: (element) =>
-			pos = @Map.latLng @locationMonitor?.lastPosition?.coords?.latitude or 0, @locationMonitor?.lastPosition?.coords?.longitude or 0
 			@Map.getMap element,
-				center: pos
-				zoom: 12
+				center: @Map.latLng 52, 21
+				zoom: 10
 
 		onInit: =>
 			@scope.$watch 'markers', @markersChanged, yes
 			setTimeout =>
-				@centerOnLocation(yes)
+				@resizeHandler()
+				if @savedMapData.coords
+					pos = @Map.latLng @savedMapData.coords.latitude, @savedMapData.coords.longitude
+					@map.setZoom @savedMapData.zoom
+					@Map.moveTo @map, pos
+				else
+					@centerOnLocation yes
 				@scope.onInit?()
 			, 250
 
@@ -78,7 +85,6 @@ angular.module 'directives.googleMaps', [
 		, 250
 
 		centerOnLocation: (fast) =>
-			@resizeHandler()
 			@doCenterOnLocation ?= @_doCenterOnLocation()
 			if @locationMonitor.lastPosition
 				@doCenterOnLocation @locationMonitor.lastPosition, fast
@@ -175,10 +181,11 @@ angular.module 'directives.googleMaps', [
 			@scope.onMarkerClick marker
 
 		resizeHandler: =>
-			@Map?.resize @map
+			@Map.resize @map
 
 		destructor: =>
-			@cleanMarkers()
-			@centerOnLocation(yes)
+			@getView().then (position) =>
+				angular.extend @savedMapData, position
 ]
+
 

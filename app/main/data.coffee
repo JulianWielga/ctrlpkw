@@ -30,13 +30,11 @@ angular.module 'main.data', []
 			$rootScope.$watch (=> @selectedVoting), @_onVotingChanged
 
 		_onVotingChanged: =>
-			return unless @selectedVoting?
-
 			@wards = []
 			@selectedWards = []
 			@markers = []
 
-			@getBallots()
+			@getBallots() if @selectedVoting
 
 		_getWards: (position) =>
 			@wardsLoading = yes

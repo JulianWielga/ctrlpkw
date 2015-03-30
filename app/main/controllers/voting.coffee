@@ -29,6 +29,7 @@ angular.module 'main.controllers.voting', [
 
 		contextChanged: (renderContext) =>
 			@history.clean()
+			@data.selectedWards = []
 			if votingDate = renderContext.getParam('date')
 				@data.selectedVoting = votingDate
 			else
@@ -38,15 +39,10 @@ angular.module 'main.controllers.voting', [
 					@location.path "/voting/#{@data.selectedVoting}"
 
 		init: =>
-			@getWards yes
+			@getWards() unless @data.wards.length
 
-		getWards: (init) =>
-			if @getMapCenter? and not init
-				@getMapCenter().then @data.getWards
-			else if @locationMonitor?.lastPosition
-				@data.getWards @locationMonitor.lastPosition
-			else
-				@cordovaGeolocation.getCurrentPosition().then @data.getWards
+		updateWards: =>
+			@getMapCenter?().then @data.getWards
 
 		onMarkerClick: (marker) =>
 			@data.selectedWards = marker.wards
