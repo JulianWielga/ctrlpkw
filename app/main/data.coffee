@@ -24,9 +24,7 @@ angular.module 'main.data', []
 		constructor: ($rootScope, @votingsResources, @protocolsResources, @mapSavedData) ->
 			@getWards = _.debounce @_getWards, DEBOUNCE_TIMEOUT
 
-			@votings = @votingsResources.getVotings()
-			@votings.$promise.then =>
-				@selectedVoting ?= @votings[0].date
+			@getVotings()
 
 			$rootScope.$watch (=> @selectedVoting), @_onVotingChanged
 
@@ -74,6 +72,11 @@ angular.module 'main.data', []
 				@wardsLoading = no
 
 			return request.$promise
+
+		getVotings: =>
+			@votings = @votingsResources.getVotings()
+			@votings.$promise.then =>
+				@selectedVoting ?= @votings[0].date
 
 		getBallots: =>
 			@ballots = @votingsResources.getBallots

@@ -76,6 +76,11 @@ angular.module 'directives.googleMaps', [
 					@Map.moveTo @map, pos
 				else
 					@centerOnLocation yes
+
+				@scope.$on 'MAP_VIEW_CHANGE', =>
+					@getView().then (position) =>
+						angular.extend @savedMapData, position
+
 				@scope.onInit?()
 			, 250
 
@@ -130,7 +135,7 @@ angular.module 'directives.googleMaps', [
 							@Map.moveTo @map, pos
 						else
 							@Map.fitBounds @map, bounds
-					, 50
+					, 150
 
 		centerOnMarkers: (position) =>
 			return unless @markers
@@ -194,6 +199,7 @@ angular.module 'directives.googleMaps', [
 		destructor: =>
 			@getView().then (position) =>
 				angular.extend @savedMapData, position
+				@cleanMarkers()
 ]
 
 

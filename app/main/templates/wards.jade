@@ -1,10 +1,25 @@
-md-content(ng-controller='WardsController as ctrl')
-	md-progress-linear.md-accent(ng-if='ctrl.data.wardsLoading || ctrl.locationPending', md-mode="indeterminate").fixed-top
-	md-list
-		md-item(ng-repeat='ward in ctrl.data.selectedWards')
-			md-item-content
-				.md-tile-left
-					md-icon(md-font-icon='icon-place').md-primary.md-hue-3
-				a(ng-href='#/wards/{{ward.communityCode}}/{{ward.no}}').md-tile-content
-					h3.md-title {{ward.label}}
-					p.md-caption {{ward.address}}
+section(ng-controller='WardsController as ctrl',flex, layout="column")
+	md-progress-linear.md-accent(ng-if='ctrl.data.selectedWards.length && ctrl.data.wardsLoading', md-mode="indeterminate").fixed-top
+	md-content(flex, ng-if='ctrl.data.selectedWards.length')
+		md-list
+			md-item(ng-repeat='ward in ctrl.data.selectedWards')
+				md-item-content
+					.md-tile-left
+						md-icon(md-font-icon='icon-place').md-primary.md-hue-3
+					a(ng-href='#/wards/{{ward.communityCode}}/{{ward.no}}').md-tile-content
+						h3.md-title {{ward.label}}
+						p.md-caption {{ward.address}}
+
+
+	section.placeholder-loading(flex, ng-if='!ctrl.data.selectedWards.length', layout="column", layout-align="center center")
+		md-progress-circular(md-mode="indeterminate").md-primary
+		h1.md-body-1(ng-if='ctrl.locationPending') Oczekuję na lokalizacje...
+		h1.md-body-1(ng-if='ctrl.data.wardsLoading') Pobieram listę lokali...
+
+
+	md-divider
+	div.buttons(layout="row", layout-align="center center")
+		md-button(ng-href='#/voting')
+			//md-icon(md-font-icon='icon-map')
+			span znajdź lokal wyborczy na mapie
+

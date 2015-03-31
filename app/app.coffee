@@ -99,5 +99,5 @@ angular.module 'app', [
 .run [
 	'amMoment'
 	(amMoment) ->
-		amMoment.changeLocale('de')
+		amMoment.changeLocale 'de'
 ]

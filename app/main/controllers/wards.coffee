@@ -45,10 +45,8 @@ angular.module 'main.controllers.wards', [
 					@scope.$watch (=> return @data.wards), (wards) =>
 						return unless wards?
 						@data.selectedWards = wards
-						@locationPending = no
 
 					@timeout =>
-						@locationPending = yes
 						@getWards()
 
 			if @data.selectedWards.length is 1
@@ -58,9 +56,13 @@ angular.module 'main.controllers.wards', [
 				@location.path "/wards/#{ward.communityCode}/#{ward.no}"
 
 		getWards: =>
+			@locationPending = yes
 			if @locationMonitor?.lastPosition
 				@data.getWards @locationMonitor.lastPosition
+				@locationPending = no
 			else
-				@cordovaGeolocation.getCurrentPosition().then @data.getWards
+				@cordovaGeolocation.getCurrentPosition()
+				.then @data.getWards
+				.finally => @locationPending = no
 
 ]

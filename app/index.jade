@@ -24,12 +24,16 @@ html(ng-app='app', device-detector)
 	body(ng-controller='MainCtrl as mainCtrl', layout-fill, layout="column")
 			md-toolbar.md-shadow-bottom-z-1
 				.md-toolbar-tools
-					md-button.md-tools.back(md-no-ink, ng-if='history.hasPrevious()', ng-click='history.back()'): i.icon-arrow-back
+					md-button.md-tools.back(ng-if='history.hasPrevious()', ng-click='history.back()')
+						md-icon(md-font-icon='icon-arrow-back')
 					h2(flex).md-title {{page.title}}
-					md-button.md-tools(md-no-ink, ng-if="subview != 'votings'", ng-href='#/votings'): i.icon-event
-					md-button.md-tools(md-no-ink, ng-if="subview == 'voting'", ng-click='mainCtrl.centerMap()'): i.icon-my-location
-					md-button.md-tools(md-no-ink, ng-if="subview == 'voting'", ng-href='#/wards'): i.icon-list
-					md-button.md-tools(md-no-ink, ng-if="subview == 'wards'", ng-href='#/voting'): i.icon-map
+					md-button.md-tools(ng-if="subview != 'votings'", ng-href='#/votings')
+						md-icon(md-font-icon='icon-event')
+					md-button.md-tools(ng-if="subview == 'voting'", ng-click='mainCtrl.centerMap()')
+						md-icon(md-font-icon='icon-my-location')
+					md-button.md-tools(ng-if="subview == 'voting'", ng-href='#/wards')
+						md-icon(md-font-icon='icon-list')
+					//md-button.md-tools(md-no-ink, ng-if="subview == 'wards'", ng-href='#/voting'): i.icon-map
 
 			div(ng-switch='subview', flex, layout="colum")
 				+subview('votings')
