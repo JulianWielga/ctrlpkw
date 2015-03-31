@@ -1,4 +1,5 @@
 md-content(ng-controller='WardsController as ctrl')
+	md-progress-linear.md-accent(ng-if='ctrl.data.wardsLoading || ctrl.locationPending', md-mode="indeterminate").fixed-top
 	md-list
 		md-item(ng-repeat='ward in ctrl.data.selectedWards')
 			md-item-content

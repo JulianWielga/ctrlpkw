@@ -8,6 +8,7 @@ angular.module 'main.data', []
 .service 'ApplicationData', [
 	'$rootScope'
 	'VotingsResources', 'ProtocolsResources'
+	'mapData'
 
 	class ApplicationData
 		votings: []
@@ -20,7 +21,7 @@ angular.module 'main.data', []
 		selectedWards: []
 		markers: []
 
-		constructor: ($rootScope, @votingsResources, @protocolsResources) ->
+		constructor: ($rootScope, @votingsResources, @protocolsResources, @mapSavedData) ->
 			@getWards = _.debounce @_getWards, DEBOUNCE_TIMEOUT
 
 			@votings = @votingsResources.getVotings()
@@ -33,8 +34,14 @@ angular.module 'main.data', []
 			@wards = []
 			@selectedWards = []
 			@markers = []
+			@clearMapData()
 
 			@getBallots() if @selectedVoting
+
+		clearMapData: =>
+			@mapSavedData.bounds = null
+			@mapSavedData.coords = null
+			@mapSavedData.zoom = null
 
 		_getWards: (position) =>
 			@wardsLoading = yes

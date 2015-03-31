@@ -39,9 +39,10 @@ angular.module 'main.controllers.voting', [
 					@location.path "/voting/#{@data.selectedVoting}"
 
 		init: =>
-			@getWards() unless @data.wards.length
+			@updateWards() unless @data.wards.length
 
 		updateWards: =>
+			@data.clearMapData()
 			@getMapCenter?().then @data.getWards
 
 		onMarkerClick: (marker) =>

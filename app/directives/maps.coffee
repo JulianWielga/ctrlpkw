@@ -64,7 +64,7 @@ angular.module 'directives.googleMaps', [
 		_createMap: (element) =>
 			@Map.getMap element,
 				center: @Map.latLng 52, 21
-				zoom: 10
+				zoom: 5
 
 		onInit: =>
 			@scope.$watch 'markers', @markersChanged, yes
@@ -122,7 +122,15 @@ angular.module 'directives.googleMaps', [
 					points.push pos
 					bounds = @Map.latLngBounds points
 					@viewCircle = circle
-					@Map.fitBounds @map, bounds
+					setTimeout =>
+						@resizeHandler()
+						if @savedMapData.coords
+							pos = @Map.latLng @savedMapData.coords.latitude, @savedMapData.coords.longitude
+							@map.setZoom @savedMapData.zoom
+							@Map.moveTo @map, pos
+						else
+							@Map.fitBounds @map, bounds
+					, 50
 
 		centerOnMarkers: (position) =>
 			return unless @markers
@@ -132,7 +140,7 @@ angular.module 'directives.googleMaps', [
 				@getView().then @doCenterOnMarkers
 
 		markersChanged: (markers) =>
-			@resizeHandler()
+#			@resizeHandler()
 			@doMarkersChanged markers
 
 		doMarkersChanged: (markers) =>
