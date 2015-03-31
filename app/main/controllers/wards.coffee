@@ -38,7 +38,7 @@ angular.module 'main.controllers.wards', [
 					@location.path "/wards/#{@data.selectedVoting}"
 
 		init: => @timeout =>
-			unless @data.selectedWards.length
+			unless @data.selectedWards?.length
 				if @data.wards.length
 					@data.selectedWards = @data.wards
 				else
@@ -47,8 +47,9 @@ angular.module 'main.controllers.wards', [
 						@data.selectedWards = wards
 						@locationPending = no
 
-					@locationPending = yes
-					@getWards()
+					@timeout =>
+						@locationPending = yes
+						@getWards()
 
 			if @data.selectedWards.length is 1
 				ward = @data.selectedWards[0]

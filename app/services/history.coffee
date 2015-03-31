@@ -15,6 +15,10 @@ angular.module 'touk.jwl.history', []
 			$scope.$on '$locationChangeSuccess', => @add()
 			angular.extend $scope, history: @
 
+			$scope.$watch (=> @$states), =>
+				console.debug 'history', @$states
+			, yes
+
 		add: (path = @$location.path()) =>
 			if @$replace
 				@$states.pop()
