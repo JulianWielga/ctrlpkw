@@ -47,7 +47,7 @@ div(ng-controller='BallotController as ctrl', layout="column", flex)
 				section
 					h1.md-subhead Zrób zdjęcia protokołu
 					div.buttons(layout="row", layout-align="center center")
-						md-button(flex, ng-click='ctrl.takePhoto()')
+						md-button(flex, ng-click='ctrl.takePhoto(true)')
 							md-icon(md-font-icon='icon-photo-library')
 							span wybierz zdjęcie
 						md-button(flex, ng-click='ctrl.takePhoto()')

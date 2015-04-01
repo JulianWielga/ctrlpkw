@@ -36,7 +36,7 @@ angular.module 'main.controllers.ballot', [
 			@wardNo = renderContext.getParam 'no'
 			@ballotNo = renderContext.getParamAsInt 'ballot'
 
-			@history.replace() if @scope.subview
+			@history.replace() #if @scope.subview
 
 		sum: =>
 			_.reduce @result.votesCountPerOption, (sum, value) -> (sum or 0) + (value or 0)
@@ -54,9 +54,10 @@ angular.module 'main.controllers.ballot', [
 				@loading = no
 			return @request.$promise
 
-		takePhoto: =>
+		takePhoto: (choose) =>
 			@camera.getPicture
 				destinationType: Camera.DestinationType.DATA_URL
+				sourceType: if choose then Camera.PictureSourceType.PHOTOLIBRARY else Camera.PictureSourceType.CAMERA
 				correctOrientation: yes
 				saveToPhotoAlbum: yes
 				quality: 49
