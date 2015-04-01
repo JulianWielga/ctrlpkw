@@ -42,6 +42,7 @@ angular.module 'main.controllers.ballot', [
 			_.reduce @result.votesCountPerOption, (sum, value) -> (sum or 0) + (value or 0)
 
 		sendResult: =>
+			@loading = yes
 			@request = @data.saveProtocol
 				ballotNo: @ballot.no
 				communityCode: @communityCode
@@ -49,6 +50,8 @@ angular.module 'main.controllers.ballot', [
 				ballotResult: @result
 			@request.$promise.then (response) =>
 				@uploadParams = response
+			.finally =>
+				@loading = no
 			return @request.$promise
 
 		takePhoto: =>
@@ -58,12 +61,16 @@ angular.module 'main.controllers.ballot', [
 				saveToPhotoAlbum: yes
 				quality: 49
 			.then (uri) =>
-				@cloudinary.save
+				@loading = yes
+				image = {}
+				image.res = @cloudinary.save
 					api_key: @uploadParams.apiKey
 					timestamp: @uploadParams.timestamp
 					signature: @uploadParams.signature
 					public_id: @uploadParams.publicId
 					file: "data:image/jpeg;base64,#{uri}"
-				.$promise.then =>
-					@images.push "data:image/jpeg;base64,#{uri}"
+
+				image.res.$promise.finally => @loading = no
+				image.src = "data:image/jpeg;base64,#{uri}"
+				@images.push image
 ]

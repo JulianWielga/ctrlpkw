@@ -6,7 +6,7 @@ angular.module 'app', [
 	'ngResource'
 	'ngSanitize'
 	'ngRoute'
-	'ngTouch'
+#	'ngTouch'
 	'ngMaterial'
 
 	# angular external (bower) dependencies
@@ -99,5 +99,6 @@ angular.module 'app', [
 .run [
 	'amMoment'
 	(amMoment) ->
-		amMoment.changeLocale 'de'
+		amMoment.changeLocale 'pl'
+		FastClick.attach document.body
 ]
