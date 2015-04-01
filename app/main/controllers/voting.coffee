@@ -26,7 +26,7 @@ angular.module 'main.controllers.voting', [
 			@contextChanged renderContext
 
 		contextChanged: (renderContext) =>
-			@history.clean()
+#			@history.clean()
 			@data.selectedWards = []
 			if votingDate = renderContext.getParam('date')
 				@data.selectedVoting = votingDate
