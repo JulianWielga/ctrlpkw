@@ -24,7 +24,7 @@ angular.module 'touk.jwl.history', []
 				@$replace = no
 			if path.length > 0 and _.last(@$states) isnt path
 				@$states.push path
-			@clean() if _.first(@$states) is _.last(@$states)
+#			@clean() if _.first(@$states) is _.last(@$states)
 
 		replace: => @$replace = yes
 

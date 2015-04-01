@@ -1,15 +1,17 @@
-md-content(ng-controller='WardController as ctrl', flex, layout="column").md-padding
-	mixin subview(name)
-		div(ng-switch-when=name, flex, layout="column")
-			div(ng-include="'/templates/" + name + ".html'", flex, layout="column")
+//mixin subview(name)
+//	div(ng-switch-when=name, flex, layout="column")
+//		div(ng-include="'/templates/" + name + ".html'", flex, layout="column")
 
-	div(ng-switch='subview', flex, layout="column")
-		div(ng-switch-default)
-			md-list: md-item(ng-repeat='ballot in ctrl.data.ballots')
-				md-item-content
-					.md-tile-left
-						md-icon(md-font-icon='icon-description').md-primary.md-hue-3
-					a(ng-href='#/wards/{{ctrl.communityCode}}/{{ctrl.wardNo}}/ballots/{{ballot.no}}').md-tile-content
-						p.md-caption {{ballot.question}}
+section(ng-controller='WardController as ctrl', flex, layout="column", ng-switch='subview')
+	md-content(ng-switch-default, flex, layout="column").md-padding
+		md-list
+			a(ng-repeat='ballot in ctrl.data.ballots', ng-href='#/wards/{{ctrl.communityCode}}/{{ctrl.wardNo}}/ballots/{{ballot.no}}')
+				md-item
+					md-item-content
+						.md-tile-left
+							md-icon(md-font-icon='icon-description').md-primary.md-hue-3
+						.md-tile-content
+							p.md-caption {{ballot.question}}
 
-		+subview('ballot')
+	div(ng-switch-when='ballot', flex, layout="column")
+		div(ng-include="'/templates/ballot.html'", flex, layout="column")
