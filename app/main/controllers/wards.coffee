@@ -17,8 +17,7 @@ angular.module 'main.controllers.wards', [
 
 	class WardsController
 		constructor: (@scope, $page, RenderContext, @data, @cordovaGeolocation, @locationMonitor, @location, @history, @timeout) ->
-			$page.title = 'Komisje wyborcze'
-			$page.subtitle = 'Wybierz na mapie komisję wyborczą w danej lokalizacji'
+			$page.title = 'Lokale wyborcze'
 			renderContext = new RenderContext @scope, 'wards', 'date'
 
 			@scope.$on "requestContextChanged", =>

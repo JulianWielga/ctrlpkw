@@ -7,7 +7,7 @@ angular.module 'touk.jwl.page', []
 	'$timeout'
 
 	class Page
-		title: 'pusto'
+		title: ''
 		constructor: ($scope, @$timeout) ->
 			$scope.page = @
 ]

@@ -17,8 +17,7 @@ angular.module 'main.controllers.ward', [
 	'$page'
 
 	class WardController
-		constructor: (@scope, RenderContext, @data, @camera, @cloudinary, @location, @history, $page) ->
-			$page.title = 'Komisja wyborcza'
+		constructor: (@scope, RenderContext, @data, @camera, @cloudinary, @location, @history, @page) ->
 			renderContext = new RenderContext @scope, 'ward', ['community', 'no']
 
 			@scope.$watch =>
@@ -43,5 +42,5 @@ angular.module 'main.controllers.ward', [
 		init: (renderContext) =>
 			@communityCode = renderContext.getParamAsInt 'community'
 			@wardNo = renderContext.getParamAsInt 'no'
-
+			@page.title = "Komisja nr #{@wardNo}"
 ]

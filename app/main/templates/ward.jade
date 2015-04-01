@@ -3,7 +3,6 @@ md-content(ng-controller='WardController as ctrl', flex, layout="column").md-pad
 		div(ng-switch-when=name, flex, layout="column")
 			div(ng-include="'/templates/" + name + ".html'", flex, layout="column")
 
-	h1.md-title {{ctrl.ward.label}}
 	div(ng-switch='subview', flex, layout="column")
 		div(ng-switch-default)
 			md-list: md-item(ng-repeat='ballot in ctrl.data.ballots')

@@ -3,34 +3,44 @@ div(ng-controller='BallotController as ctrl', layout="column", flex)
 		div(ng-switch-when=name, flex, layout="column")
 			div(ng-include="'/templates/" + name + ".html'", flex, layout="column")
 
+	mixin input(model)
+		input(ng-model=model, type='tel', required, ng-pattern='/^[0-9]+$/')
+
 	div(ng-switch='subview', flex, layout="column")
 		div(ng-switch-default)
-			section.ballot.md-whiteframe-z1
-				h5.md-body-2 WYNIKI KANDYDATÓW
-				md-input-container(ng-repeat='option in ctrl.ballot.options')
-					label {{option}}
-					input(ng-model='ctrl.result.votesCountPerOption[$index]', type='tel', required, ng-pattern='/^[0-9]+$/')
-			section.ballot.md-whiteframe-z1
-				h5.md-body-2 ROZLICZENIE KART DO GŁOSOWANIA
-				md-input-container
-					label Liczba wyborców uprawnionych
-						//do głosowania (umieszczonych w spisie) w chwili zakończenia głosowania
-					input(ng-model='ctrl.result.votersEntitledCount', type='tel', required, ng-pattern='/^[0-9]+$/')
-				md-input-container
-					label Liczba wyborców, którym wydano karty
-						//do głosowania (liczba podpisów w spisie)
-					input(ng-model='ctrl.result.ballotsGivenCount', type='tel', required, ng-pattern='/^[0-9]+$/')
-				md-input-container
-					label Liczba oddanych głosów
-						//, czyli kart wrzuconych do urny przez wyborców
-					input(ng-model='ctrl.result.votesCastCount', type='tel', required, ng-pattern='/^[0-9]+$/')
-				md-input-container
-					label Liczba głosów ważnych
-					input(ng-model='ctrl.result.votesValidCount', type='tel', required, ng-pattern='/^[0-9]+$/')
-			div.buttons(layout="row", layout-align="end center")
+			section.ballot
+				h1.md-headline Wypełnij wyniki kandydatów
+				table
+					tr(ng-repeat='option in ctrl.ballot.options')
+						td.label
+							p.name {{option.split(' ')[0]}}
+							p.small {{option.split(' ').slice(1).join(' ')}}
+						td.input
+							+input('ctrl.result.votesCountPerOption[$index]')
+			section.ballot
+				h1.md-headline Wypełnij informacje o głosowaniu
+				table
+					tr
+						td.label Liczba wyborców uprawnionych
+						td.input
+							+input('ctrl.result.votersEntitledCount')
+					tr
+						td.label Liczba wyborców, którym wydano karty
+						td.input
+							+input('ctrl.result.ballotsGivenCount')
+					tr
+						td.label Liczba oddanych głosów
+						td.input
+							+input('ctrl.result.votesCastCount')
+					tr
+						td.label Liczba głosów ważnych
+						td.input
+							+input('ctrl.result.votesValidCount')
+			md-divider
+			div.buttons(layout="row", layout-align="center center")
 				//md-button(ng-href='#/wards/{{ctrl.communityCode}}/{{ctrl.wardNo}}/ballots/{{ctrl.ballot.no}}')
 				//	span wstecz
-				md-button(ng-href='#/wards/{{ctrl.communityCode}}/{{ctrl.wardNo}}/ballots/{{ctrl.ballot.no}}/photos', promised-fn='ctrl.sendResult()')
+				md-button(flex, ng-href='#/wards/{{ctrl.communityCode}}/{{ctrl.wardNo}}/ballots/{{ctrl.ballot.no}}/photos', promised-fn='ctrl.sendResult()')
 					span dalej
 		div(ng-switch-when='photos')
 			section

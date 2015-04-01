@@ -8,11 +8,11 @@ angular.module 'main.controllers.votings', [
 	'$scope'
 	'RenderContextFactory'
 	'ApplicationData'
-	'$cordovaGeolocation'
-	'locationMonitor'
+	'$page'
 
 	class VotingsController
-		constructor: (@scope, RenderContext, @data, @cordovaGeolocation, @locationMonitor) ->
+		constructor: (@scope, RenderContext, @data, $page) ->
 			renderContext = new RenderContext @scope, 'votings'
+			$page.title = 'Wybory'
 
 ]

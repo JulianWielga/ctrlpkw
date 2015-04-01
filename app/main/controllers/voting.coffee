@@ -16,9 +16,7 @@ angular.module 'main.controllers.voting', [
 	'$page'
 
 	class VotingController
-		constructor: (@scope, RenderContext, @data, @cordovaGeolocation, @locationMonitor, @location, @timeout, @history, $page) ->
-			$page.title = 'Komisje wyborcze'
-			$page.subtitle = 'Wybierz na mapie komisję wyborczą w danej lokalizacji'
+		constructor: (@scope, RenderContext, @data, @cordovaGeolocation, @locationMonitor, @location, @timeout, @history, @page) ->
 			renderContext = new RenderContext @scope, 'voting', 'date'
 
 			@scope.$on "requestContextChanged", =>
@@ -40,6 +38,7 @@ angular.module 'main.controllers.voting', [
 
 		init: =>
 			@updateWards() unless @data.wards.length
+			@page.title = 'Lokale wyborcze'
 
 		updateWards: =>
 			@data.clearMapData()
