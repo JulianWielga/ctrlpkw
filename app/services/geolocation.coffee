@@ -60,6 +60,6 @@ angular.module "ngCordova.plugins.geolocation", [
 				@document.triggerHandler 'location_changed'
 
 		stop: =>
-			@promise?.cancel()
+			@promise?.cancel?()
 			@promise = null
 ]

@@ -6,12 +6,11 @@ angular.module 'touk.jwl.history', []
 	'$q'
 	'$rootScope'
 	'$location'
-	'$timeout'
 
 	class History
 		$states: []
 		$replace: no
-		constructor: (@$q, $scope, @$location, @$timeout) ->
+		constructor: (@$q, $scope, @$location) ->
 			$scope.$on '$locationChangeSuccess', => @add()
 			angular.extend $scope, history: @
 
@@ -37,19 +36,20 @@ angular.module 'touk.jwl.history', []
 			@$replace = no
 			@$states = _.takeRight @$states
 
-		back: (steps = 1) => @$timeout =>
+		back: (steps = 1) =>
 			@$replace = no
 			if @$states.length > 1
 				@$states = _.dropRight @$states, steps
-			@$location.replace()
-			@$location.path _.last @$states
+				@$location.replace()
+				@$location.path _.last @$states
 ]
 
 .run [
-	'$history'
-	($history) ->
+	'$history', '$timeout'
+	($history, $timeout) ->
 		document.addEventListener 'backbutton', (event) ->
 			event.preventDefault()
-			$history.back()
+			$timeout =>
+				$history.back() or navigator?.app?.exitApp?()
 		, false
 ]
