@@ -1,14 +1,16 @@
 'use strict'
 
-apiUrl = 'http://ctrlpkw.pl:80/api'
+#apiUrl = 'http://ctrlpkw.pl:80/api'
 
-angular.module 'main.resources.votings', []
+angular.module 'main.resources.votings', [
+	'config.api'
+]
 
 .factory 'VotingsResources', [
-	'$resource'
-	($resource) ->
+	'$resource', 'apiConfig'
+	($resource, apiConfig) ->
 
-		$resource "#{apiUrl}/votings/:date/:action",
+		$resource "#{apiConfig.base}/votings/:date/:action",
 			date: '@date'
 		,
 			getVotings:
@@ -29,9 +31,10 @@ angular.module 'main.resources.votings', []
 
 ]
 
-.factory 'ProtocolsResources', [
-	'$resource'
-	($resource) ->
 
-		$resource "#{apiUrl}/protocols/:id", {}
+.factory 'ProtocolsResources', [
+	'$resource', 'apiConfig'
+	($resource, apiConfig) ->
+
+		$resource "#{apiConfig.base}/protocols/:id", {}
 ]

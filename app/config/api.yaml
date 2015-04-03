@@ -1,0 +1,8 @@
+ripple:
+  base: 'https://ctrlpkw.touk.pl/api'
+
+production:
+  base: 'https://ctrlpkw.touk.pl/api'
+
+development:
+  base: 'https://ctrlpkw.touk.pl/api'
