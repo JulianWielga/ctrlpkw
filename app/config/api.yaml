@@ -1,8 +1,8 @@
 ripple:
-  base: 'https://ctrlpkw.touk.pl/api'
+  base: 'http://ctrlpkw.pl/api'
 
 production:
-  base: 'https://ctrlpkw.touk.pl/api'
+  base: 'http://ctrlpkw.pl/api'
 
 development:
-  base: 'https://ctrlpkw.touk.pl/api'
+  base: 'http://ctrlpkw.pl/api'
