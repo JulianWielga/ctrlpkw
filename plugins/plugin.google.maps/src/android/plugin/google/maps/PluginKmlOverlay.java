@@ -30,8 +30,25 @@ public class PluginKmlOverlay extends MyPlugin {
     JSONObject opts = args.getJSONObject(1);
     Bundle params = PluginUtil.Json2Bundle(opts);
     
-    AsyncKmlParser kmlParser = new AsyncKmlParser(this.cordova.getActivity(), this.mapCtrl, callbackContext, params);
-    kmlParser.execute(opts.getString("url"));
+    String urlStr = opts.getString("url");
+    if (urlStr.indexOf("://") == -1 && 
+        urlStr.startsWith("/") == false && 
+        urlStr.startsWith("www/") == false) {
+      urlStr = "./" + urlStr;
+    }
+    if (urlStr.indexOf("./") == 0) {
+      String currentPage = this.webView.getUrl();
+      currentPage = currentPage.replaceAll("[^\\/]*$", "");
+      urlStr = urlStr.replace("./", currentPage);
+    }
+    if (urlStr.indexOf("cdvfile://") == 0 ) {
+      urlStr = PluginUtil.getAbsolutePathFromCDVFilePath(this.webView.getResourceApi(), urlStr);
+    }
+    
+    String kmlId = opts.getString("kmlId");
+    
+    AsyncKmlParser kmlParser = new AsyncKmlParser(this.cordova.getActivity(), this.mapCtrl, kmlId, callbackContext, params);
+    kmlParser.execute(urlStr);
   }
 
 }

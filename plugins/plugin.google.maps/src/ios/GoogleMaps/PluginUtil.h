@@ -12,6 +12,16 @@
 #import <Foundation/Foundation.h>
 #import <Cordova/CDV.h>
 #import "MainViewController.h"
+#import <QuartzCore/QuartzCore.h>
+#import <objc/runtime.h>
+
+typedef void (^MYCompletionHandler)(NSError *error);
+
+// Switch statement in Objective-C
+//http://qiita.com/GeneralD/items/5a05f176ac2321e7a51b
+#define CASE(str) if ([__s__ isEqualToString:(str)])
+#define SWITCH(s) for (NSString *__s__ = (s); __s__; __s__ = nil)
+#define DEFAULT
 
 @interface UIView (GoogleMapsPlugin)
 - (void)setFrameWithDictionary:(NSDictionary *) params;
@@ -40,11 +50,20 @@
 - (void)webViewDidFinishLoad:(UIWebView*)theWebView;
 @end
 
+//
+// animationDidStop for group animation
+// http://stackoverflow.com/a/28051909/697856
+//
+typedef void (^TIFAnimationGroupCompletionBlock)();
+@interface CAAnimationGroup (Blocks)
+- (void)setCompletionBlock:(TIFAnimationGroupCompletionBlock)handler;
+@end
 
 @interface PluginUtil : NSObject
 + (BOOL)isIOS7_OR_OVER;
 + (BOOL)isIOS8_OR_OVER;
 + (BOOL)isInDebugMode;
++ (NSString *)getAbsolutePathFromCDVFilePath:(UIWebView*)theWebView cdvFilePath:(NSString *)cdvFilePath;
 @end
 
 

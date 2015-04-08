@@ -11,7 +11,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.util.Base64;
-import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -49,9 +48,11 @@ public class PluginMap extends MyPlugin {
       if (controls.has("indoorPicker")) {
         settings.setIndoorLevelPickerEnabled(controls.getBoolean("indoorPicker"));
       }
+      if (controls.has("myLocation")) {
+        map.setMyLocationEnabled(controls.getBoolean("myLocation"));
+      }
       if (controls.has("myLocationButton")) {
         settings.setMyLocationButtonEnabled(controls.getBoolean("myLocationButton"));
-        map.setMyLocationEnabled(controls.getBoolean("myLocationButton"));
       }
     }
     
@@ -303,6 +304,20 @@ public class PluginMap extends MyPlugin {
   }
 
   /**
+   * Enable MyLocationButton if set true
+   * @param args
+   * @param callbackContext
+   * @throws JSONException
+   */
+  @SuppressWarnings("unused")
+  private void setMyLocationButtonEnabled(final JSONArray args, final CallbackContext callbackContext) throws JSONException {
+    Boolean isEnabled = false;
+    isEnabled = args.getBoolean(1);
+    map.getUiSettings().setMyLocationButtonEnabled(isEnabled);
+    this.sendNoResult(callbackContext);
+  }
+
+  /**
    * Enable Indoor map feature if set true
    * @param args
    * @param callbackContext
@@ -444,7 +459,7 @@ public class PluginMap extends MyPlugin {
         image.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
         byte[] byteArray = outputStream.toByteArray();
         String imageEncoded = "data:image/png;base64," + 
-                Base64.encodeToString(byteArray, Base64.DEFAULT);
+                Base64.encodeToString(byteArray, Base64.NO_WRAP);
         
         callbackContext.success(imageEncoded);
       }

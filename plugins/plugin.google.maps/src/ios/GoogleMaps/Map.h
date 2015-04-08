@@ -8,6 +8,8 @@
 
 #import "GoogleMaps.h"
 #import "MyPlgunProtocol.h"
+//#import "NSData-Base64/NSData+Base64.h"
+#import "NSData+Base64.h"
 
 @interface Map : CDVPlugin<MyPlgunProtocol>
 @property (nonatomic, strong) GoogleMapsViewController* mapCtrl;
@@ -18,6 +20,7 @@
 - (void)animateCamera:(CDVInvokedUrlCommand*)command;
 - (void)moveCamera:(CDVInvokedUrlCommand*)command;
 - (void)setMyLocationEnabled:(CDVInvokedUrlCommand*)command;
+- (void)setMyLocationButtonEnabled:(CDVInvokedUrlCommand*)command;
 - (void)setIndoorEnabled:(CDVInvokedUrlCommand*)command;
 - (void)setTrafficEnabled:(CDVInvokedUrlCommand*)command;
 - (void)setCompassEnabled:(CDVInvokedUrlCommand*)command;
@@ -28,4 +31,5 @@
 - (void)setAllGesturesEnabled:(CDVInvokedUrlCommand*)command;
 - (void)setPadding:(CDVInvokedUrlCommand*)command;
 - (void)panBy:(CDVInvokedUrlCommand*)command;
+- (void)getFocusedBuilding:(CDVInvokedUrlCommand*)command;
 @end

@@ -21,6 +21,10 @@
   NSString *to = [json objectForKey:@"to"];
   NSString *directionsRequest = nil;
   
+  from = [from stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+  to = [to stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+  
+  
   NSURL *googleMapsURLScheme = [NSURL URLWithString:@"comgooglemaps-x-callback://"];
   if ([[UIApplication sharedApplication] canOpenURL:googleMapsURLScheme]) {
   
@@ -34,6 +38,7 @@
     [params addObject:[NSString stringWithFormat:@"x-success=%@://?resume=true", bundleIdentifier, nil]];
     
     NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
+    appName = [appName stringByReplacingOccurrencesOfString:@" " withString:@""];
     [params addObject:[NSString stringWithFormat:@"x-source=%@", appName, nil]];
     
     directionsRequest =

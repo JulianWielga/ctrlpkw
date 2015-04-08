@@ -2,8 +2,8 @@
 //	div(ng-switch-when=name, flex, layout="column")
 //		div(ng-include="'/templates/" + name + ".html'", flex, layout="column")
 
-section(ng-controller='WardController as ctrl', flex, layout="column", ng-switch='subview')
-	md-content(ng-switch-default, flex, layout="column").md-padding
+.controller(ng-controller='WardController as ctrl', ng-switch='subview', layout='column', flex)
+	.content(ng-switch-default, flex, layout="column").md-padding
 		md-list
 			a(ng-repeat='ballot in ctrl.data.ballots', ng-href='#/wards/{{ctrl.communityCode}}/{{ctrl.wardNo}}/ballots/{{ballot.no}}')
 				md-item

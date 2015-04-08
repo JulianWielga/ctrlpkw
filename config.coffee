@@ -18,7 +18,7 @@ exports.config =
 				'js/vendor.js': /^(bower_components|vendor)/
 			order:
 				before: [
-					'bower_components/underscore/underscore.js'
+					'bower_components/lodash/lodash.js'
 				]
 
 		stylesheets:
@@ -27,7 +27,7 @@ exports.config =
 				'css/app.css': /^(app)/
 			order:
 				before: [
-					'app/styles/bootstrap/bootstrap.less'
+					'bower_components/reset-css/reset.css'
 				]
 				after: []
 

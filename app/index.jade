@@ -7,7 +7,7 @@ html(ng-app='app', device-detector)
 		//- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323
 		meta(
 			name='viewport'
-			content='user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi'
+			content='user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height'
 		)
 		link(rel='stylesheet', href='css/vendor.css')
 		link(rel='stylesheet', href='css/app.css')
@@ -18,25 +18,23 @@ html(ng-app='app', device-detector)
 		title ctrlpkw
 
 	mixin subview(name)
-		div(ng-switch-when=name, flex, layout="column")
-			md-content(ng-include="'/templates/"+name+".html'", flex, layout="column")
+		.subview(ng-switch-when=name, flex, layout='column')
+			.content(ng-include="'/templates/"+name+".html'", flex, layout='column')
 
-	body(ng-controller='MainCtrl as mainCtrl', layout-fill, layout="column")
-			md-toolbar.md-shadow-bottom-z-1
-				.md-toolbar-tools
-					md-button.md-tools.back(ng-if='history.hasPrevious()', ng-click='history.back()')
-						md-icon(md-font-icon='icon-arrow-back')
-					h2(flex).md-title {{page.title}}
-					md-button.md-tools(ng-if="subview != 'votings'", ng-href='#/votings')
-						md-icon(md-font-icon='icon-event')
-					md-button.md-tools(ng-if="subview == 'voting'", ng-click='mainCtrl.centerMap()')
-						md-icon(md-font-icon='icon-my-location')
-					md-button.md-tools(ng-if="subview == 'voting'", ng-href='#/wards')
-						md-icon(md-font-icon='icon-list')
-					//md-button.md-tools(md-no-ink, ng-if="subview == 'wards'", ng-href='#/voting'): i.icon-map
+	body(ng-controller='MainCtrl as mainCtrl', fill, layout='column')
+		.toolbar
+			button.button.back(ng-if='history.hasPrevious()', ng-click='history.back()')
+				i.icon-arrow-back
+			h2.title {{page.title}}
+			a.button(ng-if="subview != 'votings'", ng-href='#/votings')
+				i.icon-event
+			button.button(ng-if="subview == 'voting'", ng-click='mainCtrl.centerMap()')
+				i.icon-my-location
+			a.button(ng-if="subview == 'voting'", ng-href='#/wards')
+				i.icon-list
 
-			div(ng-switch='subview', flex, layout="colum")
-				+subview('votings')
-				+subview('voting')
-				+subview('wards')
-				+subview('ward')
+		.view-switch(ng-switch='subview', flex, layout='column')
+			+subview('votings')
+			+subview('voting')
+			+subview('wards')
+			+subview('ward')

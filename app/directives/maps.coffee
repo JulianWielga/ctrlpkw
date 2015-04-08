@@ -52,7 +52,7 @@ angular.module 'directives.googleMaps', [
 		init: (element) =>
 			@_injectPlugin()
 			.then =>
-				@map ?= @_createMap element
+				@map = @_createMap element
 				return @map
 			.then => @onInit()
 
@@ -67,8 +67,8 @@ angular.module 'directives.googleMaps', [
 				zoom: 5
 
 		onInit: =>
-			@scope.$watch 'markers', @markersChanged, yes
 			setTimeout =>
+				@scope.$watch 'markers', @markersChanged, yes
 				@resizeHandler()
 				if @savedMapData.coords
 					pos = @Map.latLng @savedMapData.coords.latitude, @savedMapData.coords.longitude
@@ -145,10 +145,6 @@ angular.module 'directives.googleMaps', [
 				@getView().then @doCenterOnMarkers
 
 		markersChanged: (markers) =>
-#			@resizeHandler()
-			@doMarkersChanged markers
-
-		doMarkersChanged: (markers) =>
 			return unless markers?
 			@cleanMarkers()
 			return unless markers.points?.length
@@ -176,6 +172,7 @@ angular.module 'directives.googleMaps', [
 			@Map.deleteMarker marker
 
 		createMarker: (marker) =>
+			console.log 'createMarker'
 			count = marker.wards.length if marker.wards?.length > 1
 			scale = .75 unless _.every marker.wards, protocolStatus: 'LACK'
 

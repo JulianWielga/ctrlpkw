@@ -1,10 +1,13 @@
-md-content(ng-controller='VotingsController as ctrl')
-	md-list
-		a(ng-repeat='voting in ctrl.data.votings', ng-href='#/wards/{{voting.date}}')
-			md-item
-				md-item-content
-					.md-tile-left
-						md-icon(md-font-icon='icon-event', ng-class="{'md-hue-3': voting.date != ctrl.data.selectedVoting}").md-primary.md-hue-2
-					.md-tile-content
-						h3.md-title {{voting.date | amDateFormat:'LL'}}
-						p.md-caption {{voting.description}}
+.controller(ng-controller='VotingsController as ctrl')
+	.list
+		a(
+			ng-repeat='voting in ctrl.data.votings'
+			ng-href='#/wards/{{voting.date}}'
+			ng-class="{'selected': voting.date != ctrl.data.selectedVoting}"
+		).item
+			.item-content
+				.tile-left
+					i.icon-event
+				.tile-content
+					h2 {{voting.date | amDateFormat:'LL'}}
+					p {{voting.description}}

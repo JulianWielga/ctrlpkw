@@ -25,7 +25,10 @@
     NSString *urlStr = [tileUrlFormat stringByReplacingOccurrencesOfString:@"<x>" withString:[NSString stringWithFormat:@"%lu", (unsigned long)x]];
     urlStr = [urlStr stringByReplacingOccurrencesOfString:@"<y>" withString:[NSString stringWithFormat:@"%lu", (unsigned long)y]];
     urlStr = [urlStr stringByReplacingOccurrencesOfString:@"<zoom>" withString:[NSString stringWithFormat:@"%lu", (unsigned long)zoom]];
-    NSLog(@"%@", urlStr);
+    
+    if (self.mapCtrl.debuggable) {
+      NSLog(@"%@", urlStr);
+    }
     return [NSURL URLWithString:urlStr];
   };
   GMSTileLayer *layer = [GMSURLTileLayer tileLayerWithURLConstructor:constructor];
@@ -35,6 +38,12 @@
   }
   if ([json valueForKey:@"zIndex"]) {
     layer.zIndex = [[json valueForKey:@"zIndex"] floatValue];
+  }
+  if ([json valueForKey:@"tileSize"]) {
+    layer.tileSize = [[json valueForKey:@"tileSize"] integerValue];
+  }
+  if ([json valueForKey:@"opacity"]) {
+    layer.opacity = [[json valueForKey:@"opacity"] floatValue];
   }
 
   NSString *id = [NSString stringWithFormat:@"tileOverlay_%lu", (unsigned long)layer.hash];
@@ -131,4 +140,19 @@
   [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
+
+/**
+ * Set opacity
+ * @params key
+ */
+-(void)setOpacity:(CDVInvokedUrlCommand *)command
+{
+  NSString *tileLayerKey = [command.arguments objectAtIndex:1];
+  GMSTileLayer *layer = [self.mapCtrl getTileLayerByKey:tileLayerKey];
+  double opacity = [[command.arguments objectAtIndex:2] doubleValue];
+  [layer setOpacity:opacity];
+  
+  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
 @end

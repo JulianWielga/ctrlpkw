@@ -1,10 +1,12 @@
 package plugin.google.maps;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.cordova.CordovaResourceApi;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,16 +21,30 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.util.Base64;
 
+import com.google.android.gms.maps.model.IndoorBuilding;
+import com.google.android.gms.maps.model.IndoorLevel;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.LatLngBounds.Builder;
 
 public class PluginUtil {
+  
+  public static String getAbsolutePathFromCDVFilePath(CordovaResourceApi resourceApi, String cdvFilePath) {
+    if (cdvFilePath.indexOf("cdvfile://") != 0) {
+      return null;
+    }
+    
+    //CordovaResourceApi resourceApi = webView.getResourceApi();
+    Uri fileURL = resourceApi.remapUri(Uri.parse(cdvFilePath));
+    File file = resourceApi.mapUriToFile(fileURL);
+    return file.getAbsolutePath();
+  }
 
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
   public static JSONObject location2Json(Location location) throws JSONException {
@@ -136,7 +152,7 @@ public class PluginUtil {
     }
     return mBundle;
   }
-  
+
   public static Bitmap resizeBitmap(Bitmap bitmap, int newWidth, int newHeight) {
     if (bitmap == null) {
       return null;
@@ -188,6 +204,7 @@ public class PluginUtil {
     Canvas canvas = new Canvas(scaledBitmap);
     canvas.setMatrix(scaleMatrix);
     canvas.drawBitmap(bitmap, middleX - bitmap.getWidth() / 2, middleY - bitmap.getHeight() / 2, new Paint(Paint.FILTER_BITMAP_FLAG));
+    bitmap.recycle();
     
     return scaledBitmap;
   }
@@ -254,5 +271,32 @@ public class PluginUtil {
       latLngBuilder.include(iterator.next());
     }
     return latLngBuilder.build();
+  }
+  
+  
+  public static JSONObject convertIndoorBuildingToJson(IndoorBuilding indoorBuilding) {
+    if (indoorBuilding == null) {
+      return null;
+    }
+    JSONObject result = new JSONObject();
+    try {
+      JSONArray levels = new JSONArray();
+      for(IndoorLevel level : indoorBuilding.getLevels()){
+        JSONObject levelInfo = new JSONObject();
+          levelInfo.put("name",level.getName());
+        
+          // TODO Auto-generated catch block
+        levelInfo.put("shortName",level.getShortName());
+        levels.put(levelInfo);
+      }
+      result.put("activeLevelIndex",indoorBuilding.getActiveLevelIndex());
+      result.put("defaultLevelIndex",indoorBuilding.getDefaultLevelIndex());
+      result.put("levels",levels);
+      result.put("underground",indoorBuilding.isUnderground());
+    } catch (JSONException e) {
+      e.printStackTrace();
+      return null;
+    }  
+    return result;
   }
 }

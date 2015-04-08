@@ -30,12 +30,25 @@
   self.webView.scrollView.delegate = self;
   [self.pluginScrollView setContentSize:CGSizeMake(320, 960) ];
   
-  self.root = self.webView.superview;
-  [self.webView removeFromSuperview];
+  //[self.webView removeFromSuperview];
   self.pluginLayer.webView = self.webView;
   [self.pluginLayer addSubview:self.pluginScrollView];
-  [self.pluginLayer addSubview:self.webView];
-  [self.root addSubview:self.pluginLayer];
+  //[self.pluginLayer addSubview:self.webView];
+  
+  
+  NSArray *subViews = self.viewController.view.subviews;
+  UIView *view;
+  for (int i = 0; i < [subViews count]; i++) {
+    view = [subViews objectAtIndex:i];
+    //NSLog(@"remove i=%d class=%@", i, view.class);
+    [view removeFromSuperview];
+    [self.pluginLayer addSubview: view];
+  }
+
+  [self.viewController.view addSubview:self.pluginLayer];
+  
+  
+  
   
   NSString *APIKey = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"Google Maps API Key"];
   if (APIKey == nil) {
@@ -59,7 +72,7 @@
  */
 -(void)versionCheck
 {
-  NSString *PLUGIN_VERSION = @"1.2.4";
+  NSString *PLUGIN_VERSION = @"1.2.5";
   NSLog(@"This app uses phonegap-googlemaps-plugin version %@", PLUGIN_VERSION);
   
   if ([PluginUtil isInDebugMode] == NO || [PluginUtil isIOS7_OR_OVER] == NO) {
@@ -84,23 +97,27 @@
     return;
   }
   
-  NSURL *URL = [NSURL URLWithString:@"http://plugins.cordova.io/api/plugin.google.maps"];
-  R9HTTPRequest *request = [[R9HTTPRequest alloc] initWithURL:URL];
   
-  [request setHTTPMethod:@"GET"];
-  [request setTimeoutInterval:5];
-  [request setFailedHandler:^(NSError *error){}];
-  [request setCompletionHandler:^(NSHTTPURLResponse *responseHeader, NSString *responseString){
-    NSData *jsonData = [responseString dataUsingEncoding:NSUTF8StringEncoding];
-    NSError *error;
-    NSMutableDictionary *info = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:&error];
-    NSDictionary *distTags = [info objectForKey:@"dist-tags"];
-    NSString *latestVersion = [distTags objectForKey:@"latest"];
-    if ([PLUGIN_VERSION isEqualToString:latestVersion] == NO) {
-      NSLog(@"phonegap-googlemaps-plugin version %@ is available.", latestVersion);
-    }
-  }];
-  [request startRequest];
+  dispatch_queue_t gueue = dispatch_queue_create("plugins.google.maps.version_check", NULL);
+  dispatch_async(gueue, ^{
+    NSURL *URL = [NSURL URLWithString:@"http://plugins.cordova.io/api/plugin.google.maps"];
+    R9HTTPRequest *request = [[R9HTTPRequest alloc] initWithURL:URL];
+    
+    [request setHTTPMethod:@"GET"];
+    [request setTimeoutInterval:5];
+    [request setFailedHandler:^(NSError *error){}];
+    [request setCompletionHandler:^(NSHTTPURLResponse *responseHeader, NSString *responseString){
+      NSData *jsonData = [responseString dataUsingEncoding:NSUTF8StringEncoding];
+      NSError *error;
+      NSMutableDictionary *info = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:&error];
+      NSDictionary *distTags = [info objectForKey:@"dist-tags"];
+      NSString *latestVersion = [distTags objectForKey:@"latest"];
+      if ([PLUGIN_VERSION isEqualToString:latestVersion] == NO) {
+        NSLog(@"phonegap-googlemaps-plugin version %@ is available.", latestVersion);
+      }
+    }];
+    [request startRequest];
+  });
 }
 
 -(void)viewDidLayoutSubviews {
@@ -213,6 +230,9 @@
     NSString *className = [target objectAtIndex:0];
     CDVPlugin<MyPlgunProtocol> *pluginClass = nil;
     NSString *methodName;
+    if (self.mapCtrl.debuggable) {
+      NSLog(@"(debug)%@", classAndMethod);
+    }
     
     if ([classAndMethod isEqualToString:@"Map.setOptions"]) {
       NSDictionary *options = [command.arguments objectAtIndex:1];
@@ -487,9 +507,19 @@
   CGRect pluginRect = self.mapCtrl.view.frame;
   pluginRect.origin.x = 0;
   pluginRect.origin.y = 0;
-  int direction = self.mapCtrl.interfaceOrientation;
+  int direction;
+  
+  #if !defined(__IPHONE_8_0)
+    // iOS 7
+    direction = self.mapCtrl.interfaceOrientation;
+  #else
+    // iOS8 or above
+    direction = [UIDevice currentDevice].orientation;
+  #endif
+  
+  
   if (direction == UIInterfaceOrientationLandscapeLeft ||
-    direction == UIInterfaceOrientationLandscapeRight) {
+      direction == UIInterfaceOrientationLandscapeRight) {
     pluginRect.size.width = screenSize.size.height;
     pluginRect.size.height = screenSize.size.width - footerHeight - footerAdjustment;
   } else {
@@ -530,14 +560,11 @@
  */
 -(void)getMyLocation:(CDVInvokedUrlCommand *)command
 {
-NSLog(@"---getMyLocaiton");
   // Obtain the authorizationStatus
   CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
   
-NSLog(@"---status=%d", status);
   if (status == kCLAuthorizationStatusDenied ||
       status == kCLAuthorizationStatusRestricted) {
-NSLog(@"---status=denied");
     //----------------------------------------------------
     // kCLAuthorizationStatusDenied
     // kCLAuthorizationStatusRestricted
@@ -559,12 +586,11 @@ NSLog(@"---status=denied");
       CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:json];
       [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
   } else {
-NSLog(@"---status=authorized");
 
     if (self.locationManager == nil) {
       self.locationManager = [[CLLocationManager alloc] init];
-      self.locationManager.delegate = self;
     }
+    self.locationManager.delegate = self;
     
     
     //----------------------------------------------------
@@ -599,9 +625,9 @@ NSLog(@"---status=authorized");
     [self.locationManager startUpdatingLocation];
     [self.locationCommandQueue addObject:command];
     
-    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_NO_RESULT];
-    [pluginResult setKeepCallbackAsBool:YES];
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    //CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_NO_RESULT];
+    //[pluginResult setKeepCallbackAsBool:YES];
+    //[self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
   }
 }
 
@@ -668,7 +694,7 @@ NSLog(@"---status=authorized");
   [self.mapCtrl.overlayManager removeAllObjects];
   [self.mapCtrl.map clear];
   
-  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_NO_RESULT];
+  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
   [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
@@ -694,6 +720,7 @@ NSLog(@"---status=authorized");
   Boolean isDebuggable = [[command.arguments objectAtIndex:0] boolValue];
   self.pluginLayer.debuggable = isDebuggable;
   self.pluginScrollView.debugView.debuggable = isDebuggable;
+  self.mapCtrl.debuggable = isDebuggable;
   [self.pluginScrollView.debugView setNeedsDisplay];
     
   CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_NO_RESULT];
@@ -729,6 +756,8 @@ NSLog(@"---status=authorized");
  * Remove the map
  */
 - (void)remove:(CDVInvokedUrlCommand *)command {
+  [self.pluginLayer clearHTMLElement];
+  [self.pluginScrollView.debugView clearHTMLElement];
   [self.mapCtrl.overlayManager removeAllObjects];
   [self.mapCtrl.map clear];
   [self.mapCtrl.map removeFromSuperview];
@@ -739,7 +768,7 @@ NSLog(@"---status=authorized");
   self.footer = nil;
   self.closeButton = nil;
   self.locationManager = nil;
-  self.locationCommandQueue = nil;
+  //self.locationCommandQueue = nil;  // issue 437
   
   
   CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];

@@ -108,6 +108,29 @@
 @end
 
 
+static char CAAnimationGroupBlockKey;
+@implementation CAAnimationGroup (Blocks)
+
+- (void)setCompletionBlock:(TIFAnimationGroupCompletionBlock)handler {
+    objc_setAssociatedObject(self, &CAAnimationGroupBlockKey, handler, OBJC_ASSOCIATION_COPY_NONATOMIC);
+
+    self.delegate = self;
+}
+
+- (void)animationDidStop:(CAAnimation *)animation finished:(BOOL)finished
+{
+    if (finished)
+    {
+        TIFAnimationGroupCompletionBlock handler = (TIFAnimationGroupCompletionBlock)objc_getAssociatedObject(self, &CAAnimationGroupBlockKey);
+        if (handler) {
+            handler();
+        }
+    }
+}
+
+@end
+
+
 @implementation MainViewController (CDVViewController)
 - (void)webViewDidFinishLoad:(UIWebView*)theWebView
 {
@@ -148,6 +171,43 @@
     #else
         return NO;
     #endif
+}
+
+
++ (NSString *)getAbsolutePathFromCDVFilePath:(UIWebView*)webView cdvFilePath:(NSString *)cdvFilePath {
+
+  NSRange range = [cdvFilePath rangeOfString:@"cdvfile://"];
+  if (range.location == NSNotFound) {
+    return nil;
+  }
+
+  // Convert cdv:// path to the device real path
+  // (http://docs.monaca.mobi/3.5/en/reference/phonegap_34/en/file/plugins/)
+  NSString *filePath = nil;
+  Class CDVFilesystemURLCls = NSClassFromString(@"CDVFilesystemURL");
+  Class CDVFileCls = NSClassFromString(@"CDVFile");
+  if (CDVFilesystemURLCls != nil && CDVFileCls != nil) {
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+  
+    SEL fileSystemURLWithString = NSSelectorFromString(@"fileSystemURLWithString:");
+    if ([CDVFilesystemURLCls respondsToSelector:fileSystemURLWithString]) {
+      id cdvFilesystemURL = [CDVFilesystemURLCls performSelector:fileSystemURLWithString withObject:cdvFilePath];
+      if (cdvFilesystemURL != nil) {
+      
+        CDVPlugin *filePlugin = (CDVPlugin *)[[CDVFileCls alloc] initWithWebView:webView];
+        [filePlugin pluginInitialize];
+        
+        SEL filesystemPathForURL = NSSelectorFromString(@"filesystemPathForURL:");
+        filePath = [filePlugin performSelector: filesystemPathForURL withObject:cdvFilesystemURL];
+      }
+    }
+    #pragma clang diagnostic pop
+  } else {
+    NSLog(@"(debug)File and FileTransfer plugins are required to convert cdvfile:// to localpath.");
+  }
+  
+  return filePath;
 }
 @end
 

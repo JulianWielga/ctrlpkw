@@ -13,7 +13,6 @@
 
 @interface Marker : CDVPlugin<MyPlgunProtocol>
 @property (nonatomic, strong) GoogleMapsViewController* mapCtrl;
-@property (nonatomic, strong) NSMutableDictionary* iconCache;
 - (void)createMarker:(CDVInvokedUrlCommand*)command;
 - (void)showInfoWindow:(CDVInvokedUrlCommand*)command;
 - (void)hideInfoWindow:(CDVInvokedUrlCommand*)command;
@@ -32,4 +31,15 @@
 - (void)remove:(CDVInvokedUrlCommand*)command;
 - (void)setPosition:(CDVInvokedUrlCommand*)command;
 - (void)setRotation:(CDVInvokedUrlCommand*)command;
+- (void)setAnimation:(CDVInvokedUrlCommand*)command;
+
+// Internal use
+-(void)setMarkerAnimation_:(NSString *)animation marker:(GMSMarker *)marker pluginResult:(CDVPluginResult *)pluginResult callbackId:(NSString*)callbackId;
+-(void)setDropAnimation_:(GMSMarker *)marker pluginResult:(CDVPluginResult *)pluginResult callbackId:(NSString*)callbackId;
+-(void)setBounceAnimation_:(GMSMarker *)marker pluginResult:(CDVPluginResult *)pluginResult callbackId:(NSString*)callbackId;
+
+-(void)setIcon_:(GMSMarker *)marker iconProperty:(NSDictionary *)iconProperty
+                pluginResult:(CDVPluginResult *)pluginResult
+                callbackId:(NSString*)callbackId;
+
 @end

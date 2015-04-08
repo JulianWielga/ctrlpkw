@@ -1,11 +1,13 @@
 package plugin.google.maps;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Random;
 
 import org.apache.cordova.CallbackContext;
@@ -64,18 +66,8 @@ public class AsyncKmlParser extends AsyncTask<String, Void, Bundle> {
   private boolean animation = true;
   private Bundle mOption = null;
   
-  public AsyncKmlParser(Activity activity, GoogleMaps mapCtrl, CallbackContext callbackContext, Bundle option) {
-    Random random = new Random();
-    kmlId = "kml" + random.nextInt();
-    init(activity, mapCtrl, callbackContext, option);
-  }
-
   public AsyncKmlParser(Activity activity, GoogleMaps mapCtrl, String kmlId, CallbackContext callbackContext, Bundle option) {
     this.kmlId = kmlId;
-    init(activity, mapCtrl, callbackContext, option);
-  }
-  
-  private void init(Activity activity, GoogleMaps mapCtrl, CallbackContext callbackContext, Bundle option) {
     mCallback = callbackContext;
     mMapCtrl = mapCtrl;
     mActivity = activity;
@@ -130,7 +122,7 @@ public class AsyncKmlParser extends AsyncTask<String, Void, Bundle> {
           // get the cookie if need, for login
           String cookies = http.getHeaderField("Set-Cookie");
        
-          // open the new connnection again
+          // open the new connection again
           http = (HttpURLConnection) new URL(newUrl).openConnection();
           http.setRequestProperty("Cookie", cookies);
           http.addRequestProperty("Accept-Language", "en-US,en;q=0.8");
@@ -138,7 +130,14 @@ public class AsyncKmlParser extends AsyncTask<String, Void, Bundle> {
         }
         
         inputStream = http.getInputStream();
+      } else if (urlStr.indexOf("file://") == 0 && urlStr.indexOf("file:///android_asset/") == -1 ||
+          urlStr.indexOf("/") == 0) {
+        urlStr = urlStr.replace("file://", "");
+        inputStream = new FileInputStream(urlStr);
       } else {
+        if (urlStr.indexOf("file:///android_asset/") == 0) {
+          urlStr = urlStr.replace("file:///android_asset/", "");
+        }
         inputStream = mActivity.getResources().getAssets().open(urlStr);
       }
       
@@ -166,7 +165,6 @@ public class AsyncKmlParser extends AsyncTask<String, Void, Bundle> {
     JSONObject optionsJSON, latLngJSON;
     JSONArray defaultViewport = new JSONArray();
     
-    this.mCallback.success(kmlId);
     
     String tmp, tagName;
     Bundle node, style, childNode;
@@ -296,6 +294,11 @@ public class AsyncKmlParser extends AsyncTask<String, Void, Bundle> {
                     optionsJSON.put("width", (int) (Integer.parseInt(style.getString("width"))));
                   } catch (Exception e) {}
                 }
+                try {
+                  optionsJSON.put("zIndex", 4);
+                } catch (Exception e) {}
+                break;
+              default:
                 break;
               }
             }
@@ -358,12 +361,19 @@ public class AsyncKmlParser extends AsyncTask<String, Void, Bundle> {
                   } catch (Exception e) {}
                 }
                 break;
+              default:
+                break;
               }
             }
           } else {
             Log.e("client", "--" + style + " is null");
           }
+          try {
+            optionsJSON.put("zIndex", 2);
+          } catch (Exception e) {}
           this.implementToMap("Polygon", optionsJSON, kmlId);
+          break;
+        default:
           break;
           
         }
@@ -421,9 +431,10 @@ public class AsyncKmlParser extends AsyncTask<String, Void, Bundle> {
   
   protected void onPostExecute(Bundle parseResult) {
     end = System.currentTimeMillis();
-    Log.d("GoogleMaps", "duration=" + ((end -start) / 1000));
+    //Log.d("GoogleMaps", "duration=" + ((end -start) / 1000));
     
     this.mProgress.dismiss();
+    this.mCallback.success(kmlId);
   }
   
   
@@ -466,7 +477,7 @@ public class AsyncKmlParser extends AsyncTask<String, Void, Bundle> {
       @Override
       public void onResult(PluginResult pluginResult) {
         mMapCtrl.webView.loadUrl("javascript:plugin.google.maps.Map." +
-            "_onKmlEvent('" + className.toLowerCase() + "_add', '" + kmlId + "'," + pluginResult.getMessage() + "," +  optionsJSON.toString()+ ")");
+            "_onKmlEvent('add', '" + className.toLowerCase(Locale.US) + "','" + kmlId + "'," + pluginResult.getMessage() + "," +  optionsJSON.toString()+ ")");
       }
       
     });
@@ -479,6 +490,7 @@ public class AsyncKmlParser extends AsyncTask<String, Void, Bundle> {
   
   private JSONArray kmlColor2PluginColor(String colorStr) {
     JSONArray rgba = new JSONArray();
+    colorStr = colorStr.replace("#", "");
     for (int i = 2; i < 8; i+=2) {
       rgba.put(Integer.parseInt(colorStr.substring(i, i + 2), 16));
     }
@@ -508,7 +520,7 @@ public class AsyncKmlParser extends AsyncTask<String, Void, Bundle> {
         case XmlPullParser.START_DOCUMENT:
           break;
         case XmlPullParser.START_TAG:
-          tagName = parser.getName().toLowerCase();
+          tagName = parser.getName().toLowerCase(Locale.US);
           try {
             kmlTag = KML_TAG.valueOf(tagName);
           } catch(Exception e) {}
@@ -612,7 +624,7 @@ public class AsyncKmlParser extends AsyncTask<String, Void, Bundle> {
         case XmlPullParser.END_TAG:
           if (currentNode != null) {
             
-            tagName = parser.getName().toLowerCase();
+            tagName = parser.getName().toLowerCase(Locale.US);
             kmlTag = null;
             try {
               kmlTag = KML_TAG.valueOf(tagName);

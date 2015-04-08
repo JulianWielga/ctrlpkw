@@ -83,6 +83,9 @@ NSDictionary *initOptions;
     //self.map.autoresizingMask = UIViewAutoresizingNone;
     self.map.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
   
+    //indoor display
+    self.map.indoorDisplay.delegate = self;
+  
   
     BOOL isEnabled = NO;
     //controls
@@ -93,11 +96,15 @@ NSDictionary *initOptions;
         isEnabled = [[controls valueForKey:@"compass"] boolValue];
         self.map.settings.compassButton = isEnabled;
       }
+      //myLocation
+      if ([controls valueForKey:@"myLocation"] != nil) {
+        isEnabled = [[controls valueForKey:@"myLocation"] boolValue];
+        self.map.myLocationEnabled = isEnabled;
+      }
       //myLocationButton
       if ([controls valueForKey:@"myLocationButton"] != nil) {
         isEnabled = [[controls valueForKey:@"myLocationButton"] boolValue];
-        self.map.settings.myLocationButton = FALSE;
-        self.map.myLocationEnabled = isEnabled;
+        self.map.settings.myLocationButton = isEnabled;
       }
       //indoorPicker
       if ([controls valueForKey:@"indoorPicker"] != nil) {
@@ -200,7 +207,7 @@ NSDictionary *initOptions;
   dispatch_queue_t gueue = dispatch_queue_create("plugin.google.maps.Map._onMapEvent", NULL);
   dispatch_sync(gueue, ^{
   
-    NSString* jsString = [NSString stringWithFormat:@"plugin.google.maps.Map._onMapEvent('will_move', %hhd);", gesture];
+    NSString* jsString = [NSString stringWithFormat:@"plugin.google.maps.Map._onMapEvent('will_move', %@);", gesture ? @"true": @"false"];
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
   });
 }
@@ -379,11 +386,17 @@ NSDictionary *initOptions;
     isTextMode = false;
     NSArray *tmp = [title componentsSeparatedByString:@","];
     NSData *decodedData;
-    if ([PluginUtil isIOS7_OR_OVER]) {
-      decodedData = [[NSData alloc] initWithBase64EncodedString:tmp[1] options:0];
-    } else {
-      decodedData = [NSData dataFromBase64String:tmp[1]];
-    }
+    #if !defined(__IPHONE_8_0)
+      decodedData = [[NSData alloc] initWithBase64Encoding:(NSString *)tmp[1]];
+    #else
+      if ([PluginUtil isIOS7_OR_OVER]) {
+        decodedData = [NSData dataFromBase64String:tmp[1]];
+      } else {
+        #if !defined(__IPHONE_7_0)
+          decodedData = [[NSData alloc] initWithBase64Encoding:(NSString *)tmp[1]];
+        #endif
+      }
+    #endif
     
     base64Image = [[UIImage alloc] initWithData:decodedData];
     rectSize = CGSizeMake(base64Image.size.width + leftImg.size.width, base64Image.size.height + leftImg.size.height / 2);
@@ -403,15 +416,15 @@ NSDictionary *initOptions;
       }
     }
     if (isBold == TRUE && isItalic == TRUE) {
-      if ([PluginUtil isIOS7_OR_OVER] == true) {
+      #ifdef __IPHONE_7_0
         // ref: http://stackoverflow.com/questions/4713236/how-do-i-set-bold-and-italic-on-uilabel-of-iphone-ipad#21777132
         titleFont = [UIFont systemFontOfSize:17.0f];
         UIFontDescriptor *fontDescriptor = [titleFont.fontDescriptor
                                                 fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold | UIFontDescriptorTraitItalic];
         titleFont = [UIFont fontWithDescriptor:fontDescriptor size:0];
-      } else {
+      #else
         titleFont = [UIFont fontWithName:@"Helvetica-BoldOblique" size:17.0];
-      }
+      #endif
     } else if (isBold == TRUE && isItalic == FALSE) {
       titleFont = [UIFont boldSystemFontOfSize:17.0f];
     } else if (isBold == TRUE && isItalic == FALSE) {
@@ -421,14 +434,33 @@ NSDictionary *initOptions;
     }
     
     // Calculate the size for the title strings
-    textSize = [title sizeWithFont:titleFont constrainedToSize: CGSizeMake(mapView.frame.size.width - 13, mapView.frame.size.height - 13)];
+    CGSize tmpSize = CGSizeMake(mapView.frame.size.width - 13, mapView.frame.size.height - 13);
+    #if !defined(__IPHONE_8_0)
+      textSize = [title sizeWithFont:titleFont constrainedToSize: tmpSize];
+    #else
+      NSDictionary *attr = @{ NSFontAttributeName: titleFont};
+      textSize = [title boundingRectWithSize:tmpSize
+                        options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingTruncatesLastVisibleLine
+                        attributes:attr
+                        context:nil].size;
+    #endif
     rectSize = CGSizeMake(textSize.width + 10, textSize.height + 22);
     
     // Calculate the size for the snippet strings
     if (snippet) {
       snippetFont = [UIFont systemFontOfSize:12.0f];
       snippet = [snippet stringByReplacingOccurrencesOfString:@"\n" withString:@""];
-      snippetSize = [snippet sizeWithFont:snippetFont constrainedToSize: CGSizeMake(mapView.frame.size.width - 13, mapView.frame.size.height - 13)];
+      
+      
+      #if !defined(__IPHONE_8_0)
+        snippetSize = [snippet sizeWithFont:snippetFont constrainedToSize: tmpSize];
+      #else
+        NSDictionary *attr = @{ NSFontAttributeName: snippetFont};
+        snippetSize = [snippet boundingRectWithSize:tmpSize
+                          options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingTruncatesLastVisibleLine
+                          attributes:attr
+                          context:nil].size;
+      #endif
       rectSize.height += snippetSize.height + 4;
       if (rectSize.width < snippetSize.width + leftImg.size.width) {
         rectSize.width = snippetSize.width + leftImg.size.width;
@@ -566,7 +598,7 @@ NSDictionary *initOptions;
       }
       
       CGRect textRect = CGRectMake(5, 5 , rectSize.width - 10, textSize.height );
-      if ([PluginUtil isIOS7_OR_OVER] == true) {
+      #if defined(__IPHONE_7_0)
         // iOS7 and above
         NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
         style.lineBreakMode = NSLineBreakByWordWrapping;
@@ -579,16 +611,14 @@ NSDictionary *initOptions;
         };
         [title drawInRect:textRect
                withAttributes:attributes];
-        
-        
-      } else {
+      #else
         // iOS6
         [titleColor set];
         [title drawInRect:textRect
                 withFont:titleFont
                 lineBreakMode:NSLineBreakByWordWrapping
                 alignment:textAlignment];
-      }
+      #endif
       //CGContextSetRGBStrokeColor(context, 1.0, 0.0, 0.0, 0.5);
       //CGContextStrokeRect(context, textRect);
     }
@@ -596,26 +626,26 @@ NSDictionary *initOptions;
     //Draw the snippet
     if (snippet) {
       CGRect textRect = CGRectMake(5, textSize.height + 10 , rectSize.width - 10, snippetSize.height );
-      if ([PluginUtil isIOS7_OR_OVER] == true) {
-          // iOS7 and above
-          NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
-          style.lineBreakMode = NSLineBreakByWordWrapping;
-          style.alignment = textAlignment;
-          
-          NSDictionary *attributes = @{
-              NSForegroundColorAttributeName : [UIColor grayColor],
-              NSFontAttributeName : snippetFont,
-              NSParagraphStyleAttributeName : style
-          };
-          [snippet drawInRect:textRect withAttributes:attributes];
-        } else {
-          // iOS6
-          [[UIColor grayColor] set];
-          [snippet drawInRect:textRect
-                  withFont:snippetFont
-                  lineBreakMode:NSLineBreakByWordWrapping
-                  alignment:textAlignment];
-        }
+      #if defined(__IPHONE_7_0)
+        // iOS7 and above
+        NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
+        style.lineBreakMode = NSLineBreakByWordWrapping;
+        style.alignment = textAlignment;
+        
+        NSDictionary *attributes = @{
+            NSForegroundColorAttributeName : [UIColor grayColor],
+            NSFontAttributeName : snippetFont,
+            NSParagraphStyleAttributeName : style
+        };
+        [snippet drawInRect:textRect withAttributes:attributes];
+      #else
+        // iOS6
+        [[UIColor grayColor] set];
+        [snippet drawInRect:textRect
+                withFont:snippetFont
+                lineBreakMode:NSLineBreakByWordWrapping
+                alignment:textAlignment];
+      #endif
     }
   } else {
     //Draw the content image
@@ -646,6 +676,43 @@ NSDictionary *initOptions;
 }
 
 
+- (void) didChangeActiveBuilding: (GMSIndoorBuilding *)building {
+  //Notify to the JS
+  NSString* jsString = @"javascript:plugin.google.maps.Map._onMapEvent('indoor_building_focused')";
+  [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+}
+
+- (void) didChangeActiveLevel: (GMSIndoorLevel *)activeLevel {
+  
+  GMSIndoorBuilding *building = self.map.indoorDisplay.activeBuilding;
+  
+  NSMutableDictionary *result = [NSMutableDictionary dictionary];
+  
+  NSUInteger activeLevelIndex = [building.levels indexOfObject:activeLevel];
+  [result setObject:[NSNumber numberWithInteger:activeLevelIndex] forKey:@"activeLevelIndex"];
+  [result setObject:[NSNumber numberWithInteger:building.defaultLevelIndex] forKey:@"defaultLevelIndex"];
+  
+  GMSIndoorLevel *level;
+  NSMutableDictionary *levelInfo;
+  NSMutableArray *levels = [NSMutableArray array];
+  for (level in building.levels) {
+    levelInfo = [NSMutableDictionary dictionary];
+    
+    [levelInfo setObject:[NSString stringWithString:level.name] forKey:@"name"];
+    [levelInfo setObject:[NSString stringWithString:level.shortName] forKey:@"shortName"];
+    [levels addObject:levelInfo];
+  }
+  [result setObject:levels forKey:@"levels"];
+  
+  NSError *error;
+  NSData *data = [NSJSONSerialization dataWithJSONObject:result options:NSJSONWritingPrettyPrinted error:&error];
+  
+  NSString *JSONstring = [[NSString alloc] initWithData:data
+                                           encoding:NSUTF8StringEncoding];
+  NSString *jsString = [NSString stringWithFormat:@"javascript:plugin.google.maps.Map._onMapEvent('indoor_level_activated', %@)", JSONstring];
+  
+  [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+}
 
 
 

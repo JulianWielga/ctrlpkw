@@ -12,7 +12,7 @@
 #import "PluginUtil.h"
 #import "NSData+Base64.h"
 
-@interface GoogleMapsViewController : UIViewController<GMSMapViewDelegate>
+@interface GoogleMapsViewController : UIViewController<GMSMapViewDelegate, GMSIndoorDisplayDelegate>
 
 @property (nonatomic, strong) GMSMapView* map;
 @property (nonatomic, strong) UIWebView* webView;
@@ -21,6 +21,7 @@
 @property (nonatomic) BOOL isFullScreen;
 @property (nonatomic) NSDictionary *embedRect;
 @property (nonatomic) CGRect screenSize;
+@property (nonatomic) BOOL debuggable;
 
 
 //- (UIView *)mapView:(GMSMapView *)mapView markerInfoWindow:(GMSMarker *)marker;
@@ -37,4 +38,7 @@
 
 - (void)removeObjectForKey: (NSString *)key;
 - (BOOL)didTapMyLocationButtonForMapView:(GMSMapView *)mapView;
+
+- (void) didChangeActiveBuilding: (GMSIndoorBuilding *)building;
+- (void) didChangeActiveLevel: (GMSIndoorLevel *)level;
 @end

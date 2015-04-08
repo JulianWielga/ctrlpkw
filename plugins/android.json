@@ -107,6 +107,9 @@
         "android.support.v4": {
             "PACKAGE_NAME": "com.phonegap.helloworld"
         },
+        "com.google.playservices": {
+            "PACKAGE_NAME": "com.phonegap.helloworld"
+        },
         "org.apache.cordova.camera": {
             "PACKAGE_NAME": "com.phonegap.helloworld"
         },
@@ -116,10 +119,10 @@
         "org.apache.cordova.device-orientation": {
             "PACKAGE_NAME": "com.phonegap.helloworld"
         },
-        "org.apache.cordova.geolocation": {
+        "org.apache.cordova.statusbar": {
             "PACKAGE_NAME": "com.phonegap.helloworld"
         },
-        "org.apache.cordova.statusbar": {
+        "org.apache.cordova.geolocation": {
             "PACKAGE_NAME": "com.phonegap.helloworld"
         },
         "plugin.google.maps": {
@@ -129,9 +132,6 @@
     },
     "dependent_plugins": {
         "plugin.http.request": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
-        },
-        "com.google.playservices": {
             "PACKAGE_NAME": "com.phonegap.helloworld"
         }
     }

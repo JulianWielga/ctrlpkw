@@ -32,9 +32,16 @@
 
 - (void)setMyLocationEnabled:(CDVInvokedUrlCommand *)command {
   Boolean isEnabled = [[command.arguments objectAtIndex:1] boolValue];
-  self.mapCtrl.map.settings.myLocationButton = isEnabled;
   self.mapCtrl.map.myLocationEnabled = isEnabled;
   
+  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void)setMyLocationButtonEnabled:(CDVInvokedUrlCommand *)command {
+  Boolean isEnabled = [[command.arguments objectAtIndex:1] boolValue];
+  self.mapCtrl.map.settings.myLocationButton = isEnabled;
+
   CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
   [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
@@ -178,7 +185,7 @@
   
   int bearing = (int)[[json valueForKey:@"bearing"] integerValue];
   double angle = [[json valueForKey:@"tilt"] doubleValue];
-  int zoom = (int)[[json valueForKey:@"zoom"] integerValue];
+  double zoom = [[json valueForKey:@"zoom"] doubleValue];
   
   
   NSDictionary *latLng = nil;
@@ -264,19 +271,7 @@
 
   NSData *imageData = UIImagePNGRepresentation(image);
   NSString *base64Encoded = nil;
-  #ifdef __IPHONE_7_0
-    if ([PluginUtil isIOS7_OR_OVER] == true) {
-      #ifdef __CORDOVA_3_8_0
-        base64Encoded = [NSString stringWithFormat:@"data:image/png;base64,%@", [imageData cdv_base64EncodedString]];
-      #else
-        base64Encoded = [NSString stringWithFormat:@"data:image/png;base64,%@", [imageData base64EncodedString]];
-      #endif
-    } else {
-      base64Encoded = [NSString stringWithFormat:@"data:image/png;base64,%@", [imageData base64Encoding]];
-    }
-  #else
-    base64Encoded = [NSString stringWithFormat:@"data:image/png;base64,%@", [imageData base64Encoding]];
-  #endif
+  base64Encoded = [NSString stringWithFormat:@"data:image/png;base64,%@", [imageData base64EncodedStringWithSeparateLines:NO]];
   
   CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:base64Encoded];
   [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -386,15 +381,22 @@
         self.mapCtrl.map.settings.compassButton = NO;
       }
     }
+    //myLocation
+    if ([controls valueForKey:@"myLocation"] != nil) {
+      isEnabled = [[controls valueForKey:@"myLocation"] boolValue];
+      if (isEnabled == true) {
+        self.mapCtrl.map.myLocationEnabled = YES;
+      } else {
+        self.mapCtrl.map.myLocationEnabled = NO;
+      }
+    }
     //myLocationButton
     if ([controls valueForKey:@"myLocationButton"] != nil) {
       isEnabled = [[controls valueForKey:@"myLocationButton"] boolValue];
       if (isEnabled == true) {
         self.mapCtrl.map.settings.myLocationButton = YES;
-        self.mapCtrl.map.myLocationEnabled = YES;
       } else {
         self.mapCtrl.map.settings.myLocationButton = NO;
-        self.mapCtrl.map.myLocationEnabled = NO;
       }
     }
     //indoorPicker
@@ -469,5 +471,36 @@
   UIEdgeInsets padding = UIEdgeInsetsMake(top, left, bottom, right);
   
   [self.mapCtrl.map setPadding:padding];
+}
+
+- (void)getFocusedBuilding:(CDVInvokedUrlCommand*)command {
+  GMSIndoorBuilding *building = self.mapCtrl.map.indoorDisplay.activeBuilding;
+  if (building != nil) {
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+  }
+  GMSIndoorLevel *activeLevel = self.mapCtrl.map.indoorDisplay.activeLevel;
+  
+  NSMutableDictionary *result = [NSMutableDictionary dictionary];
+  
+  NSUInteger activeLevelIndex = [building.levels indexOfObject:activeLevel];
+  [result setObject:[NSNumber numberWithInteger:activeLevelIndex] forKey:@"activeLevelIndex"];
+  [result setObject:[NSNumber numberWithInteger:building.defaultLevelIndex] forKey:@"defaultLevelIndex"];
+  
+  GMSIndoorLevel *level;
+  NSMutableDictionary *levelInfo;
+  NSMutableArray *levels = [NSMutableArray array];
+  for (level in building.levels) {
+    levelInfo = [NSMutableDictionary dictionary];
+    
+    [levelInfo setObject:[NSString stringWithString:level.name] forKey:@"name"];
+    [levelInfo setObject:[NSString stringWithString:level.shortName] forKey:@"shortName"];
+    [levels addObject:levelInfo];
+  }
+  [result setObject:levels forKey:@"levels"];
+  
+  
+  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:result];
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 @end

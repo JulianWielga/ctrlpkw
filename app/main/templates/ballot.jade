@@ -1,82 +1,93 @@
 mixin input(model)
 	input(ng-model=model, type='tel', required, ng-pattern='/^[0-9]+$/')
 
-div(ng-controller='BallotController as ctrl', layout="column", flex)
-	md-progress-linear.md-accent(ng-if="ctrl.loading", md-mode="indeterminate").fixed-top
-	md-content(flex, layout="column").md-padding
-
-		div(ng-switch='subview', flex, layout="column")
-
-			div(ng-switch-default)
+.controller(ng-controller='BallotController as ctrl', layout='column', flex)
+	.progress-linear.top.fixed(ng-if="ctrl.loading")
+	.view-switch(ng-switch='subview', layout='column', flex)
+		.subview(ng-switch-default, flex).content
+			.padding
 				section.ballot
-					h1.md-subhead Wypełnij wyniki kandydatów
-					table
-						tr(ng-repeat='option in ctrl.ballot.options')
-							td.label
-								p.name {{option.split(' ')[0]}}
+					h1 Wypełnij wyniki kandydatów
+					.table
+						.row(ng-repeat='option in ctrl.ballot.options')
+							.column.label
+								h2.name {{option.split(' ')[0]}}
 								p.small {{option.split(' ').slice(1).join(' ')}}
-							td.input
+							.column.input
 								+input('ctrl.result.votesCountPerOption[$index]')
 				section.ballot
-					h1.md-subhead Wypełnij informacje o głosowaniu
-					table
-						tr
-							td.label Liczba wyborców uprawnionych
-							td.input
+					h1 Wypełnij informacje o głosowaniu
+					.table
+						.row
+							.column.label Liczba wyborców uprawnionych
+							.column.input
 								+input('ctrl.result.votersEntitledCount')
-						tr
-							td.label Liczba wyborców, którym wydano karty
-							td.input
+						.row
+							.column.label Liczba wyborców, którym wydano karty
+							.column.input
 								+input('ctrl.result.ballotsGivenCount')
-						tr
-							td.label Liczba oddanych głosów
-							td.input
+						.row
+							.column.label Liczba oddanych głosów
+							.column.input
 								+input('ctrl.result.votesCastCount')
-						tr
-							td.label Liczba głosów ważnych
-							td.input
+						.row
+							.column.label Liczba głosów ważnych
+							.column.input
 								+input('ctrl.result.votesValidCount')
-				md-divider
-				div.buttons(layout="row", layout-align="center center")
-					//md-button(ng-href='#/wards/{{ctrl.communityCode}}/{{ctrl.wardNo}}/ballots/{{ctrl.ballot.no}}')
-					//	span wstecz
-					md-button(flex, ng-href='#/wards/{{ctrl.communityCode}}/{{ctrl.wardNo}}/ballots/{{ctrl.ballot.no}}/photos', promised-fn='ctrl.sendResult()')
-						span dalej
+			.divider
+			.buttons
+				a.button(ng-href='#/wards/{{ctrl.communityCode}}/{{ctrl.wardNo}}/ballots/{{ctrl.ballot.no}}/photos', promised-fn='ctrl.sendResult()')
+					span.text dalej
 
-			div(ng-switch-when='photos')
-				section
-					h1.md-subhead Zrób zdjęcia protokołu
-					div.buttons(layout="row", layout-align="center center")
-						md-button(flex, ng-click='ctrl.takePhoto(true)')
-							md-icon(md-font-icon='icon-photo-library')
-							span wybierz zdjęcie
-						md-button(flex, ng-click='ctrl.takePhoto()')
-							md-icon(md-font-icon='icon-photo-camera')
-							span zrób zdjęcie
-				section(ng-if='ctrl.images.length')
-					md-grid-list(
-						md-cols-sm="3", md-cols-md="5", md-cols-gt-md="9"
-						md-row-height-gt-md="1:1", md-row-height="2:2"
-						md-gutter="12px", md-gutter-gt-sm="8px")
-						md-grid-tile(md-rowspan="1", md-colspan="1", ng-repeat='image in ctrl.images').image
+		.subview(ng-switch-when='photos', layout='column', flex)
+			.content.padding(flex)
+				section.photos
+					h1 Zrób zdjęcia protokołu
+					.buttons
+						button.button(ng-click='ctrl.takePhoto(true)')
+							i.icon-photo-library
+							span.text wybierz zdjęcie
+						button.button(ng-click='ctrl.takePhoto()')
+							i.icon-photo-camera
+							span.text zrób zdjęcie
+				section.photos(ang-if='ctrl.images.length')
+					.grid-list
+						.grid-tile(ng-repeat='image in ctrl.images').image
 							img(ng-src='{{image.src}}')
-							md-grid-tile-footer(ng-if='!image.res.$resolved') przesyłam...
+							.grid-tile-footer(ng-if='!image.res.$resolved') przesyłam...
+						.grid-tile.image
+							img(ng-src='http://www.redisbad.pl/design/_gallery/_600_600_3/2088.jpg')
+							.grid-tile-footer(ng-if='!image.res.$resolved') przesyłam...
+						.grid-tile.image
+							img(ng-src='http://www.fightershop.com.pl/foto/news/big/e02c2e1f446f505891d57f894fd72ae4.jpg')
+							.grid-tile-footer(ng-if='!image.res.$resolved') przesyłam...
+						.grid-tile.image
+							img(ng-src='http://www.redisbad.pl/design/_gallery/_600_600_3/2088.jpg')
+							.grid-tile-footer(ng-if='!image.res.$resolved') przesyłam...
+						.grid-tile.image
+							img(ng-src='http://www.fakt.pl/m/Repozytorium.Obiekt.aspx/-690/-550/faktonline/634823084269907731.jpeg')
+						.grid-tile.image
+							img(ng-src='http://www.redisbad.pl/design/_gallery/_600_600_3/2088.jpg')
+			.divider
+			.buttons
+				a.button(ang-if='ctrl.images.length', ng-href='#/wards/{{ctrl.communityCode}}/{{ctrl.wardNo}}/ballots/{{ctrl.ballot.no}}/share', promised-fn='ctrl.sendResult()')
+					span.text zakończ
 
-				div.bottom-buttons(layout="row", layout-align="end center")
-					md-button(flex, ng-if='ctrl.images.length', ng-href='#/wards/{{ctrl.communityCode}}/{{ctrl.wardNo}}/ballots/{{ctrl.ballot.no}}/share', promised-fn='ctrl.sendResult()')
-						span zakończ
+		.subview(ng-switch-when='share')
+			.content.padding
+				section.share
+					h1 Podziel się
+					.buttons
+						button.button.facebook
+							span.text facebook
+						button.button.twitter
+							span.text twitter
 
-			div(ng-switch-when='share')
-				section
-
-					h5.md-body-2 Podziel się
-
-					md-button facebook
-					md-button twitter
-
-				div.bottom-buttons(layout="row", layout-align="end center")
-					md-button(ng-if='ctrl.data.selectedWards.length > 1', ng-href='#/wards') inne obwody w pobliżu
-					md-button(ng-href='#/voting') powrot do mapy
+			.buttons
+				a.button(ng-if='ctrl.data.selectedWards.length > 1', ng-href='#/wards')
+					span.text inne obwody w pobliżu
+				a.button(ng-href='#/voting')
+					span.text powrot do mapy
 
 
 

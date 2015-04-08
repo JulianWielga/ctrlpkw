@@ -24,7 +24,51 @@
   TBXML *tbxml = [TBXML alloc];// initWithXMLFile:urlStr error:&error];
   
   NSString *urlStr = [json objectForKey:@"url"];
-  NSRange range = [urlStr rangeOfString:@"http"];
+  NSRange range = [urlStr rangeOfString:@"://"];
+  if (range.location == NSNotFound) {
+    range = [urlStr rangeOfString:@"www/"];
+    if (range.location == NSNotFound) {
+      range = [urlStr rangeOfString:@"/"];
+      if (range.location != 0) {
+        urlStr = [NSString stringWithFormat:@"./%@", urlStr];
+      }
+    }
+  }
+  
+  range = [urlStr rangeOfString:@"./"];
+  if (range.location != NSNotFound) {
+    NSString *currentPath = [self.webView.request.URL absoluteString];
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"[^\\/]*$" options:NSRegularExpressionCaseInsensitive error:&error];
+    currentPath= [regex stringByReplacingMatchesInString:currentPath options:0 range:NSMakeRange(0, [currentPath length]) withTemplate:@""];
+    urlStr = [urlStr stringByReplacingOccurrencesOfString:@"./" withString:currentPath];
+  }
+  
+  range = [urlStr rangeOfString:@"cdvfile://"];
+  if (range.location != NSNotFound) {
+    urlStr = [PluginUtil getAbsolutePathFromCDVFilePath:self.webView cdvFilePath:urlStr];
+    if (urlStr == nil) {
+      NSMutableDictionary* details = [NSMutableDictionary dictionary];
+      [details setValue:[NSString stringWithFormat:@"Can not convert '%@' to device full path.", urlStr] forKey:NSLocalizedDescriptionKey];
+      error = [NSError errorWithDomain:@"world" code:200 userInfo:details];
+    }
+  }
+  
+  range = [urlStr rangeOfString:@"file://"];
+  if (range.location != NSNotFound) {
+    urlStr = [urlStr stringByReplacingOccurrencesOfString:@"file://" withString:@""];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if (![fileManager fileExistsAtPath:urlStr]) {
+      NSMutableDictionary* details = [NSMutableDictionary dictionary];
+      [details setValue:[NSString stringWithFormat:@"There is no file at '%@'.", urlStr] forKey:NSLocalizedDescriptionKey];
+      error = [NSError errorWithDomain:@"world" code:200 userInfo:details];
+    }
+  }
+  if (self.mapCtrl.debuggable) {
+    NSLog(@"urlStr = %@", urlStr);
+  }
+
+  
+  range = [urlStr rangeOfString:@"http://"];
   if (range.location == NSNotFound) {
     tbxml = [tbxml initWithXMLFile:urlStr error:&error];
   } else {
@@ -103,8 +147,6 @@
   
   NSString *idPrefix = [NSString stringWithFormat:@"%@-", self.kmlId];
   
-  CDVPluginResult* pluginResult;
-  
   dispatch_queue_t gueue = dispatch_queue_create("plugin.google.maps.Map.createKmlOverlay", NULL);
   
   //--------------------------------
@@ -113,7 +155,9 @@
   __block NSMutableDictionary *kmlData;
   dispatch_async(gueue, ^{
     //NSLog(@"%@", [[TBXML elementName:tbxml.rootXMLElement] lowercaseString]);
+    //NSLog(@"-----------------> parseXML");
     kmlData = [self parseXML:tbxml.rootXMLElement];
+    //NSLog(@"%@", kmlData);
 
   });
   
@@ -124,17 +168,30 @@
   __block NSMutableDictionary *styles = [NSMutableDictionary dictionary];
   __block NSMutableArray *placeMarks = [NSMutableArray array];
   dispatch_async(gueue, ^{
+    //NSLog(@"-----------------> _filterPlaceMarks");
     [self _filterPlaceMarks:kmlData placemarks:&placeMarks];
+    //NSLog(@"-----------------> _filterPlaceMarks was successful");
   });
   
   //------------------------------------
   // Implement placemarks onto the map
   //------------------------------------
   dispatch_async(gueue, ^{
+    //NSLog(@"-----------------> placeMarks = %d", [placeMarks count]);
     if ([placeMarks count] > 0) {
-      //Implement placemarks
-      [self _filterStyles:kmlData styles:&styles];
+      // Pick up style tags only
+      dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
+        [self _filterStyleTag:kmlData styles:&styles];
+        //NSLog(@"-----------------> _filterStyleTag was successful.");
+      });
       
+      // Pick up styleMap tags only
+      dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
+        [self _filterStyleMapTag:kmlData styles:&styles];
+        //NSLog(@"-----------------> _filterStyleMapTag was successful.");
+      });
+      
+      //Implement placemarks
       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
         NSMutableArray *defaultViewport = [NSMutableArray array];
         for (tag in placeMarks) {
@@ -164,8 +221,12 @@
           }
           NSMutableDictionary *cameraOptions = [NSMutableDictionary dictionary];
           [cameraOptions setObject:defaultViewport forKey:@"target"];
-          [self _execOtherClassMethod:@"Map" methodName:changeMethod options:cameraOptions callbackId:@"kmlOverlay.viewChange"];
+          [self _execOtherClassMethod:@"Map" methodName:changeMethod options:cameraOptions callbackId:@"kmlOverlay.viewChange" waitUntilDone:YES];
+          
         }
+          
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:self.kmlId];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
       });
 
     } else {
@@ -187,9 +248,6 @@
     
   });
 
-
-  pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:self.kmlId];
-  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 
@@ -242,7 +300,7 @@
 
 }
 
--(void)_filterStyles:(NSDictionary *)rootNode styles:(NSMutableDictionary **)styles
+-(void)_filterStyleTag:(NSDictionary *)rootNode styles:(NSMutableDictionary **)styles
 {
   NSDictionary *tag;
   NSString *tagName;
@@ -259,16 +317,33 @@
       }
       [*styles setObject:tag[@"children"] forKey:styleId];
       continue;
-    } else if ([tagName isEqualToString:@"stylemap"]) {
+    } else {
+      [self _filterStyleTag:tag styles:styles];
+    }
+  }
+  
+}
+
+
+-(void)_filterStyleMapTag:(NSDictionary *)rootNode styles:(NSMutableDictionary **)styles
+{
+  NSDictionary *tag;
+  NSString *tagName;
+  NSString *styleId;
+  
+  NSArray *children = [rootNode objectForKey:@"children"];
+  for (tag in children) {
+    tagName = tag[@"_tag"];
+    
+    if ([tagName isEqualToString:@"stylemap"]) {
       styleId = nil;
       [self _getNormalStyleUrlForStyleMap:tag output:&styleId];
       if (styleId != nil) {
         [*styles setObject:[*styles objectForKey:styleId] forKey:tag[@"_id"]];
       }
       continue;
-
     } else {
-      [self _filterStyles:tag styles:styles];
+      [self _filterStyleMapTag:tag styles:styles];
     }
   }
 
@@ -330,8 +405,10 @@
       
       if ([tagName isEqualToString:@"linestring"]) {
         targetClass = @"Polyline";
+        [*options setObject:[NSNumber numberWithInt:4] forKey:@"zIndex"];
       } else {
         targetClass = @"Polygon";
+        [*options setObject:[NSNumber numberWithInt:2] forKey:@"zIndex"];
       }
       [*options setObject:[NSNumber numberWithBool:true] forKey:@"visible"];
       [*options setObject:[NSNumber numberWithBool:true] forKey:@"geodesic"];
@@ -496,7 +573,7 @@
  * @Private
  * Execute the method of other plugin class internally.
  */
--(void)_execOtherClassMethod:(NSString *)className methodName:(NSString *)methodName options:(NSDictionary *)options callbackId:(NSString *)callbackId
+-(void)_execOtherClassMethod:(NSString *)className methodName:(NSString *)methodName options:(NSDictionary *)options callbackId:(NSString *)callbackId waitUntilDone:(BOOL)waitUntilDone
 {
   NSArray* args = [NSArray arrayWithObjects:@"exec", options, nil];
   NSArray* jsonArr = [NSArray arrayWithObjects:callbackId, className, methodName, args, nil];
@@ -513,9 +590,11 @@
   }
   SEL selector = NSSelectorFromString([NSString stringWithFormat:@"%@:", methodName]);
   if ([pluginClass respondsToSelector:selector]){
-    [pluginClass performSelectorOnMainThread:selector withObject:command2 waitUntilDone:NO];
+    [pluginClass performSelectorOnMainThread:selector withObject:command2 waitUntilDone:waitUntilDone];
   }
 }
+
+
 -(void)evalJsHelper:(NSString*)jsString
 {
   [self.webView stringByEvaluatingJavaScriptFromString:jsString];
@@ -530,20 +609,23 @@
     NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     
     //Add callback
-    NSString* jsString = [NSString stringWithFormat:@"cordova.callbacks['%@']={'success': function(result) {plugin.google.maps.Map._onKmlEventForIOS('%@',result, %@);}, 'fail': null};", callbackId, self.kmlId, jsonString];
+    NSString* jsString = [NSString stringWithFormat:@"cordova.callbacks['%@']={'success': function(result) {plugin.google.maps.Map._onKmlEvent('add', '%@', '%@', result, %@);}, 'fail': null};",
+                                callbackId, className, self.kmlId, jsonString];
     [self performSelectorOnMainThread:@selector(evalJsHelper:) withObject:jsString waitUntilDone:YES];
   }
   
   [self _execOtherClassMethod:className
         methodName:[NSString stringWithFormat:@"create%@", className]
         options:options
-        callbackId:callbackId];
+        callbackId:callbackId
+        waitUntilDone:NO];
 
   
 }
 
 
 -(NSMutableArray *)_parseKMLColor:(NSString *)ARGB {
+  ARGB = [ARGB stringByReplacingOccurrencesOfString:@"#" withString:@""];
   NSMutableArray *rgbaArray = [NSMutableArray array];
   NSString *hexStr;
   NSString *RGBA = [NSString stringWithFormat:@"%@%@",

@@ -26,6 +26,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
+@SuppressWarnings("deprecation")
 public class MyPluginLayout extends FrameLayout  {
   private CordovaWebView webView;
   private ViewGroup root;
@@ -69,6 +70,9 @@ public class MyPluginLayout extends FrameLayout  {
     scrollFrameLayout = new FrameLayout(this.context);
     scrollFrameLayout.addView(backgroundView);
     scrollFrameLayout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+    
+    scrollView.setHorizontalScrollBarEnabled(false);
+    scrollView.setVerticalScrollBarEnabled(false);
     
     this.touchableWrapper = new TouchableWrapper(this.context);
     
@@ -120,7 +124,6 @@ public class MyPluginLayout extends FrameLayout  {
     }
   }
   
-  @SuppressWarnings("deprecation")
   public void updateViewPosition() {
     if (myView == null) {
       return;
@@ -191,6 +194,9 @@ public class MyPluginLayout extends FrameLayout  {
   }
   
   public void attachMyView(ViewGroup pluginView) {
+    scrollView.setHorizontalScrollBarEnabled(false);
+    scrollView.setVerticalScrollBarEnabled(false);
+    
     scrollView.scrollTo(webView.getScrollX(), webView.getScrollY());
     if (myView == pluginView) {
       return;
@@ -216,6 +222,9 @@ public class MyPluginLayout extends FrameLayout  {
     this.addView(frontLayer);
     root.addView(this);
     mActivity.getWindow().getDecorView().requestFocus();
+    
+    scrollView.setHorizontalScrollBarEnabled(true);
+    scrollView.setVerticalScrollBarEnabled(true);
   }
   
   public void setPageSize(int width, int height) {

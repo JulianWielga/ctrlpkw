@@ -35,12 +35,14 @@ angular.module 'cordova.plugin.googleMaps', [
 		deferred = $q.defer()
 
 		checkNative = crdReady ->
+			console.debug 'checkNative'
 			return checkJavascript() unless plugin?.google?.maps?.Map
 			plugin.google.maps.Map.isAvailable (isAvailable, message) ->
 				return checkJavascript() unless isAvailable
 				nativeMaps()
 
 		checkJavascript = ->
+			console.debug 'checkJavascript'
 			return javascriptMaps() if google?.maps?.Map
 			callbackName = 'mapsInit'
 			window[callbackName] = ->
@@ -59,12 +61,15 @@ angular.module 'cordova.plugin.googleMaps', [
 			document.body.appendChild script
 
 		nativeMaps = ->
+			console.debug 'nativeMaps'
 			deferred.resolve $injector.get 'googleMapsNative'
 
 		javascriptMaps = ->
+			console.debug 'javascriptMaps'
 			deferred.resolve $injector.get 'googleMapsJS'
 
 		noMaps = ->
+			console.debug 'noMaps'
 			deferred.reject 'No maps'
 
 		checkNative()
@@ -87,7 +92,8 @@ angular.module 'cordova.plugin.googleMaps', [
 				controls:
 					zoom: no
 					compass: yes
-					myLocationButton: yes
+					myLocation: yes
+					myLocationButton: no
 				camera:
 					latLng: params.center
 					tilt: params.tilt
@@ -128,11 +134,9 @@ angular.module 'cordova.plugin.googleMaps', [
 
 		createMarker: (map, options) =>
 			deferred = @q.defer()
+			if options.icon
+				options.icon.url = "www/#{options.icon.url}"
 			map.addMarker options, (marker) ->
-				if options.icon
-					marker.setIcon
-						url: 'www/' + options.icon.url
-						size: options.icon.size
 				deferred.resolve marker
 			deferred.promise
 

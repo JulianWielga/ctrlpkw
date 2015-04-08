@@ -8,34 +8,294 @@ body
 	-webkit-text-size-adjust none
 	-webkit-user-select none
 
-/*@media screen and (min-aspect-ratio: 1/1) and (min-width:400px)*/
 
-header
-	padding 10px
-	a
-		display inline-block
-		padding 10px
-		margin 10px
 
-.os-ios.browser-unknown
-	body > md-toolbar
+defaultMargin = 16px
+toolbarHeight = 4 * defaultMargin
+
+html
+body
+	font-family Roboto, 'Helvetica Neue', sans-serif
+	height 100%
+	font-size 12px
+	line-height defaultMargin
+
+h1
+h2
+	line-height  1.2em
+	margin-bottom .5em
+	font-weight 500
+
+h1
+	font-size defaultMargin * 1.2
+h2
+	font-size defaultMargin
+
+p
+	margin-top 8px
+
+a
+	&
+	&:hover
+	&:active
+		color inherit
+		text-decoration inherit
+
+[fill]
+	min-width 100%
+	max-width 100%
+	min-height 100%
+	max-height 100%
+	overflow hidden
+
+
+[layout='column']
+[layout='row']
+	display flex
+
+[layout='column']
+	flex-direction column
+
+[layout='row']
+	flex-direction row
+
+[flex]
+	flex 1
+
+.shadow-z1
+	box-shadow: 0px 2px 5px 0 rgba(0, 0, 0, 0.26)
+
+.shadow-z2
+	box-shadow 0px 8px 17px rgba(0, 0, 0, 0.2)
+
+
+.button
+	background none
+	border none
+	color inherit
+	display block
+	border-radius 3px
+	box-sizing border-box
+	margin 0
+	padding 8px
+	font-size 16px
+	font-weight 500
+	text-align center
+	text-transform uppercase
+	&:active
+	&:focus
+		background red
+
+	overflow ellipsis
+	.text
+		margin-left .5em
+		&:first-child
+			margin-left 0
+
+
+	&.circle
+		position: absolute
+
+		&.top
+			top defaultMargin
+
+		&.bottom
+			bottom defaultMargin
+
+		&.left
+			left defaultMargin
+
+		&.right
+			right defaultMargin
+
+		background white
+		color black
+
+		border-radius 100%
+		font-size 20px
+		padding 12px
+		line-height @font-size * 1.2
+		width @line-height + @padding * 2
+		height @width
+		@extend .shadow-z1
+
+
+
+.toolbar
+	background red
+	color white
+	min-height toolbarHeight
+	box-sizing border-box
+	align-items center
+	@extend [layout='row']
+	@extend .shadow-z1
+
+	.os-ios.browser-unknown body > &
 		padding-top 20px
-		min-height 64px + @padding-top
+		min-height @min-height + @padding-top
 
-		&.md-tall
-			height 128px + @padding-top
-			min-height @height
-			max-height @height
+	.button
+		min-height 48px
+		height @min-height
+		min-width (@min-height / 2)
+		line-height @min-height
 
-		&.md-medium-tall
-			height 88px + @padding-top
-			min-height @height
-			max-height @height
+
+		i[class^="icon-"]
+		i[class*=" icon-"]
+			font-size (@min-height / 2)
+			line-height @min-height
+
+
+	.title
+		@extend [flex]
+		font-size 20px
+		font-weight normal
+		margin 0
+		overflow ellipsis
+
+	.button
+	.title
+		padding 0 16px
+
+	.title ~ .button
+		margin-left -16px
+
+
+.list
+	.item
+		.item-content
+			padding 0 defaultMargin
+			@extend [layout='row']
+			.tile-left
+				margin defaultMargin defaultMargin defaultMargin 0
+				width 72px - defaultMargin * 2
+				i[class^="icon-"]
+				i[class*=" icon-"]
+					font-size 40px
+
+
+			.tile-content
+				padding defaultMargin 0
+				@extend [flex]
+
+.content
+	overflow auto
+.padding
+	padding defaultMargin
+
+.divider
+	border-top 1px solid black
+
+.buttons
+	padding 4px
+	@extend [layout='row']
+	.button
+		margin @padding
+		@extend [flex]
+
+.table
+	display table
+	.row
+		display table-row
+		.column
+			display table-cell
+			vertical-align middle
+
+
+.ballot
+	margin-bottom 1rem
+
+	input
+		padding 0
+		margin 0
+		outline 0
+		border 0
+
+	.table
+		width 100%
+
+	.label
+	.input
+		padding-bottom 1rem
+
+	.label
+		padding-right 1rem
+
+		h2
+		p
+			margin 0
+
+		h2
+			white-space nowrap
+
+	.input
+		input
+			width 100%
+			text-align right
+			font-size 2.5rem
+			box-sizing border-box
+			padding 1rem
+			border 1px solid rgba(0,0,0,.2)
+			border-radius 3px
+			-webkit-appearance none
+
+			&.ng-invalid
+				border-color rgba(255,0,0,.5)
+				box-shadow 0 0 1px @border-color
+
+
+.grid-list
+	padding 0
+	.grid-tile
+		position relative
+		width 32%
+		float left
+		margin-right ( 100% / 2 ) - ( 3 * @width / 2 )
+		margin-bottom @margin-right
+
+		&:nth-child(3n)
+			margin-right 0
+
+		&::before
+			display block
+			content ''
+			padding-top 100%
+
+		&.image
+			img
+				position absolute
+				top 0
+				left 0
+				right 0
+				left 0
+
+		.grid-tile-footer
+			position absolute
+			bottom 0
+			left 0
+			right 0
+			padding 1em
+			background rgba(black, .3)
+			color white
+
+
+.placeholder
+	&-empty
+	&-loading
+		opacity 1
+		text-align center
+		padding 4rem 1rem
 
 
 .map-wrapper
 	position relative
 	overflow hidden
+	min-height 100px
+	min-width 100px
+
+	map
+		display block
 
 	.mapImage
 		position absolute
@@ -49,166 +309,29 @@ header
 		&.ng-enter.ng-enter-active
 			opacity 1
 
-[class^="icon-"]
-[class*=" icon-"]
-	font-size 24px
-
-md-progress-linear
-	&.fixed-top
-		height 0
-		.md-container
-			top 0
-			z-index 1
-			opacity .8
-			transform translate(0, -5px) scale(1, 0)
-			&.md-ready
-				transform translate(0) scale(1)
-
-.md-toolbar-tools
-	.md-tools
-		&.ng-enter
-		&.ng-leave
-			transition opacity .5s
-
-		&.ng-enter
-		&.ng-leave.ng-leave-active
-			opacity 0
-
-		&.ng-leave
-		&.ng-enter.ng-enter-active
-			opacity 1
+	.button.circle
+		background black
+		color white
 
 
-	BACK-BUTTON-WIDTH = 38px
-	.md-tools.back
-		width BACK-BUTTON-WIDTH
-		margin-right 24px
-		margin-left -6px
-		&.ng-enter
-		&.ng-leave
-			display block
-			position relative
-			overflow visible
-			box-sizing border-box
-			transition all .5s
-			i
-				position relative
+@keyframes progress
+	0%
+		transform translateX(-100%)
+	100%
+		transform translateX(200%)
 
-		&.ng-enter
-		&.ng-leave.ng-leave-active
-			width 0
-			margin-right 0
-			padding-right 0
-			transform translateX(- BACK-BUTTON-WIDTH * 2)
+.progress-linear.top.fixed
+	position relative
+	z-index 10
+	height 0
+	line-height 0
 
-		&.ng-leave
-		&.ng-enter.ng-enter-active
-			margin-right 24px
-			padding-right 6px
-			width BACK-BUTTON-WIDTH
-			transform translateX(0)
-
-
-.md-toolbar-tools
-	& .md-tools
-		padding 16px 8px
-
-
-a
-	&
-	&:hover
-	&:active
-		color inherit
-		text-decoration inherit
-
-
-.md-tile-left
-	min-width 72px
-	md-icon
-		font-size 32px
-		line-height @font-size
-		width @font-size
-		height @font-size
-		padding 16px
-		.md-font
-			font-size inherit
-
-.md-toolbar-tools
-	.md-title
-		overflow ellipsis
-
-.md-subheader:not(.md-sticky-no-effect)
-	margin-right 0
-	&::after
-		right 0
-
-.buttons
-.bottom-buttons
-	& > .md-button
-		margin 8px
-		overflow ellipsis
-		md-icon
-			margin-right 4px
-			height 16px
-			line-height @height
-			vertical-align top
-			.md-font
-				font-size 22px
-				line-height @height
-
-
-.ballot
-	margin 1rem 0 4rem 0
-
-
-	table
-	tr
-	td
-	input
-		padding 0
-		margin 0
-		outline 0
-		border 0
-
-	table
-		width 100%
-		border-collapse collapse
-	td
-
-		&.label
-			padding 1rem
-			padding-left 0
-
-			p
-				margin: 0
-				padding: 0
-
-		&.input
-
-			input
-				width 100%
-				text-align right
-				font-size 2.5rem
-				box-sizing border-box
-				padding 1rem
-				border 1px solid rgba(0,0,0,.2)
-				border-radius 0
-				-webkit-appearance none
-
-				&.ng-invalid
-					border-color rgba(255,0,0,.5)
-					box-shadow 0 0 1px @border-color
-
-	.name
-		font-size 2rem
-		white-space nowrap
-		font-weight bold
-
-
-
-.placeholder
-	&-empty
-	&-loading
-		opacity 1
-		text-align center
-		padding 4rem 8rem
+	&::before
+		content ''
+		position absolute
+		top 0
+		left 0
+		background red
+		width 50%
+		height 4px
+		animation progress .5s infinite
