@@ -190,7 +190,7 @@ toolbarTheme(color)
 	@extend [layout='row']
 	@extend .shadow-z1
 
-	.os-ios.browser-unknown body > &
+	.os-ios.browser-unknown body > &:first-child
 		padding-top 20px
 		min-height @min-height + @padding-top
 
@@ -222,7 +222,7 @@ toolbarTheme(color)
 		margin-left -16px
 
 	&.small
-		min-height: 0
+		min-height: 0 !important
 		padding: 8px 16px
 		font-size: 1em
 		line-height: 1em
