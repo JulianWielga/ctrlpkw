@@ -22,7 +22,7 @@ html(ng-app='app', device-detector)
 			.content(ng-include="'/templates/"+name+".html'", flex, layout='column')
 
 	body(ng-controller='MainCtrl as mainCtrl', fill, layout='column')
-		.toolbar
+		.toolbar.primary
 			button.button.back(ng-if='history.hasPrevious()', ng-click='history.back()')
 				i.icon-arrow-back
 			h2.title {{page.title}}

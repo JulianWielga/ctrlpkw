@@ -12,6 +12,8 @@ body
 
 defaultMargin = 16px
 toolbarHeight = 4 * defaultMargin
+primaryBack = #d4213d
+accentBack = #3d3d3d
 
 html
 body
@@ -41,6 +43,10 @@ a
 		color inherit
 		text-decoration inherit
 
+a
+button
+	outline none
+
 [fill]
 	min-width 100%
 	max-width 100%
@@ -69,10 +75,40 @@ a
 	box-shadow 0px 8px 17px rgba(0, 0, 0, 0.2)
 
 
+
+
+.primary
+	color primaryBack
+.accent
+	color accentBack
+
+
+
+
+
+
+
+
+buttonTheme(color)
+	background white
+	color color
+	&.raised
+		@extend .shadow-z1
+		background color
+		if dark(color)
+			color white
+		else
+			color black
+
+		&:active
+		&:focus
+			if dark(@background)
+				background lighten(@background, 30%)
+			else
+				background darken(@background, 30%)
+
 .button
-	background none
 	border none
-	color inherit
 	display block
 	border-radius 3px
 	box-sizing border-box
@@ -82,9 +118,7 @@ a
 	font-weight 500
 	text-align center
 	text-transform uppercase
-	&:active
-	&:focus
-		background red
+
 
 	overflow ellipsis
 	.text
@@ -108,9 +142,6 @@ a
 		&.right
 			right defaultMargin
 
-		background white
-		color black
-
 		border-radius 100%
 		font-size 20px
 		padding 12px
@@ -119,14 +150,43 @@ a
 		height @width
 		@extend .shadow-z1
 
+	background rgba(black, 0)
+	color inherit
+	&:active
+	&:focus
+		background rgba(@background, .2)
 
+	&.primary
+		buttonTheme primaryBack
+	&.accent
+		buttonTheme accentBack
+
+
+
+
+
+
+
+
+toolbarTheme(color)
+	background color
+	if dark(color)
+		color white
+	else
+		color black
 
 .toolbar
-	background red
-	color white
+	background white
+	&.primary
+		toolbarTheme primaryBack
+	&.accent
+		toolbarTheme accentBack
+
+
 	min-height toolbarHeight
 	box-sizing border-box
 	align-items center
+	z-index 1
 	@extend [layout='row']
 	@extend .shadow-z1
 
@@ -185,7 +245,7 @@ a
 	padding defaultMargin
 
 .divider
-	border-top 1px solid black
+	border-top 1px solid rgba(black, .2)
 
 .buttons
 	padding 4px
@@ -309,10 +369,6 @@ a
 		&.ng-enter.ng-enter-active
 			opacity 1
 
-	.button.circle
-		background black
-		color white
-
 
 @keyframes progress
 	0%
@@ -331,7 +387,8 @@ a
 		position absolute
 		top 0
 		left 0
-		background red
 		width 50%
 		height 4px
 		animation progress .5s infinite
+
+		background saturate(primaryBack, 100%)
