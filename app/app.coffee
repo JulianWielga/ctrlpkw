@@ -27,6 +27,7 @@ angular.module 'app', [
 	'cordova.Ready'
 	'ngCordova.plugins.geolocation'
 	'ngCordova.plugins.camera'
+	'config.vars'
 
 	# jade / html templates and templates
 	'app.templates'
@@ -62,9 +63,32 @@ angular.module 'app', [
 
 .config [
 	'$httpProvider'
-	($httpProvider, config) ->
+	($httpProvider) ->
 		$httpProvider.defaults.useXDomain = yes
 #		$httpProvider.defaults.withCredentials = yes
+		$httpProvider.interceptors.push [
+			'$q', '$location', 'varsConfig'
+			($q, $location, varsConfig) ->
+				request: (config) ->
+					angular.extend config.headers,
+						'ctrl-pkw-client-version': varsConfig.version
+
+					if transforms = config.transformResponse
+						transforms = [transforms] unless angular.isArray(transforms)
+					else
+						defaults = $httpProvider.defaults.transformResponse
+						transforms = [defaults] unless angular.isArray(defaults)
+
+					transforms.unshift (data, headersGetter, status) ->
+						#TODO: jakiś inny warunek, jakaś inna akcja...
+						if status is 403
+							window.location.replace headersGetter().location
+						return data
+
+					config.transformResponse = transforms
+					return config
+
+		]
 ]
 
 .config [

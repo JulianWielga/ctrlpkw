@@ -3,14 +3,14 @@
 #apiUrl = 'http://ctrlpkw.pl:80/api'
 
 angular.module 'main.resources.votings', [
-	'config.api'
+	'config.vars'
 ]
 
 .factory 'VotingsResources', [
-	'$resource', 'apiConfig'
-	($resource, apiConfig) ->
+	'$resource', 'varsConfig'
+	($resource, varsConfig) ->
 
-		$resource "#{apiConfig.base}/votings/:date/:action",
+		$resource "#{varsConfig.api}/votings/:date/:action",
 			date: '@date'
 		,
 			getVotings:
@@ -33,8 +33,8 @@ angular.module 'main.resources.votings', [
 
 
 .factory 'ProtocolsResources', [
-	'$resource', 'apiConfig'
-	($resource, apiConfig) ->
+	'$resource', 'varsConfig'
+	($resource, varsConfig) ->
 
-		$resource "#{apiConfig.base}/protocols/:id", {}
+		$resource "#{varsConfig.api}/protocols/:id", {}
 ]
