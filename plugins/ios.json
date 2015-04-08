@@ -7,7 +7,13 @@
         "files": {
             "framework": {
                 "parents": {
-                    "CoreMotion.framework": [
+                    "AVFoundation.framework": [
+                        {
+                            "xml": "false",
+                            "count": 1
+                        }
+                    ],
+                    "CoreData.framework": [
                         {
                             "xml": "false",
                             "count": 1
@@ -16,135 +22,71 @@
                     "CoreLocation.framework": [
                         {
                             "xml": "false",
-                            "count": 2
-                        },
-                        {
-                            "xml": false,
-                            "count": 1
-                        }
-                    ],
-                    "AVFoundation.framework": [
-                        {
-                            "xml": "false",
-                            "count": 2
-                        },
-                        {
-                            "xml": false,
-                            "count": 1
-                        }
-                    ],
-                    "CoreData.framework": [
-                        {
-                            "xml": "false",
-                            "count": 2
-                        },
-                        {
-                            "xml": false,
-                            "count": 1
+                            "count": 4
                         }
                     ],
                     "CoreText.framework": [
                         {
                             "xml": "false",
-                            "count": 2
-                        },
-                        {
-                            "xml": false,
                             "count": 1
                         }
                     ],
                     "GLKit.framework": [
                         {
                             "xml": "false",
-                            "count": 2
-                        },
-                        {
-                            "xml": false,
                             "count": 1
                         }
                     ],
                     "ImageIO.framework": [
                         {
-                            "xml": "true",
+                            "xml": "false",
                             "count": 1
                         },
                         {
-                            "xml": "false",
-                            "count": 2
-                        },
-                        {
-                            "xml": false,
+                            "xml": "true",
                             "count": 1
                         }
                     ],
                     "libc++.dylib": [
                         {
                             "xml": "false",
-                            "count": 2
-                        },
-                        {
-                            "xml": false,
                             "count": 1
                         }
                     ],
                     "libicucore.dylib": [
                         {
                             "xml": "false",
-                            "count": 2
-                        },
-                        {
-                            "xml": false,
                             "count": 1
                         }
                     ],
                     "libz.dylib": [
                         {
                             "xml": "false",
-                            "count": 2
-                        },
-                        {
-                            "xml": false,
                             "count": 1
                         }
                     ],
                     "OpenGLES.framework": [
                         {
                             "xml": "false",
-                            "count": 2
-                        },
-                        {
-                            "xml": false,
                             "count": 1
                         }
                     ],
                     "QuartzCore.framework": [
                         {
                             "xml": "false",
-                            "count": 2
-                        },
-                        {
-                            "xml": false,
                             "count": 1
                         }
                     ],
                     "SystemConfiguration.framework": [
                         {
                             "xml": "false",
-                            "count": 2
-                        },
-                        {
-                            "xml": false,
                             "count": 1
                         }
                     ],
                     "CoreGraphics.framework": [
                         {
                             "xml": "false",
-                            "count": 1
-                        },
-                        {
-                            "xml": false,
-                            "count": 1
+                            "count": 2
                         }
                     ],
                     "AssetsLibrary.framework": [
@@ -158,6 +100,12 @@
                             "xml": "false",
                             "count": 1
                         }
+                    ],
+                    "CoreMotion.framework": [
+                        {
+                            "xml": "false",
+                            "count": 1
+                        }
                     ]
                 }
             },
@@ -165,11 +113,23 @@
                 "parents": {
                     "/*": [
                         {
+                            "xml": "<feature name=\"Camera\"><param name=\"ios-package\" value=\"CDVCamera\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<preference name=\"CameraUsesGeolocation\" value=\"false\" />",
+                            "count": 1
+                        },
+                        {
                             "xml": "<feature name=\"Accelerometer\"><param name=\"ios-package\" value=\"CDVAccelerometer\" /></feature>",
                             "count": 1
                         },
                         {
                             "xml": "<feature name=\"Compass\"><param name=\"ios-package\" value=\"CDVCompass\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Geolocation\"><param name=\"ios-package\" value=\"CDVLocation\" /></feature>",
                             "count": 1
                         },
                         {
@@ -182,18 +142,6 @@
                         },
                         {
                             "xml": "<preference name=\"StatusBarStyle\" value=\"lightcontent\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"Camera\"><param name=\"ios-package\" value=\"CDVCamera\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<preference name=\"CameraUsesGeolocation\" value=\"false\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"Geolocation\"><param name=\"ios-package\" value=\"CDVLocation\" /></feature>",
                             "count": 1
                         },
                         {
@@ -250,19 +198,28 @@
         }
     },
     "installed_plugins": {
+        "android.support.v4": {
+            "PACKAGE_NAME": "com.phonegap.helloworld"
+        },
+        "com.google.playservices": {
+            "PACKAGE_NAME": "com.phonegap.helloworld"
+        },
+        "com.googlemaps.ios": {
+            "PACKAGE_NAME": "com.phonegap.helloworld"
+        },
+        "org.apache.cordova.camera": {
+            "PACKAGE_NAME": "com.phonegap.helloworld"
+        },
         "org.apache.cordova.device-motion": {
             "PACKAGE_NAME": "com.phonegap.helloworld"
         },
         "org.apache.cordova.device-orientation": {
             "PACKAGE_NAME": "com.phonegap.helloworld"
         },
-        "org.apache.cordova.statusbar": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
-        },
-        "org.apache.cordova.camera": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
-        },
         "org.apache.cordova.geolocation": {
+            "PACKAGE_NAME": "com.phonegap.helloworld"
+        },
+        "org.apache.cordova.statusbar": {
             "PACKAGE_NAME": "com.phonegap.helloworld"
         },
         "plugin.google.maps": {
@@ -272,9 +229,6 @@
     },
     "dependent_plugins": {
         "plugin.http.request": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
-        },
-        "com.googlemaps.ios": {
             "PACKAGE_NAME": "com.phonegap.helloworld"
         }
     }

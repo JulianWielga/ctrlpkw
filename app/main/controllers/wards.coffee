@@ -47,6 +47,7 @@ angular.module 'main.controllers.wards', [
 
 					@timeout =>
 						@getWards()
+					, 250
 
 			if @data.selectedWards.length is 1
 				ward = @data.selectedWards[0]
