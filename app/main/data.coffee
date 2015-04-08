@@ -87,4 +87,7 @@ angular.module 'main.data', []
 				votingDate: @selectedVoting
 			, protocol
 
+		currentVoting: =>
+			if @selectedVoting?
+				_.find(@votings, date: @selectedVoting)
 ]

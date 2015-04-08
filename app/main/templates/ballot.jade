@@ -55,19 +55,6 @@ mixin input(model)
 						.grid-tile(ng-repeat='image in ctrl.images').image
 							img(ng-src='{{image.src}}')
 							.grid-tile-footer(ng-if='!image.res.$resolved') przesyłam...
-						.grid-tile.image
-							img(ng-src='http://www.redisbad.pl/design/_gallery/_600_600_3/2088.jpg')
-							.grid-tile-footer(ng-if='!image.res.$resolved') przesyłam...
-						.grid-tile.image
-							img(ng-src='http://www.fightershop.com.pl/foto/news/big/e02c2e1f446f505891d57f894fd72ae4.jpg')
-							.grid-tile-footer(ng-if='!image.res.$resolved') przesyłam...
-						.grid-tile.image
-							img(ng-src='http://www.redisbad.pl/design/_gallery/_600_600_3/2088.jpg')
-							.grid-tile-footer(ng-if='!image.res.$resolved') przesyłam...
-						.grid-tile.image
-							img(ng-src='http://www.fakt.pl/m/Repozytorium.Obiekt.aspx/-690/-550/faktonline/634823084269907731.jpeg')
-						.grid-tile.image
-							img(ng-src='http://www.redisbad.pl/design/_gallery/_600_600_3/2088.jpg')
 			.divider
 			.buttons
 				a.button(ang-if='ctrl.images.length', ng-href='#/wards/{{ctrl.communityCode}}/{{ctrl.wardNo}}/ballots/{{ctrl.ballot.no}}/share', promised-fn='ctrl.sendResult()')

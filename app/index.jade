@@ -32,6 +32,8 @@ html(ng-app='app', device-detector)
 				i.icon-my-location
 			a.button(ng-if="subview == 'voting'", ng-href='#/wards')
 				i.icon-list
+		.toolbar.small(ng-if='mainCtrl.data.currentVoting()')
+			span {{mainCtrl.data.currentVoting().description}}
 
 		.view-switch(ng-switch='subview', flex, layout='column')
 			+subview('votings')
