@@ -74,7 +74,7 @@ exports.config =
 				command: 'ripple emulate'
 
 			onCompile: (files) ->
-				exec 'phonegap prepare'
+				exec 'cordova prepare'
 
 
 
