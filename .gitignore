@@ -3,15 +3,12 @@ nbproject
 manifest.mf
 build.xml
 
-node_modules
-
 .project
 .settings
 .idea/*
 *.iml
 
-_public
-node_modules/*
+node_modules/
 npm-debug.log
 node/
 
@@ -23,6 +20,6 @@ coverage/
 test/test-results.xml
 test-results.xml
 
-target/
 www/
+plugins/
 platforms/
