@@ -27,11 +27,12 @@ class Maps
 
 angular.module 'cordova.plugin.googleMaps', [
 	'cordova.Ready'
+	'config.vars'
 ]
 
 .factory "initMaps", [
-	'$q', '$injector', 'crdReady'
-	($q, $injector, crdReady) ->
+	'$q', '$injector', 'crdReady', 'varsConfig'
+	($q, $injector, crdReady, varsConfig) ->
 		deferred = $q.defer()
 
 		checkNative = crdReady ->
@@ -53,8 +54,7 @@ angular.module 'cordova.plugin.googleMaps', [
 				noMaps()
 				delete window[callbackName]
 			, 10000
-			mapsApiKey = 'AIzaSyDvoIJEBVWnFvqMnSLPvu4Ce7cD8tJmNjc'
-			url = "https://maps.googleapis.com/maps/api/js?key=#{mapsApiKey}"
+			url = "#{varsConfig.googleMaps}/js?key=#{varsConfig.mapsApiKey}"
 			script = document.createElement 'script'
 			script.type = 'text/javascript'
 			script.src = "#{url}&callback=#{callbackName}"

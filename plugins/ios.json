@@ -143,22 +143,6 @@
                         {
                             "xml": "<preference name=\"StatusBarStyle\" value=\"lightcontent\" />",
                             "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"HttpRequest\"><param name=\"ios-package\" value=\"HttpRequest\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"GoogleMaps\"><param name=\"ios-package\" value=\"GoogleMaps\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"External\"><param name=\"ios-package\" value=\"External\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"Geocoder\"><param name=\"ios-package\" value=\"Geocoder\" /></feature>",
-                            "count": 1
                         }
                     ]
                 }
@@ -169,28 +153,6 @@
                         {
                             "xml": "<string />",
                             "count": 2
-                        },
-                        {
-                            "xml": "<string>Show your location on the map</string>",
-                            "count": 1
-                        }
-                    ],
-                    "Google Maps API Key": [
-                        {
-                            "xml": "<string>AIzaSyB52Yqqz2jex4NhBRa4VrMTW9AC0W68n0U</string>",
-                            "count": 1
-                        }
-                    ],
-                    "NSLocationAlwaysUsageDescription": [
-                        {
-                            "xml": "<string>Trace your location on the map</string>",
-                            "count": 2
-                        }
-                    ],
-                    "CFBundleURLTypes": [
-                        {
-                            "xml": "<array><dict><key>CFBundleTypeRole</key><string>Editor</string><key>CFBundleURLName</key><string>com.phonegap.helloworld</string><key>CFBundleURLSchemes</key><array><string>com.phonegap.helloworld</string></array></dict></array>",
-                            "count": 1
                         }
                     ]
                 }
@@ -199,37 +161,29 @@
     },
     "installed_plugins": {
         "android.support.v4": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
+            "PACKAGE_NAME": "pl.touk.ctrlpkw"
         },
         "com.google.playservices": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
+            "PACKAGE_NAME": "pl.touk.ctrlpkw"
         },
         "com.googlemaps.ios": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
+            "PACKAGE_NAME": "pl.touk.ctrlpkw"
         },
         "org.apache.cordova.camera": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
+            "PACKAGE_NAME": "pl.touk.ctrlpkw"
         },
         "org.apache.cordova.device-motion": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
+            "PACKAGE_NAME": "pl.touk.ctrlpkw"
         },
         "org.apache.cordova.device-orientation": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
+            "PACKAGE_NAME": "pl.touk.ctrlpkw"
         },
         "org.apache.cordova.geolocation": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
+            "PACKAGE_NAME": "pl.touk.ctrlpkw"
         },
         "org.apache.cordova.statusbar": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
-        },
-        "plugin.google.maps": {
-            "API_KEY_FOR_IOS": "AIzaSyB52Yqqz2jex4NhBRa4VrMTW9AC0W68n0U",
-            "PACKAGE_NAME": "com.phonegap.helloworld"
+            "PACKAGE_NAME": "pl.touk.ctrlpkw"
         }
     },
-    "dependent_plugins": {
-        "plugin.http.request": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
-        }
-    }
+    "dependent_plugins": {}
 }
