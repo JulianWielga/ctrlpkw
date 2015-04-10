@@ -86,7 +86,7 @@ angular.module 'directives.googleMaps', [
 
 		_doCenterOnLocation: => _.debounce (position, fast) =>
 			pos = @Map.latLng position.coords.latitude, position.coords.longitude
-			@Map[if fast then 'moveTo' else 'panTo'] @map, pos
+			@Map[if fast then 'moveTo' else 'panTo'] @map, pos, 12
 		, 250
 
 		centerOnLocation: (fast) =>

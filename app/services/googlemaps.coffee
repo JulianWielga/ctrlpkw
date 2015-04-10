@@ -115,16 +115,16 @@ angular.module 'cordova.plugin.googleMaps', [
 				duration: 1000
 			setTimeout -> map.setPadding 0
 
-		panTo: (map, position) -> map.getCameraPosition (camera) ->
+		panTo: (map, position, zoom) -> map.getCameraPosition (camera) ->
 			map.animateCamera
 				target: position
-				zoom: camera.zoom
+				zoom: zoom or camera.zoom
 				duration: 1000
 
-		moveTo: (map, position) -> map.getCameraPosition (camera) ->
+		moveTo: (map, position, zoom) -> map.getCameraPosition (camera) ->
 			map.moveCamera
 				target: position
-				zoom: camera.zoom
+				zoom: zoom or camera.zoom
 
 		latLng: (latitude, longitude) ->
 			new plugin.google.maps.LatLng latitude, longitude
@@ -305,9 +305,13 @@ angular.module 'cordova.plugin.googleMaps', [
 
 		fitBounds: (map, bounds) => map.fitBounds bounds
 
-		panTo: (map, position) => map.panTo position
+		panTo: (map, position, zoom) =>
+			map.panTo position
+			map.setZoom zoom if zoom?
 
-		moveTo: (map, position) => map.setCenter position
+		moveTo: (map, position, zoom) =>
+			map.setCenter position
+			map.setZoom zoom if zoom?
 
 		latLng: (latitude, longitude) ->
 			new google.maps.LatLng latitude, longitude
