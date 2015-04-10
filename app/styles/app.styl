@@ -386,7 +386,6 @@ toolbarTheme(color)
 	z-index 10
 	height 0
 	line-height 0
-
 	&::before
 		content ''
 		position absolute
@@ -394,6 +393,6 @@ toolbarTheme(color)
 		left 0
 		width 50%
 		height 4px
-		animation progress .5s infinite
-
 		background saturate(primaryBack, 100%)
+	&:not(.ng-enter)::before
+		animation progress .5s infinite
