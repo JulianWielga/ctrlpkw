@@ -86,7 +86,7 @@ angular.module 'directives.googleMaps', [
 
 		_doCenterOnLocation: => _.debounce (position, fast) =>
 			pos = @Map.latLng position.coords.latitude, position.coords.longitude
-			@Map[if fast then 'moveTo' else 'panTo'] @map, pos, 12
+			@Map[if fast then 'moveTo' else 'panTo'] @map, pos, 14
 		, 250
 
 		centerOnLocation: (fast) =>
@@ -174,15 +174,15 @@ angular.module 'directives.googleMaps', [
 		createMarker: (marker) =>
 			console.log 'createMarker'
 			count = marker.wards.length if marker.wards?.length > 1
-			scale = .75 unless _.every marker.wards, protocolStatus: 'LACK'
+			suffix = '_d' unless _.any marker.wards, protocolStatus: 'LACK'
 
 			m = @Map.createMarker @map,
 				position: @Map.latLng marker.location.latitude, marker.location.longitude
 				icon:
-					url: "img/marker#{count or ''}.png"
+					url: "img/marker#{suffix or ''}#{count or ''}.png"
 					size:
-						width: (44/2) * (scale or 1)
-						height: (80/2) * (scale or 1)
+						width: (58/2)
+						height: (83/2)
 			m.then (el) =>
 				@Map.onMarkerClick el, => @onMarkerClick marker
 			return m
