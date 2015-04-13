@@ -1,24 +1,24 @@
 ripple:
-  api: 'http://ctrlpkw.pl/api'
+  api: '@api_url'
   cloudinary: 'https://api.cloudinary.com/v1_1'
   googleMaps: 'https://maps.googleapis.com/maps/api'
-  mapsApiKey: 'AIzaSyD9ZdOYFEhmyyMWWc7fMQRaV8xKsKWnijw'
+  mapsApiKey: '@js_map_key'
   cloudName: 'ddj4jx8rq'
-  version: '0.0.1'
+  version: '@app_version'
 
 
 production:
-  api: 'http://ctrlpkw.pl/api'
+  api: '@api_url'
   cloudinary: 'https://api.cloudinary.com/v1_1'
   googleMaps: 'https://maps.googleapis.com/maps/api'
-  mapsApiKey: 'AIzaSyD9ZdOYFEhmyyMWWc7fMQRaV8xKsKWnijw'
+  mapsApiKey: '@js_map_key'
   cloudName: 'ddj4jx8rq'
-  version: '0.0.1'
+  version: '@app_version'
 
 development:
-  api: 'http://ctrlpkw.pl/api'
+  api: '@api_url'
   cloudinary: 'https://api.cloudinary.com/v1_1'
   googleMaps: 'https://maps.googleapis.com/maps/api'
-  mapsApiKey: 'AIzaSyD9ZdOYFEhmyyMWWc7fMQRaV8xKsKWnijw'
+  mapsApiKey: '@js_map_key'
   cloudName: 'ddj4jx8rq'
-  version: '0.0.1'
+  version: '@app_version'
