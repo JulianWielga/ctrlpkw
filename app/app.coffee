@@ -82,7 +82,11 @@ angular.module 'app', [
 					transforms.unshift (data, headersGetter, status) ->
 						#TODO: jakiś inny warunek, jakaś inna akcja...
 						if status is 403
-							window.location.replace headersGetter().location
+							title = 'Nowa wersja aplikacji'
+							text = 'Masz nieaktualną wersję aplikacji. Pobierz najnowszą wersję ze sklepu, ta nie będzie działać.'
+							navigator.notification.alert text, ->
+								window.open headersGetter().location, '_system'
+							, title, 'Uaktualnij'
 						return data
 
 					config.transformResponse = transforms

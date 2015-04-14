@@ -76,13 +76,13 @@
         <icon height="58" src="resources/ios/icon/icon-small@2x.png" width="58" />
         <icon height="87" src="resources/ios/icon/icon-small@3x.png" width="87" />
     </platform>
-	<feature name="phonegap-googlemaps-plugin">
+    <feature name="phonegap-googlemaps-plugin">
 		<param name="id" value="plugin.google.maps"/>
 		<param name="installPath" value="https://github.com/JulianWielga/phonegap-googlemaps-plugin.git"/>
         <!--TODO: dodac klucze przed buildem-->
 		<variable name="API_KEY_FOR_ANDROID" value="@android_map_key"/>
 		<variable name="API_KEY_FOR_IOS" value="@ios_map_key"/>
-	</feature>
+    </feature>
     <feature name="Camera">
         <param name="id" value="org.apache.cordova.camera" />
     </feature>
@@ -97,5 +97,11 @@
     </feature>
     <feature name="StatusBar">
         <param name="id" value="org.apache.cordova.statusbar" />
+    </feature>
+    <feature name="Notification">
+        <param name="id" value="org.apache.cordova.dialogs" />
+    </feature>
+    <feature name="InAppBrowser">
+        <param name="id" value="org.apache.cordova.inappbrowser" />
     </feature>
 </widget>
