@@ -50,6 +50,8 @@ angular.module 'main.controllers.ballot', [
 				ballotResult: @result
 			@request.$promise.then (response) =>
 				@uploadParams = response
+			.catch (res) =>
+				@fieldErrors = res.data
 			.finally =>
 				@loading = no
 			return @request.$promise

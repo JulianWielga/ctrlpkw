@@ -181,8 +181,8 @@ angular.module 'directives.googleMaps', [
 				icon:
 					url: "img/marker#{suffix or ''}#{count or ''}.png"
 					size:
-						width: (58/2) * .85
-						height: (83/2) * .85
+						width: (58/2) * (0.85)
+						height: (83/2) * (0.85)
 			m.then (el) =>
 				@Map.onMarkerClick el, => @onMarkerClick marker
 			return m
