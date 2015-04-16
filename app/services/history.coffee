@@ -45,11 +45,13 @@ angular.module 'touk.jwl.history', []
 ]
 
 .run [
-	'$history', '$timeout'
-	($history, $timeout) ->
+	'$history', '$timeout', '$rootScope'
+	($history, $timeout, $rootScope) ->
 		document.addEventListener 'backbutton', (event) ->
 			event.preventDefault()
 			$timeout =>
-				$history.back() or navigator?.app?.exitApp?()
+				$history.back() or $rootScope.$broadcast('EXIT_APP')
 		, false
+
+		$rootScope.$on 'EXIT_APP', -> navigator?.app?.exitApp?()
 ]

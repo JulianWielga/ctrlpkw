@@ -101,6 +101,9 @@ angular.module 'cordova.plugin.googleMaps', [
 					bearing: params.bearing
 
 			map.on plugin.google.maps.event.CAMERA_CHANGE, @_onMapCameraChanged(map)
+
+			@rootScope.$on 'EXIT_APP', -> map.remove()
+
 			return map
 
 		_onMapCameraChanged: (map) => =>
