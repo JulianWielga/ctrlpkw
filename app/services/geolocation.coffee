@@ -55,7 +55,8 @@ angular.module "ngCordova.plugins.geolocation", [
 
 		start: =>
 			@stop()
-			@promise = @geolocation.watchPosition().then null, null, (@lastPosition) =>
+			@promise = @geolocation.watchPosition()
+			@promise.then null, null, (@lastPosition) =>
 				@rootScope.$broadcast 'LOCATION_CHANGED', @lastPosition
 				@document.triggerHandler 'location_changed'
 
