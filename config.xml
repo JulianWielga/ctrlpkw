@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <widget id="pl.touk.ctrlpkw" version="@app_version" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
-    <name>CtrlPKW</name>
+    <name>Ctrl-PKW</name>
     <description>
 		Aplikacja do zliczania głosów z protokołów komisji wyborczych
 	</description>
