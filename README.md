@@ -16,4 +16,3 @@ Instalacja na telefonie (emulatorze/symulatorze):
 
 Podgląd w przeglądarce:
 - npm run ripple
-
