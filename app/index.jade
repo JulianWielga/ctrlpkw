@@ -34,6 +34,13 @@ html(ng-app='app', device-detector)
 				i.icon-list
 		.toolbar.small(ng-if='mainCtrl.data.currentVoting()')
 			span {{mainCtrl.data.currentVoting().description}}
+		.toolbar.error(ng-if='mainCtrl.errors.noNetworkConnection')
+			span Błąd! Włącz przesyłanie danych pakietowych.
+		.toolbar.error(ng-if='mainCtrl.errors.noLocationService')
+			span Błąd! Włącz lokalizację GPS.
+		.toolbar.error(ng-if='mainCtrl.errors.upgradeRequired')
+			span Błąd! Pobierz nową wersję aplikacji.
+
 
 		.view-switch(ng-switch='subview', flex, layout='column')
 			+subview('votings')

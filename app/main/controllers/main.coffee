@@ -10,8 +10,9 @@ angular.module 'main.controllers.main', [
 	'$routeParams'
 	'requestContext'
 	'ApplicationData'
+	'ApplicationErrors'
 
-	($scope, $route, $routeParams, requestContext, data) ->
+	($scope, $route, $routeParams, requestContext, data, errors) ->
 		# Get the render context local to this controller (and relevant params).
 		renderContext = requestContext.getRenderContext()
 
@@ -39,5 +40,6 @@ angular.module 'main.controllers.main', [
 			$scope.$broadcast "requestContextChanged", requestContext
 
 		@data = data
+		@errors = errors
 
 ]

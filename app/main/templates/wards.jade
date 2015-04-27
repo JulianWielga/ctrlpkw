@@ -11,7 +11,7 @@
 							p {{ward.address}}
 
 
-	.placeholder-loading(flex, ng-if='!ctrl.data.selectedWards.length', layout="column", layout-align="center center", us-spinner)
+	.placeholder-loading(flex, ng-if='ctrl.locationPending || ctrl.data.wardsLoading', layout="column", layout-align="center center", us-spinner)
 		h1.md-body-1(ng-if='ctrl.locationPending') Oczekuję na lokalizacje...
 		h1.md-body-1(ng-if='ctrl.data.wardsLoading') Pobieram listę lokali...
 

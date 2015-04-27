@@ -9,6 +9,7 @@ angular.module 'main.controllers.wards', [
 	'$page'
 	'RenderContextFactory'
 	'ApplicationData'
+	'ApplicationErrors'
 	'$cordovaGeolocation'
 	'locationMonitor'
 	'$location'
@@ -16,7 +17,7 @@ angular.module 'main.controllers.wards', [
 	'$timeout'
 
 	class WardsController
-		constructor: (@scope, $page, RenderContext, @data, @cordovaGeolocation, @locationMonitor, @location, @history, @timeout) ->
+		constructor: (@scope, $page, RenderContext, @data, @errors, @cordovaGeolocation, @locationMonitor, @location, @history, @timeout) ->
 			$page.title = 'Lokale wyborcze'
 			renderContext = new RenderContext @scope, 'wards', 'date'
 
@@ -62,7 +63,12 @@ angular.module 'main.controllers.wards', [
 				@locationPending = no
 			else
 				@cordovaGeolocation.getCurrentPosition()
-				.then @data.getWards
+				.then (=>
+					@errors.noLocationService = false
+					@data.getWards
+				) (=>
+					@errors.noLocationService = true
+				)
 				.finally => @locationPending = no
 
 ]
