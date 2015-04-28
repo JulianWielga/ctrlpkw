@@ -1,0 +1,15 @@
+.controller(ng-controller='ErrorsController as ctrl',flex, layout="column")
+	.content(flex)
+		.toolbar.error(ng-if='errors.noNetworkConnection')
+			span Aplikajca wymaga dostępu do internetu. Włącz Wi-Fi lub przesyłanie danych pakietowych.
+		.toolbar.error(ng-if='errors.noLocationService')
+			span Pobranie lokalizacji nie powiodło się. Sprawdź czy usługa GPS jest włączona i czy aplikacja ma do niej dostęp.
+		.toolbar.error(ng-if='errors.upgradeRequired')
+			span Masz nieaktualną wersję aplikacji. Pobierz najnowszą wersję ze sklepu, ta nie będzie działać.
+		.toolbar.error(ng-if='errors.unknown')
+			span Niespodziewany problem.
+
+	.divider
+		.buttons
+			a.button(ng-click='errors.clear()')
+				span.text spróbuj ponownie

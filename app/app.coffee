@@ -43,8 +43,8 @@ angular.module 'app', [
 
 		.when '/votings', action: 'votings'
 
-		.when '/voting', action: 'voting'
-		.when '/voting/:date', action: 'voting'
+		.when '/wardsmap', action: 'wardsmap'
+		.when '/wardsmap/:date', action: 'wardsmap'
 
 		.when '/wards', action: 'wards'
 		.when '/wards/:date', action: 'wards'

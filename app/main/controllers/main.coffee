@@ -2,6 +2,7 @@
 
 angular.module 'main.controllers.main', [
 	'RequestContext'
+	'main.services.errors'
 ]
 
 .controller 'MainCtrl', [
@@ -10,9 +11,9 @@ angular.module 'main.controllers.main', [
 	'$routeParams'
 	'requestContext'
 	'ApplicationData'
-	'ApplicationErrors'
+	'$errors'
 
-	($scope, $route, $routeParams, requestContext, data, errors) ->
+	($scope, $route, $routeParams, requestContext, data, $errors) ->
 		# Get the render context local to this controller (and relevant params).
 		renderContext = requestContext.getRenderContext()
 
@@ -39,7 +40,9 @@ angular.module 'main.controllers.main', [
 			# Announce the change in render conditions.
 			$scope.$broadcast "requestContextChanged", requestContext
 
+		$scope.errors = $errors
+		$scope.$on "$locationChangeStart", -> $scope.errors.clear()
+
 		@data = data
-		@errors = errors
 
 ]

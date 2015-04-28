@@ -2,6 +2,7 @@
 
 angular.module 'main.controllers.wards', [
 	'RequestContext'
+	'main.services.errors'
 ]
 
 .controller 'WardsController', [
@@ -9,15 +10,15 @@ angular.module 'main.controllers.wards', [
 	'$page'
 	'RenderContextFactory'
 	'ApplicationData'
-	'ApplicationErrors'
 	'$cordovaGeolocation'
 	'locationMonitor'
 	'$location'
 	'$history'
 	'$timeout'
+	'$errors'
 
 	class WardsController
-		constructor: (@scope, $page, RenderContext, @data, @errors, @cordovaGeolocation, @locationMonitor, @location, @history, @timeout) ->
+		constructor: (@scope, $page, RenderContext, @data, @cordovaGeolocation, @locationMonitor, @location, @history, @timeout, @errors) ->
 			$page.title = 'Lokale wyborcze'
 			renderContext = new RenderContext @scope, 'wards', 'date'
 
@@ -32,10 +33,13 @@ angular.module 'main.controllers.wards', [
 				@data.selectedVoting = votingDate
 				@init()
 			else
-				@data.votings.$promise.then =>
+				@data.getVotings()
+				.then =>
 					@history.replace()
 					@location.replace()
 					@location.path "/wards/#{@data.selectedVoting}"
+				.catch =>
+					@errors.noNetworkConnection = true
 
 		init: => @timeout =>
 			unless @data.selectedWards?.length
@@ -57,18 +61,19 @@ angular.module 'main.controllers.wards', [
 				@location.path "/wards/#{ward.communityCode}/#{ward.no}"
 
 		getWards: =>
-			@locationPending = yes
-			if @locationMonitor?.lastPosition
-				@data.getWards @locationMonitor.lastPosition
-				@locationPending = no
-			else
-				@cordovaGeolocation.getCurrentPosition()
-				.then (=>
-					@errors.noLocationService = false
-					@data.getWards
-				) (=>
-					@errors.noLocationService = true
-				)
-				.finally => @locationPending = no
+			@data.getVotings()
+			.then =>
+				@locationPending = yes
+				if @locationMonitor?.lastPosition
+					@data.getWards @locationMonitor.lastPosition
+					@locationPending = no
+				else
+					@cordovaGeolocation.getCurrentPosition(timeout: 60000)
+					.then @data.getWards
+					.catch =>
+						@errors.noLocationService= true
+					.finally => @locationPending = no
+			.catch =>
+				@errors.noNetworkConnection = true
 
 ]

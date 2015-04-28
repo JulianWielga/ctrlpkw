@@ -1,10 +1,10 @@
 'use strict'
 
-angular.module 'main.controllers.voting', [
+angular.module 'main.controllers.wardsmap', [
 	'RequestContext'
 ]
 
-.controller 'VotingController', [
+.controller 'WardsmapController', [
 	'$scope'
 	'RenderContextFactory'
 	'ApplicationData'
@@ -15,9 +15,9 @@ angular.module 'main.controllers.voting', [
 	'$history'
 	'$page'
 
-	class VotingController
+	class WardsmapController
 		constructor: (@scope, RenderContext, @data, @cordovaGeolocation, @locationMonitor, @location, @timeout, @history, @page) ->
-			renderContext = new RenderContext @scope, 'voting', 'date'
+			renderContext = new RenderContext @scope, 'wardsmap', 'date'
 
 			@scope.$on "requestContextChanged", =>
 				return unless renderContext.isChangeRelevant()
@@ -34,7 +34,7 @@ angular.module 'main.controllers.voting', [
 				@data.votings.$promise.then =>
 					@history.replace()
 					@location.replace()
-					@location.path "/voting/#{@data.selectedVoting}"
+					@location.path "/wardsmap/#{@data.selectedVoting}"
 
 		init: =>
 			@updateWards() unless @data.wards.length
@@ -42,7 +42,8 @@ angular.module 'main.controllers.voting', [
 
 		updateWards: =>
 			@data.clearMapData()
-			@getMapCenter?().then @data.getWards
+			@getMapCenter?().then (position) =>
+				@data.getWards?(position)
 
 		onMarkerClick: (marker) =>
 			@data.selectedWards = marker.wards
