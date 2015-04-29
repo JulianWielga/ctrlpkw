@@ -38,3 +38,11 @@ angular.module 'main.resources.votings', [
 
 		$resource "#{varsConfig.api}/protocols/:id", {}
 ]
+
+.factory 'PictureUploadAuthorizationResource', [
+	'$resource', 'varsConfig'
+	($resource, varsConfig) ->
+
+		$resource "#{varsConfig.api}/protocols/:protocolId/image/:imageId"
+
+]
