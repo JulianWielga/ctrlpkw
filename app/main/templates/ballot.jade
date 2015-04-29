@@ -72,9 +72,9 @@ mixin input(model)
 				section.share
 					h1 Podziel się
 					.buttons
-						button.button.facebook
+						button.button.facebook(ng-click="ctrl.shareFb()")
 							span.text facebook
-						button.button.twitter
+						button.button.twitter(ng-click="ctrl.shareTw()")
 							span.text twitter
 
 			.buttons

@@ -76,4 +76,10 @@ angular.module 'main.controllers.ballot', [
 				image.res.$promise.finally => @loading = no
 				image.src = "data:image/jpeg;base64,#{uri}"
 				@images.push image
+
+		shareFb: =>
+			console.log 'costam costam facebook', @data.currentVoting()
+
+		shareTw: =>
+			console.log 'costam costam twitter', @data.currentVoting()
 ]
