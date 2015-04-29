@@ -1,0 +1,33 @@
+.error
+	padding 10%
+	font-size 1.2em
+	line-height 1.3em
+	text-align center
+	opacity .4
+
+	&::before
+		font-family: 'icomoon';
+		speak: none;
+		font-style: normal;
+		font-weight: normal;
+		font-variant: normal;
+		text-transform: none;
+		line-height: 1;
+
+		/* Better Font Rendering =========== */
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+
+		font-size: 3em;
+		display: block;
+		margin-bottom: 0.2em;
+		opacity: .5;
+
+		content "\e6a2"
+
+	&.gps::before
+		content "\e744"
+	&.net::before
+		content "\e759"
+	&.update::before
+		content "\e7ad"
