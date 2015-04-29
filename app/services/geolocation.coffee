@@ -8,24 +8,29 @@ angular.module "ngCordova.plugins.geolocation", [
 .factory "$cordovaGeolocation", [
 	"$q", 'crdReady'
 	($q, cordovaReady) ->
-		getCurrentPosition: (options) ->
+		defaults =
+			timeout: 20000
+			maximumAge:	30 * 60 * 1000
+#			enableHighAccuracy: yes
+
+		getCurrentPosition: (options = {}) ->
 			q = $q.defer()
 			do cordovaReady ->
 				navigator.geolocation.getCurrentPosition (result) ->
 					q.resolve result
 				, (err) ->
 					q.reject err
-				, options
+				, _.defaults(options, defaults)
 			q.promise
 
-		watchPosition: (options) ->
+		watchPosition: (options = {}) ->
 			q = $q.defer()
 			do cordovaReady ->
 				watchID = navigator.geolocation.watchPosition (result) ->
 					q.notify result
 				, (err) ->
 					q.reject err
-				, options
+				, _.defaults(options, defaults)
 
 				q.promise.cancel = ->
 					navigator.geolocation.clearWatch watchID

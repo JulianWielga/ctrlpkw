@@ -68,12 +68,10 @@ angular.module 'main.controllers.wards', [
 					@data.getWards @locationMonitor.lastPosition
 					@locationPending = no
 				else
-					@cordovaGeolocation.getCurrentPosition(timeout: 60000)
+					@cordovaGeolocation.getCurrentPosition()
 					.then @data.getWards
 					.catch =>
 						@errors.noLocationService= true
 					.finally => @locationPending = no
-			.catch =>
-				@errors.noNetworkConnection = true
 
 ]

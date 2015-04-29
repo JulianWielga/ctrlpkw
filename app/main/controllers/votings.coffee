@@ -14,5 +14,6 @@ angular.module 'main.controllers.votings', [
 		constructor: (@scope, RenderContext, @data, $page) ->
 			renderContext = new RenderContext @scope, 'votings'
 			$page.title = 'Wybory'
+			@data.getVotings()
 
 ]

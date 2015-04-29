@@ -73,9 +73,6 @@ exports.config =
 			server:
 				command: 'ripple emulate'
 
-			onCompile: (files) ->
-				exec 'cordova prepare'
-
 
 
 # export server configuration to jade processor

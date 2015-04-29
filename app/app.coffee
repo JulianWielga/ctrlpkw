@@ -65,12 +65,16 @@ angular.module 'app', [
 .config [
 	'$httpProvider'
 	($httpProvider) ->
+		$httpConfigDefaults =
+			timeout: 10000
+
 		$httpProvider.defaults.useXDomain = yes
 #		$httpProvider.defaults.withCredentials = yes
 		$httpProvider.interceptors.push [
 			'$q', '$location', 'varsConfig'
 			($q, $location, varsConfig) ->
-				request: (config) ->
+				request: (config = {}) ->
+					_.defaults(config, $httpConfigDefaults)
 					angular.extend config.headers,
 						'ctrl-pkw-client-version': varsConfig.version
 

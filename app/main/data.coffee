@@ -9,6 +9,7 @@ angular.module 'main.data', []
 	'$rootScope'
 	'VotingsResources', 'ProtocolsResources'
 	'mapData'
+	'$errors'
 
 	class ApplicationData
 		votings: []
@@ -21,7 +22,7 @@ angular.module 'main.data', []
 		selectedWards: []
 		markers: []
 
-		constructor: ($rootScope, @votingsResources, @protocolsResources, @mapSavedData) ->
+		constructor: ($rootScope, @votingsResources, @protocolsResources, @mapSavedData, @errors) ->
 			@getWards = _.debounce @_getWards, DEBOUNCE_TIMEOUT
 
 			$rootScope.$watch (=> @selectedVoting), @_onVotingChanged
@@ -66,18 +67,23 @@ angular.module 'main.data', []
 					points: points
 					center: position
 
+			.catch =>
+				@errors.noNetworkConnection = true
+
 			.finally =>
 				@wardsLoading = no
 
 			return request.$promise
 
 		getVotings: =>
-			@votingsLoading = yes
 			unless @votings?.length
+				@votingsLoading = yes
 				@votings = @votingsResources.getVotings()
 				@votings.$promise
 				.then =>
 					@selectedVoting ?= @votings[0].date
+				.catch =>
+					@errors.noNetworkConnection = true
 				.finally =>
 					@votingsLoading = no
 			return @votings.$promise

@@ -11,3 +11,6 @@
 				.tile-content
 					h2 {{voting.date | amDateFormat:'LL'}}
 					p {{voting.description}}
+
+	.placeholder-loading(flex, ng-if='!ctrl.data.votings.length', layout="column", layout-align="center center", us-spinner)
+		h1.md-body-1(ng-if='ctrl.data.votingsLoading') Pobieram dane o wyborach...
