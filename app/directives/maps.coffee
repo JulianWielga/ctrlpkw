@@ -39,10 +39,10 @@ angular.module 'directives.googleMaps', [
 .service 'mapData', [->]
 
 .controller 'mapController', [
-	'initMaps', '$injector', '$scope', '$q', '$cordovaGeolocation', 'locationMonitor', '$document', 'mapData'
+	'initMaps', '$injector', '$scope', '$q', '$cordovaGeolocation', 'locationMonitor', '$document', 'mapData', '$timeout'
 	class MapController
 
-		constructor: (@initMaps, @injector, @scope, @q, @geolocation, @locationMonitor, @document, @savedMapData) ->
+		constructor: (@initMaps, @injector, @scope, @q, @geolocation, @locationMonitor, @document, @savedMapData, @timeout) ->
 			angular.extend @scope,
 				centerMapFn: @centerOnLocation
 				getMapCenterFn: @getView
@@ -51,10 +51,8 @@ angular.module 'directives.googleMaps', [
 
 		init: (element) =>
 			@_injectPlugin()
-			.then =>
-				@map = @_createMap element
-				return @map
-			.then => @onInit()
+			.then => @_createMap element
+			.then (@map) => @onInit()
 
 		_injectPlugin: =>
 			@q.when @initMaps
@@ -67,22 +65,20 @@ angular.module 'directives.googleMaps', [
 				zoom: 5
 
 		onInit: =>
-			setTimeout =>
-				@scope.$watch 'markers', @markersChanged, yes
-				@resizeHandler()
-				if @savedMapData.coords
-					pos = @Map.latLng @savedMapData.coords.latitude, @savedMapData.coords.longitude
-					@map.setZoom @savedMapData.zoom
-					@Map.moveTo @map, pos
-				else
-					@centerOnLocation yes
+			@resizeHandler()
 
-				@scope.$on 'MAP_VIEW_CHANGE', =>
-					@getView().then (position) =>
-						angular.extend @savedMapData, position
+			@scope.$watch 'markers', @markersChanged, yes
 
-				@scope.onInit?()
-			, 250
+			if @savedMapData.coords
+				pos = @Map.latLng @savedMapData.coords.latitude, @savedMapData.coords.longitude
+				@map.setZoom @savedMapData.zoom
+				@Map.moveTo @map, pos
+
+			@scope.onInit?()
+
+			@scope.$on 'MAP_VIEW_CHANGE', =>
+				@getView().then (position) =>
+					angular.extend @savedMapData, position
 
 		_doCenterOnLocation: => _.debounce (position, fast) =>
 			pos = @Map.latLng position.coords.latitude, position.coords.longitude
@@ -127,15 +123,9 @@ angular.module 'directives.googleMaps', [
 					points.push pos
 					bounds = @Map.latLngBounds points
 					@viewCircle = circle
-					setTimeout =>
+					@timeout =>
 						@resizeHandler()
-						if @savedMapData.coords
-							pos = @Map.latLng @savedMapData.coords.latitude, @savedMapData.coords.longitude
-							@map.setZoom @savedMapData.zoom
-							@Map.moveTo @map, pos
-						else
-							@Map.fitBounds @map, bounds
-					, 150
+						@Map.fitBounds @map, bounds
 
 		centerOnMarkers: (position) =>
 			return unless @markers
@@ -172,7 +162,6 @@ angular.module 'directives.googleMaps', [
 			@Map.deleteMarker marker
 
 		createMarker: (marker) =>
-			console.log 'createMarker'
 			count = marker.wards.length if marker.wards?.length > 1
 			suffix = '_d' unless _.any marker.wards, protocolStatus: 'LACK'
 

@@ -83,6 +83,7 @@ angular.module 'cordova.plugin.googleMaps', [
 		constructor: (@q, @rootScope) ->
 
 		getMap: (canvas, params) ->
+			deferred = @q.defer()
 			parent = angular
 			.element(canvas)
 			.css(display: 'none')
@@ -101,10 +102,11 @@ angular.module 'cordova.plugin.googleMaps', [
 					bearing: params.bearing
 
 			map.on plugin.google.maps.event.CAMERA_CHANGE, @_onMapCameraChanged(map)
+			map.on plugin.google.maps.event.MAP_READY, -> deferred.resolve(map)
 
 			@rootScope.$on 'EXIT_APP', -> map.remove()
 
-			return map
+			return deferred.promise
 
 		_onMapCameraChanged: (map) => =>
 			@getView map
@@ -213,6 +215,8 @@ angular.module 'cordova.plugin.googleMaps', [
 		constructor: (@q, @geolocation, @document, @locationMonitor, @rootScope) ->
 
 		getMap: (canvas, params) =>
+			deferred = @q.defer()
+
 			@document.off 'location_changed', @_locationChangeHandler
 
 			angular.extend params,
@@ -224,7 +228,9 @@ angular.module 'cordova.plugin.googleMaps', [
 
 			@document.on 'location_changed', @_locationChangeHandler
 			google.maps.event.addListener map, 'center_changed', @_onMapCameraChanged(map)
-			return map
+			google.maps.event.addListenerOnce map, 'idle', -> deferred.resolve(map)
+
+			return deferred.promise
 
 		_onMapCameraChanged: (map) => =>
 			@getView map
