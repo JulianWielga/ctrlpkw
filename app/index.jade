@@ -45,7 +45,7 @@ html(ng-app='app', device-detector)
 			+subview('wards')
 			+subview('ward')
 
-		div(ng-if="subview == 'wards'")
+		div(ng-if="subview == 'wards' && !errors.noNetworkConnection")
 			.divider
 			.buttons
 				a.button(ng-href='#/wardsmap')

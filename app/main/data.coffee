@@ -72,11 +72,14 @@ angular.module 'main.data', []
 			return request.$promise
 
 		getVotings: =>
-			if !@votings?.length
+			@votingsLoading = yes
+			unless @votings?.length
 				@votings = @votingsResources.getVotings()
 				@votings.$promise
 				.then =>
 					@selectedVoting ?= @votings[0].date
+				.finally =>
+					@votingsLoading = no
 			return @votings.$promise
 
 		getBallots: =>
