@@ -1,12 +1,12 @@
 .controller(ng-controller='ErrorsController as ctrl',flex, layout="column")
 	.content(flex)
-		.error.net(ng-if='errors.noNetworkConnection')
+		.device-error.net(ng-if='errors.noNetworkConnection')
 			span Aplikajca wymaga dostępu do internetu. Włącz Wi-Fi lub przesyłanie danych pakietowych.
-		.error.gps(ng-if='errors.noLocationService')
+		.device-error.gps(ng-if='errors.noLocationService')
 			span Pobranie lokalizacji nie powiodło się. Sprawdź czy usługa GPS jest włączona i czy aplikacja ma do niej dostęp.
-		.error.update(ng-if='errors.upgradeRequired')
+		.device-error.update(ng-if='errors.upgradeRequired')
 			span Masz nieaktualną wersję aplikacji. Pobierz najnowszą wersję ze sklepu, ta nie będzie działać.
-		.error(ng-if='errors.unknown')
+		.device-error(ng-if='errors.unknown')
 			span Niespodziewany problem.
 
 	.divider
