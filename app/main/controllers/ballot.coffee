@@ -78,8 +78,8 @@ angular.module 'main.controllers.ballot', [
 				@images.push image
 
 		shareFb: =>
-			console.log 'costam costam facebook', @data.currentVoting()
+			window.open('https://www.facebook.com/dialog/feed?app_id=474237992727126&display=page' + "&name=" + 'Protokół z wyborów prezydenckich' + '&caption=' + 'Biorę udział w akcji Ctrl-PKW!' + '&description=' + 'Policzymy głosy w wyborach prezydenckich! 10 maja 2015 r. około godziny 23:00 wybieramy się do najbliższych komisji wyborczych, robimy zdjęcia protokołów i spisujemy z nich wyniki za pomocą aplikacji Ctrl-PKW na urządzenia mobilne (telefony i tablety).' + '&link=' + 'http://ctrl-pkw.pl/' + '&picture=' + @images[0].res.url + '&redirect_uri=' + 'http://ctrl-pkw.pl/', "_system")
 
 		shareTw: =>
-			console.log 'costam costam twitter', @data.currentVoting()
+			window.open('https://twitter.com/share?text=' + 'Protokół z %23wyboryprezydenckie2015. Biorę udział w akcji %23CtrlPKW http://ctrl-pkw.pl %23wybory2015 ' + @images[0].res.url, "_system")
 ]
