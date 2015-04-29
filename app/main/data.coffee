@@ -84,9 +84,13 @@ angular.module 'main.data', []
 				date: @selectedVoting
 
 		saveProtocol: (protocol) =>
-			@protocolsResources.save angular.extend
+			@protocolsResources.save
+				authorizePictureUpload: false
+			, angular.extend
 				votingDate: @selectedVoting
 			, protocol
+
+		authorizePictureUpload: (protocolId) =>
 
 		currentVoting: =>
 			if @selectedVoting?

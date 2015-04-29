@@ -11,11 +11,12 @@ angular.module 'main.controllers.ballot', [
 	'ApplicationData'
 	'$cordovaCamera'
 	'CloudinaryResources'
+	'PictureUploadAuthorizationResource'
 	'$location'
 	'$history'
 
 	class BallotController
-		constructor: (@scope, RenderContext, @data, @camera, @cloudinary, @location, @history) ->
+		constructor: (@scope, RenderContext, @data, @camera, @cloudinary, @pictureUploadAuthorization, @location, @history) ->
 			renderContext = new RenderContext @scope, 'ward.ballot', ['community', 'no', 'ballot']
 
 			@scope.$watch =>
@@ -43,18 +44,18 @@ angular.module 'main.controllers.ballot', [
 
 		sendResult: =>
 			@loading = yes
-			@request = @data.saveProtocol
+			@protocol = @data.saveProtocol
 				ballotNo: @ballot.no
 				communityCode: @communityCode
 				wardNo: @wardNo
 				ballotResult: @result
-			@request.$promise.then (response) =>
-				@uploadParams = response
+			@protocol.$promise.then =>
+				console.log "protocol saved"
 			.catch (res) =>
 				@fieldErrors = res.data
 			.finally =>
 				@loading = no
-			return @request.$promise
+			return @protocol.$promise
 
 		takePhoto: (choose) =>
 			@camera.getPicture
@@ -63,19 +64,25 @@ angular.module 'main.controllers.ballot', [
 				correctOrientation: yes
 				saveToPhotoAlbum: yes
 				quality: 49
+
 			.then (uri) =>
 				@loading = yes
-				image = {}
-				image.res = @cloudinary.save
-					api_key: @uploadParams.apiKey
-					timestamp: @uploadParams.timestamp
-					signature: @uploadParams.signature
-					public_id: @uploadParams.publicId
-					file: "data:image/jpeg;base64,#{uri}"
+				pictureUploadToken = @pictureUploadAuthorization.save
+					protocolId: @protocol.id
+				, {}
 
-				image.res.$promise.finally => @loading = no
-				image.src = "data:image/jpeg;base64,#{uri}"
-				@images.push image
+				pictureUploadToken.$promise.then (pictureUploadToken) =>
+					image = {}
+					image.res = @cloudinary.save
+						api_key: pictureUploadToken.apiKey
+						timestamp: pictureUploadToken.timestamp
+						signature: pictureUploadToken.signature
+						public_id: pictureUploadToken.publicId
+						file: "data:image/jpeg;base64,#{uri}"
+
+					image.res.$promise.finally => @loading = no
+					image.src = "data:image/jpeg;base64,#{uri}"
+					@images.push image
 
 		shareFb: =>
 			window.open('https://www.facebook.com/dialog/feed?app_id=474237992727126&display=page' + "&name=" + 'Protokół z wyborów prezydenckich' + '&caption=' + 'Biorę udział w akcji Ctrl-PKW!' + '&description=' + 'Policzymy głosy w wyborach prezydenckich! 10 maja 2015 r. około godziny 23:00 wybieramy się do najbliższych komisji wyborczych, robimy zdjęcia protokołów i spisujemy z nich wyniki za pomocą aplikacji Ctrl-PKW na urządzenia mobilne (telefony i tablety).' + '&link=' + 'http://ctrl-pkw.pl/' + '&picture=' + @images[0].res.url + '&redirect_uri=' + 'http://ctrl-pkw.pl/', "_system")
