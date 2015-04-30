@@ -82,6 +82,8 @@ angular.module 'main.data', []
 				@votings.$promise
 				.then =>
 					@selectedVoting ?= @votings[0].date
+					@getBallots()
+					return @selectedVoting
 				.catch =>
 					@errors.noNetworkConnection = true
 				.finally =>

@@ -19,11 +19,11 @@ angular.module 'main.controllers.ballot', [
 	class BallotController
 		constructor: (@scope, RenderContext, @data, @camera, @cloudinary, @pictureUploadAuthorization, @location, @history) ->
 			renderContext = new RenderContext @scope, 'ward.ballot', ['community', 'no', 'ballot']
+			@data.getVotings()
 
 			@scope.$watch =>
-				@ballotNo
-			, =>
-				@ballot = _.find @data.ballots, no: @ballotNo
+				_.find @data.ballots, no: @ballotNo
+			, (@ballot) =>
 
 			@scope.$on "requestContextChanged", =>
 				return unless renderContext.isChangeRelevant()
@@ -37,6 +37,9 @@ angular.module 'main.controllers.ballot', [
 			@communityCode = renderContext.getParam 'community'
 			@wardNo = renderContext.getParam 'no'
 			@ballotNo = renderContext.getParamAsInt 'ballot'
+
+			unless @protocol?.id
+				@scope.subview = null
 
 			@history.replace() #if @scope.subview
 
@@ -93,7 +96,9 @@ angular.module 'main.controllers.ballot', [
 
 		shareFb: =>
 			window.open('https://www.facebook.com/dialog/feed?app_id=474237992727126&display=page' + "&name=" + 'Protokół z wyborów prezydenckich' + '&caption=' + 'Biorę udział w akcji Ctrl-PKW!' + '&description=' + 'Policzymy głosy w wyborach prezydenckich! 10 maja 2015 r. około godziny 23:00 wybieramy się do najbliższych komisji wyborczych, robimy zdjęcia protokołów i spisujemy z nich wyniki za pomocą aplikacji Ctrl-PKW na urządzenia mobilne (telefony i tablety).' + '&link=' + 'http://ctrl-pkw.pl/' + '&picture=' + @images[0].res.url + '&redirect_uri=' + 'http://ctrl-pkw.pl/', "_system")
+			return
 
 		shareTw: =>
 			window.open('https://twitter.com/share?text=' + 'Protokół z %23wyboryprezydenckie2015. Biorę udział w akcji %23CtrlPKW http://ctrl-pkw.pl %23wybory2015 ' + @images[0].res.url, "_system")
+			return
 ]
