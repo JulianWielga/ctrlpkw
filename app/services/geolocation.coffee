@@ -10,7 +10,7 @@ angular.module "ngCordova.plugins.geolocation", [
 	($q, cordovaReady) ->
 		defaults =
 			timeout: 20000
-			maximumAge:	30 * 60 * 1000
+			maximumAge:	600000
 #			enableHighAccuracy: yes
 
 		getCurrentPosition: (options = {}) ->
@@ -47,12 +47,12 @@ angular.module "ngCordova.plugins.geolocation", [
 ]
 
 .service "locationMonitor", [
-	'$q', '$rootScope', '$cordovaGeolocation', '$document'
+	'$q', '$rootScope', '$cordovaGeolocation', '$document', '$errors'
 	class LocationMonitor
 		promise: null
 		lastPosition: null
 
-		constructor: (@q, @rootScope, @geolocation, @document) ->
+		constructor: (@q, @rootScope, @geolocation, @document, @errors) ->
 			@document
 			.on 'resume', @start
 			.on 'pause', @stop
@@ -64,6 +64,10 @@ angular.module "ngCordova.plugins.geolocation", [
 			@promise.then null, null, (@lastPosition) =>
 				@rootScope.$broadcast 'LOCATION_CHANGED', @lastPosition
 				@document.triggerHandler 'location_changed'
+				@errors.noLocationService = off
+			@promise.catch =>
+				@stop()
+				@start()
 
 		stop: =>
 			@promise?.cancel?()

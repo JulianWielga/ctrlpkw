@@ -120,16 +120,28 @@ angular.module 'cordova.plugin.googleMaps', [
 				duration: 1000
 			setTimeout -> map.setPadding 0
 
-		panTo: (map, position, zoom) -> map.getCameraPosition (camera) ->
-			map.animateCamera
-				target: position
-				zoom: zoom or camera.zoom
-				duration: 1000
+		panTo: (map, position, zoom) ->
+			deferred = @q.defer()
+			map.getCameraPosition (camera) ->
+				map.animateCamera
+					target: position
+					zoom: zoom or camera.zoom
+					duration: 1000
+				, ->
+					deferred.resolve()
 
-		moveTo: (map, position, zoom) -> map.getCameraPosition (camera) ->
-			map.moveCamera
-				target: position
-				zoom: zoom or camera.zoom
+			return deferred.promise
+
+		moveTo: (map, position, zoom) ->
+			deferred = @q.defer()
+			map.getCameraPosition (camera) ->
+				map.moveCamera
+					target: position
+					zoom: zoom or camera.zoom
+				, ->
+					deferred.resolve()
+
+			return deferred.promise
 
 		latLng: (latitude, longitude) ->
 			new plugin.google.maps.LatLng latitude, longitude
@@ -315,12 +327,18 @@ angular.module 'cordova.plugin.googleMaps', [
 		fitBounds: (map, bounds) => map.fitBounds bounds
 
 		panTo: (map, position, zoom) =>
-			map.panTo position
+			deferred = @q.defer()
 			map.setZoom zoom if zoom?
+			map.panTo position
+			deferred.resolve('x')
+			return deferred.promise
 
 		moveTo: (map, position, zoom) =>
-			map.setCenter position
+			deferred = @q.defer()
 			map.setZoom zoom if zoom?
+			map.setCenter position
+			deferred.resolve('x')
+			return deferred.promise
 
 		latLng: (latitude, longitude) ->
 			new google.maps.LatLng latitude, longitude
