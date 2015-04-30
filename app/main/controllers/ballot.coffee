@@ -3,6 +3,7 @@
 angular.module 'main.controllers.ballot', [
 	'RequestContext'
 	'main.resources.cloudinary'
+	'ByGiro.base64FileInput'
 ]
 
 .controller 'BallotController', [
@@ -62,27 +63,33 @@ angular.module 'main.controllers.ballot', [
 				destinationType: Camera.DestinationType.DATA_URL
 				sourceType: if choose then Camera.PictureSourceType.PHOTOLIBRARY else Camera.PictureSourceType.CAMERA
 				correctOrientation: yes
-				saveToPhotoAlbum: yes
+				saveToPhotoAlbum: not choose
 				quality: 49
 
-			.then (uri) =>
-				@loading = yes
-				pictureUploadToken = @pictureUploadAuthorization.save
-					protocolId: @protocol.id
-				, {}
+			.then (uri) ->
+				"data:image/jpeg;base64,#{uri}"
+			.then @uploadPhoto
 
-				pictureUploadToken.$promise.then (pictureUploadToken) =>
-					image = {}
-					image.res = @cloudinary.save
-						api_key: pictureUploadToken.apiKey
-						timestamp: pictureUploadToken.timestamp
-						signature: pictureUploadToken.signature
-						public_id: pictureUploadToken.publicId
-						file: "data:image/jpeg;base64,#{uri}"
+		fileSelected: (file) => @uploadPhoto file.getPreview()
 
-					image.res.$promise.finally => @loading = no
-					image.src = "data:image/jpeg;base64,#{uri}"
-					@images.push image
+		uploadPhoto: (uri) =>
+			@loading = yes
+			pictureUploadToken = @pictureUploadAuthorization.save
+				protocolId: @protocol.id
+			, {}
+
+			pictureUploadToken.$promise.then (pictureUploadToken) =>
+				image = {}
+				image.res = @cloudinary.save
+					api_key: pictureUploadToken.apiKey
+					timestamp: pictureUploadToken.timestamp
+					signature: pictureUploadToken.signature
+					public_id: pictureUploadToken.publicId
+					file: uri
+
+				image.res.$promise.finally => @loading = no
+				image.src = uri
+				@images.push image
 
 		shareFb: =>
 			window.open('https://www.facebook.com/dialog/feed?app_id=474237992727126&display=page' + "&name=" + 'Protokół z wyborów prezydenckich' + '&caption=' + 'Biorę udział w akcji Ctrl-PKW!' + '&description=' + 'Policzymy głosy w wyborach prezydenckich! 10 maja 2015 r. około godziny 23:00 wybieramy się do najbliższych komisji wyborczych, robimy zdjęcia protokołów i spisujemy z nich wyniki za pomocą aplikacji Ctrl-PKW na urządzenia mobilne (telefony i tablety).' + '&link=' + 'http://ctrl-pkw.pl/' + '&picture=' + @images[0].res.url + '&redirect_uri=' + 'http://ctrl-pkw.pl/', "_system")

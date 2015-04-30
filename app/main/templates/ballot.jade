@@ -49,15 +49,17 @@ mixin input(model)
 		.subview(ng-switch-when='photos', layout='column', flex)
 			.content.padding(flex)
 				section.photos
-					h1 Zrób zdjęcia protokołu
-					.buttons
+					h1 Prześlij zdjęcia protokołu
+					.buttons(ng-if="platformId ==='browser'")
+						input(type="file", ng-model="file", ng-change="ctrl.fileSelected(file)", base64-input)
+					.buttons(ng-if="platformId !=='browser'")
 						button.button(ng-click='ctrl.takePhoto(true)')
 							i.icon-photo-library
 							span.text wybierz zdjęcie
 						button.button(ng-click='ctrl.takePhoto()')
 							i.icon-photo-camera
 							span.text zrób zdjęcie
-				section.photos(ang-if='ctrl.images.length')
+				section.photos
 					.grid-list
 						.grid-tile(ng-repeat='image in ctrl.images').image
 							img(ng-src='{{image.src}}')

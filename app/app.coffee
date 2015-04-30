@@ -24,6 +24,7 @@ angular.module 'app', [
 	# app modules
 	'main.module'
 	'directives.googleMaps'
+	'directives.cordovaPlatform'
 	'validators.responseValidators'
 
 	#'app.services'

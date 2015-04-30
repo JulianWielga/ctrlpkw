@@ -86,12 +86,25 @@
     <feature name="Camera">
         <param name="id" value="org.apache.cordova.camera" />
     </feature>
-    <feature name="Device Motion">
-        <param name="id" value="org.apache.cordova.device-motion" />
-    </feature>
-    <feature name="Device Orientation">
-        <param name="id" value="org.apache.cordova.device-orientation" />
-    </feature>
+
+    <platform name="android">
+        <feature name="Device Motion">
+            <param name="id" value="org.apache.cordova.device-motion"/>
+        </feature>
+        <feature name="Device Orientation">
+            <param name="id" value="org.apache.cordova.device-orientation"/>
+        </feature>
+    </platform>
+
+    <platform name="ios">
+        <feature name="Device Motion">
+            <param name="id" value="org.apache.cordova.device-motion"/>
+        </feature>
+        <feature name="Device Orientation">
+            <param name="id" value="org.apache.cordova.device-orientation"/>
+        </feature>
+    </platform>
+
     <feature name="Geolocation">
         <param name="id" value="org.apache.cordova.geolocation" />
     </feature>
