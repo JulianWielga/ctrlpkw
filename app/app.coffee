@@ -18,6 +18,8 @@ angular.module 'app', [
 	'touk.jwl.history'
 	'touk.jwl.page'
 	'ng.deviceDetector'
+	'uuid4'
+	'LocalStorageModule'
 
 	# app modules
 	'main.module'
@@ -71,12 +73,13 @@ angular.module 'app', [
 		$httpProvider.defaults.useXDomain = yes
 #		$httpProvider.defaults.withCredentials = yes
 		$httpProvider.interceptors.push [
-			'$q', '$location', 'varsConfig'
-			($q, $location, varsConfig) ->
+			'$q', '$location', 'varsConfig', 'localStorageService'
+			($q, $location, varsConfig, localStorageService) ->
 				request: (config = {}) ->
 					_.defaults(config, $httpConfigDefaults)
 					angular.extend config.headers,
 						'ctrl-pkw-client-version': varsConfig.version
+						'Ctrl-PKW-Client-Id': localStorageService.get('clientId')
 
 					if transforms = config.transformResponse
 						transforms = [transforms] unless angular.isArray(transforms)
@@ -85,6 +88,11 @@ angular.module 'app', [
 						transforms = [defaults] unless angular.isArray(defaults)
 
 					transforms.unshift (data, headersGetter, status) ->
+						hUuid = headersGetter()['Ctrl-PKW-Client-Id']
+						sUuid = localStorageService.get('clientId')
+						if hUuid? and hUuid isnt sUuid
+							localStorageService.set 'clientId', hUuid
+
 						#TODO: jakiś inny warunek, jakaś inna akcja...
 						if status is 403
 							title = 'Nowa wersja aplikacji'
@@ -118,4 +126,13 @@ angular.module 'app', [
 	(amMoment) ->
 		amMoment.changeLocale 'pl'
 		FastClick.attach document.body
+]
+
+.run [
+	'localStorageService', 'uuid4'
+	(localStorageService, uuid4) ->
+		uuid = localStorageService.get 'clientId'
+		unless uuid
+			uuid = uuid4.generate()
+			localStorageService.set 'clientId', uuid
 ]
