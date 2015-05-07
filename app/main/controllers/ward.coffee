@@ -42,5 +42,5 @@ angular.module 'main.controllers.ward', [
 		init: (renderContext) =>
 			@communityCode = renderContext.getParamAsInt 'community'
 			@wardNo = renderContext.getParamAsInt 'no'
-			@page.title = "Komisja nr #{@wardNo}"
+			@page.title = @ward?.shortLabel
 ]
