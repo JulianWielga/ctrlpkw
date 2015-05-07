@@ -163,7 +163,7 @@ angular.module 'directives.googleMaps', [
 
 		createMarker: (marker) =>
 			count = marker.wards.length if marker.wards?.length > 1
-			suffix = '_d' unless _.any marker.wards, protocolStatus: 'LACK'
+			suffix = '_d' if _.every marker.wards, protocolStatus: 'CONFIRMED'
 
 			m = @Map.createMarker @map,
 				position: @Map.latLng marker.location.latitude, marker.location.longitude

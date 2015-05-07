@@ -3,12 +3,12 @@
 	.content(flex, ng-if='ctrl.data.selectedWards.length')
 		.list
 			a(ng-repeat='ward in ctrl.data.selectedWards', ng-href='#/wards/{{ward.communityCode}}/{{ward.no}}').item
-					.item-content
-						.tile-left
-							i.icon-place.primary
-						.tile-content
-							h2 {{ward.label}}
-							p {{ward.address}}
+				.item-content
+					.tile-left
+						i.icon-place.primary(ng-class="{'accent': ward.protocolStatus === 'CONFIRMED'}")
+					.tile-content
+						h2 {{ward.label}}
+						p {{ward.address}}
 
 
 	.placeholder-loading(flex, ng-if='!ctrl.data.selectedWards.length', layout="column", layout-align="center center", us-spinner)
