@@ -17,7 +17,6 @@ angular.module 'main.data', []
 
 		ballots: []
 
-		wardsCount: 3
 		wards: []
 		selectedWards: []
 		markers: []
@@ -47,7 +46,6 @@ angular.module 'main.data', []
 			position.coords.radius = Math.min(MAX_RADIUS, position.coords.radius / 2 or 0)
 			request = @votingsResources.getWards
 				date: @selectedVoting
-				minCount: @wardsCount
 				latitude: position.coords.latitude
 				longitude: position.coords.longitude
 				radius: position.coords.radius
@@ -65,7 +63,7 @@ angular.module 'main.data', []
 
 				@markers =
 					points: points
-					center: position
+					center: angular.extend {}, position
 
 			.catch =>
 				@errors.noNetworkConnection = true

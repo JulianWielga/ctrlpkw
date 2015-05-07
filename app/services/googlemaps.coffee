@@ -354,7 +354,7 @@ angular.module 'cordova.plugin.googleMaps', [
 
 			if options.icon?.size?.width
 				options.icon.scaledSize = new google.maps.Size options.icon.size.width, options.icon.size.height
-				delete options.icon.size
+				options.icon.size = new google.maps.Size (options.icon.size.width + 1), (options.icon.size.height + 1)
 
 			marker = new google.maps.Marker angular.extend
 				map: map

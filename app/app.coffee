@@ -69,7 +69,7 @@ angular.module 'app', [
 	'$httpProvider'
 	($httpProvider) ->
 		$httpConfigDefaults =
-			timeout: 10000
+			timeout: 30000
 
 		$httpProvider.defaults.useXDomain = yes
 #		$httpProvider.defaults.withCredentials = yes
@@ -126,7 +126,9 @@ angular.module 'app', [
 	'amMoment'
 	(amMoment) ->
 		amMoment.changeLocale 'pl'
-		FastClick.attach document.body
+		FastClick.attach document.body,
+			tapDelay: 200
+			tapTimeout: 400
 ]
 
 .run [

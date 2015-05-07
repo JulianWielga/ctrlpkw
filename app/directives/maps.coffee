@@ -69,7 +69,7 @@ angular.module 'directives.googleMaps', [
 
 			@scope.$watch 'markers', @markersChanged, yes
 
-			if @savedMapData.coords
+			if @savedMapData?.coords
 				pos = @Map.latLng @savedMapData.coords.latitude, @savedMapData.coords.longitude
 				@map.setZoom @savedMapData.zoom
 				@Map.moveTo @map, pos
@@ -170,8 +170,8 @@ angular.module 'directives.googleMaps', [
 				icon:
 					url: "img/marker#{suffix or ''}#{count or ''}.png"
 					size:
-						width: Math.round (58/2) * (0.85)
-						height: Math.round (83/2) * (0.85)
+						width: Math.round((58/2) * (0.85))
+						height: Math.round((83/2) * (0.85))
 			m.then (el) =>
 				@Map.onMarkerClick el, => @onMarkerClick marker
 			return m

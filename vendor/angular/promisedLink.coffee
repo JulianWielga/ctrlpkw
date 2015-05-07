@@ -9,26 +9,21 @@ angular.module 'touk.promisedLink', []
 		restrict: 'A'
 		link: (scope, element, attrs) ->
 			fnGetter = null
-			options = {}
 
 			attrs.$observe 'promisedFn', (fn) ->
-				fnGetter = $parse(fn)
+				fnGetter = $parse(fn) or fn
 
-			simulateDefault = ->
+			simulateDefault = (event) ->
+				touch = event.changedTouches?[0] or event
 				$timeout ->
 					newEvent = document.createEvent "MouseEvents"
-					newEvent.initMouseEvent "click", true, true, window, 0, 0, 0, 0, 0, options.ctrlKey, options.altKey, options.shiftKey, options.metaKey, options.button, null
+					newEvent.initMouseEvent "click", true, true, window, 1, touch.screenX, touch.screenY, touch.clientX, touch.clientY, event.ctrlKey, event.altKey, event.shiftKey, event.metaKey, event.button, null
 					newEvent.preventedDefault = yes
+					newEvent.stopPropagation()
 					element[0].dispatchEvent newEvent
 
 			element.on 'click', (event) ->
-				return if (event.originalEvent or event).preventedDefault
-				options =
-					ctrlKey: event.ctrlKey
-					altKey: event.altKey
-					shiftKey: event.shiftKey
-					metaKey: event.metaKey
-					button: event.button
-				if fnGetter(scope)?.then?(simulateDefault)
-					event.preventDefault()
+				return if event.originalEvent?.preventedDefault or event?.preventedDefault
+				event.preventDefault()
+				fnGetter?(scope).then? -> simulateDefault(event)
 ]
