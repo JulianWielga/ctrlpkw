@@ -20,10 +20,9 @@ angular.module 'main.controllers.ward', [
 		constructor: (@scope, RenderContext, @data, @camera, @cloudinary, @location, @history, @page) ->
 			renderContext = new RenderContext @scope, 'ward', ['community', 'no']
 
-			@scope.$watch =>
-				@wardNo
-			, =>
+			@scope.$watch (=> return @wardNo), =>
 				@ward = _.find @data.selectedWards, no: @wardNo
+				@page.title = @ward?.shortLabel
 
 			@scope.$on "requestContextChanged", =>
 				return unless renderContext.isChangeRelevant()
@@ -31,10 +30,6 @@ angular.module 'main.controllers.ward', [
 
 			@init renderContext
 
-			if @data.ballots.length is 1
-				@history.replace()
-				@location.replace()
-				@openBallot @data.ballots[0]
 
 		openBallot: (ballot) =>
 			@location.path "/wards/#{@communityCode}/#{@wardNo}/ballots/#{ballot.no}"
@@ -42,5 +37,9 @@ angular.module 'main.controllers.ward', [
 		init: (renderContext) =>
 			@communityCode = renderContext.getParamAsInt 'community'
 			@wardNo = renderContext.getParamAsInt 'no'
-			@page.title = @ward?.shortLabel
+
+			if @data.ballots.length is 1
+				@history.replace()
+				@location.replace()
+				@openBallot @data.ballots[0]
 ]

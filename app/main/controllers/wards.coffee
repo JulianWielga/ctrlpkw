@@ -29,19 +29,23 @@ angular.module 'main.controllers.wards', [
 			@contextChanged renderContext
 
 		contextChanged: (renderContext) =>
-			if votingDate = renderContext.getParam('date')
-				@data.selectedVoting = votingDate
-				@init()
-			else
-				@data.getVotings()
-				.then =>
+			console.debug 'WardsController: contextChanged'
+			@data.getVotings()
+			.then =>
+				votingDate = renderContext.getParam('date')
+				console.log _(@data.votings).pluck('date').includes(votingDate)
+				if votingDate? and _(@data.votings).pluck('date').includes(votingDate)
+					@data.selectedVoting = votingDate
+					@init()
+				else
 					@history.replace()
 					@location.replace()
 					@location.path "/wards/#{@data.selectedVoting}"
-				.catch =>
-					@errors.noNetworkConnection = true
+			.catch =>
+				@errors.noNetworkConnection = true
 
 		init: => @timeout =>
+			console.debug 'WardsController: init'
 			unless @data.selectedWards?.length
 				if @data.wards.length
 					@data.selectedWards = @data.wards

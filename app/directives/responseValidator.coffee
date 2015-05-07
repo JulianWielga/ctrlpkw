@@ -43,7 +43,6 @@ angular.module 'validators.responseValidators', []
 				@clearMessage field
 				for error in errors
 					errorPath = error.path.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&")
-					console.log error.path, errorPath, field.path
 					if field.path.match new RegExp "(\\.|^)#{errorPath}$", 'gi'
 						@setInvalid field, error.message
 	]
@@ -73,7 +72,6 @@ angular.module 'validators.responseValidators', []
 		ngModel = ctrls[0]
 		vMessage = ctrls[1]
 
-		console.log $parse(attrs.responseValidator)(scope)
 		angular.extend vMessage,
 			model: ngModel
 			path: $parse(attrs.responseValidator)(scope)
