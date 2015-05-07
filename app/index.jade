@@ -4,6 +4,8 @@ html(ng-app='app', device-detector, cordova-platform)
 		meta(charset='utf-8')
 		meta(name='format-detection', content='telephone=no')
 		meta(name='msapplication-tap-highlight', content='no')
+		meta(name="apple-mobile-web-app-capable", content="yes")
+		meta(name="mobile-web-app-capable", content="yes")
 		//- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323
 		meta(
 			name='viewport'
@@ -44,6 +46,7 @@ html(ng-app='app', device-detector, cordova-platform)
 			+subview('wardsmap')
 			+subview('wards')
 			+subview('ward')
+
 
 		div(ng-if="subview == 'wards' && !errors.noNetworkConnection")
 			.divider
