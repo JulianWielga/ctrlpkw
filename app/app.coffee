@@ -78,9 +78,11 @@ angular.module 'app', [
 			($q, $location, varsConfig, localStorageService) ->
 				request: (config = {}) ->
 					_.defaults(config, $httpConfigDefaults)
-					angular.extend config.headers,
-						'ctrl-pkw-client-version': varsConfig.version
-						'Ctrl-PKW-Client-Id': localStorageService.get('clientId')
+
+					if config.url.indexOf(varsConfig.api) is 0
+						angular.extend config.headers,
+							'ctrl-pkw-client-version': varsConfig.version
+							'Ctrl-PKW-Client-Id': localStorageService.get('clientId')
 
 					if transforms = config.transformResponse
 						transforms = [transforms] unless angular.isArray(transforms)

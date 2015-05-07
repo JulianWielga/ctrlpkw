@@ -95,10 +95,23 @@ angular.module 'main.controllers.ballot', [
 				@images.push image
 
 		shareFb: =>
-			window.open('https://www.facebook.com/dialog/feed?app_id=474237992727126&display=page' + "&name=" + 'Protokół z wyborów prezydenckich' + '&caption=' + 'Biorę udział w akcji Ctrl-PKW!' + '&description=' + 'Policzymy głosy w wyborach prezydenckich! 10 maja 2015 r. około godziny 23:00 wybieramy się do najbliższych komisji wyborczych, robimy zdjęcia protokołów i spisujemy z nich wyniki za pomocą aplikacji Ctrl-PKW na urządzenia mobilne (telefony i tablety).' + '&link=' + 'http://ctrl-pkw.pl/' + '&picture=' + @images[0].res.url + '&redirect_uri=' + 'http://ctrl-pkw.pl/', "_system")
+			fbUrl = 'https://www.facebook.com/dialog/feed'
+			fbKey = '474237992727126'
+			title = 'Protokół z wyborów prezydenckich'
+			caption = 'Biorę udział w akcji Ctrl-PKW!'
+			description = 'Policzymy głosy w wyborach prezydenckich! 10 maja 2015 r. około godziny 23:00 wybieramy się do najbliższych komisji wyborczych, robimy zdjęcia protokołów i spisujemy z nich wyniki za pomocą aplikacji Ctrl-PKW na urządzenia mobilne (telefony i tablety).'
+			link = 'http://ctrl-pkw.pl/'
+			picture = @images[0]?.res?.url or ''
+			redirectUri = link
+			fbString = "#{fbUrl}?app_id=#{fbKey}&display=page&name=#{title}&caption=#{caption}&description=#{description}&link=#{link}&picture=#{picture}&redirect_uri=#{redirectUri}"
+			window.open fbString, "_system"
 			return
 
 		shareTw: =>
-			window.open('https://twitter.com/share?text=' + 'Protokół z %23wyboryprezydenckie2015. Biorę udział w akcji %23CtrlPKW http://ctrl-pkw.pl %23wybory2015 ' + @images[0].res.url, "_system")
+			twUrl = 'https://twitter.com/share'
+			picture = @images[0]?.res?.url or ''
+			text = 'Protokół z %23wyboryprezydenckie2015. Biorę udział w akcji %23CtrlPKW ' + picture + ' %23wybory2015'
+			twString = "#{twUrl}?text=#{text}"
+			window.open twString, "_system"
 			return
 ]
