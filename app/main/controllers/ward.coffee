@@ -30,6 +30,10 @@ angular.module 'main.controllers.ward', [
 
 			@init renderContext
 
+			if @data.ballots.length is 1
+				@history.replace()
+				@location.replace()
+				@openBallot @data.ballots[0]
 
 		openBallot: (ballot) =>
 			@location.path "/wards/#{@communityCode}/#{@wardNo}/ballots/#{ballot.no}"
@@ -38,8 +42,4 @@ angular.module 'main.controllers.ward', [
 			@communityCode = renderContext.getParamAsInt 'community'
 			@wardNo = renderContext.getParamAsInt 'no'
 
-			if @data.ballots.length is 1
-				@history.replace()
-				@location.replace()
-				@openBallot @data.ballots[0]
 ]
