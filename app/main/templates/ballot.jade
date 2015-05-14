@@ -19,22 +19,22 @@ mixin input(model)
 					h1 Wypełnij informacje o głosowaniu
 					.table
 						.row(validation-message)
-							.column.label Liczba wyborców uprawnionych
+							.column.label 1. Liczba wyborców uprawnionych
 							.column.input
 								+input('ctrl.result.votersEntitledCount')(response-validator="'ProtocolsResource.create.arg0.ballotResult.votersEntitledCount'")
 							//p {{vm.text}}
 						.row(validation-message)
-							.column.label Liczba wyborców, którym wydano karty
+							.column.label 4. Liczba wyborców, którym wydano karty
 							.column.input
 								+input('ctrl.result.ballotsGivenCount')(response-validator="'ProtocolsResource.create.arg0.ballotResult.ballotsGivenCount'")
 							//p {{vm.text}}
 						.row(validation-message)
-							.column.label Liczba oddanych głosów
+							.column.label 11. Liczba kart ważnych
 							.column.input
 								+input('ctrl.result.votesCastCount')(response-validator="'ProtocolsResource.create.arg0.ballotResult.votesCastCount'")
 							//p {{vm.text}}
 						.row(validation-message)
-							.column.label Liczba głosów ważnych
+							.column.label 13. Liczba głosów ważnych
 							.column.input
 								+input('ctrl.result.votesValidCount')(response-validator="'ProtocolsResource.create.arg0.ballotResult.votesValidCount'")
 							//p {{vm.text}}
